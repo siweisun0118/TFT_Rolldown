@@ -44,6 +44,44 @@ assert all([
     sum(TFT_LEVEL_11_ODDS) == 100]), "Error in level odds."
 
 
+class Unit:
+    """Class containing unit information."""
+    def __init__(self, cost, name, traits):
+        self.cost = cost
+        self.name = name
+        self.traits = traits
+
+    def __str__(self):
+        """String representation of a unit."""
+        return self.name + ', ' + str(self.cost) + ', ' + ', '.join(self.traits) + '\n'
+
+    def __repr__(self):
+        """Self representation of a unit."""
+        return self.name + ', ' + str(self.cost) + ', ' + ', '.join(self.traits) + '\n'
+
+
+
+class Trait:
+    """Class containing trait information (incld. breakpoints and icon style)."""
+    def __init__(self, name, breakpoints, styles):
+        self.name = name
+        self.breakpoints = breakpoints
+        self.styles = styles
+        assert len(breakpoints) == len(styles), 'Error reading in traits'
+
+    def __str__(self):
+        """String representation of a trait."""
+        str_breaks = [str(breaks) for breaks in self.breakpoints]
+        str_styles = [str(styles) for styles in self.styles]
+        return self.name + ': ' + '/'.join(str_breaks) + ' ' + 'with styles ' + '/'.join(str_styles) + '\n'
+
+    def __repr__(self):
+        """Self representation of a trait."""
+        str_breaks = [str(breaks) for breaks in self.breakpoints]
+        str_styles = [str(styles) for styles in self.styles]
+        return self.name + ': ' + '/'.join(str_breaks) + ' ' + 'with styles ' + '/'.join(str_styles) + '\n'
+
+
 def read_database(input_dir):
     """Read in units and traits."""
     # Read in units
@@ -54,14 +92,39 @@ def read_database(input_dir):
     with open(Path(input_dir) / 'traits.json') as traits_file:
         traits_list = json.loads(traits_file.read())
 
-    return champions_list, traits_list
+    # Parse unit data
+    champions = []
+    for champ in champions_list:
+        # If champion has fewer than 2 traits, ignore it
+        # Since it is a target dummy, voidspawn, tome, Veigar, etc.
+        if len(champ['traits']) < 2:
+            continue
+
+        # Add to champions list
+        champions.append(Unit(champ['cost'], champ['name'], champ['traits']))
+
+    # Parse trait data
+    traits = []
+    for trait in traits_list:
+        # Extract trait breakpoints and styles from trait data
+        # TODO: Make exception for Rival
+        breakpoints = []
+        styles = []
+        for breakpoint in trait['sets']:
+            breakpoints.append(breakpoint['min'])
+            styles.append(breakpoint['style'])
+
+        # Add to traits list
+        traits.append(Trait(trait['name'], breakpoints, styles))
+
+    return champions, traits
 
 
 def main(input_dir):
     """Simulate a rolldown."""
     champions, traits = read_database(input_dir)
-    print(champions)
-    print(traits)
+    print(*champions, sep='')
+    print(*traits, sep='')
 
 
 if __name__ == '__main__':
