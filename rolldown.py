@@ -151,7 +151,18 @@ class Team:
                 self.team = [unit for unit in self.team if not unit.unit_compare_level(new_unit)]
 
                 # Add upgraded copy
-                self.team.append(new_unit.upgrade())
+                upgraded_unit = new_unit.upgrade()
+                self.team.append(upgraded_unit)
+
+                # This can trigger a second upgrade
+                amount_2 = sum([1 if unit.unit_compare_level(upgraded_unit) else 0 for unit in self.team])
+                if amount_2 == 3:
+                    # Remove previous copies
+                    self.team = [unit for unit in self.team if not unit.unit_compare_level(upgraded_unit)]
+
+                    # Add upgraded copy
+                    upgraded_unit = upgraded_unit.upgrade()
+                    self.team.append(upgraded_unit)
 
             # Otherwise, just add the unit
             else:
@@ -213,6 +224,11 @@ def main(input_dir):
     cur_team.add_unit('Lux')
     cur_team.add_unit('Lux')
     cur_team.add_unit('Garen')
+    cur_team.add_unit('Lux')
+    cur_team.add_unit('Lux')
+    cur_team.add_unit('Lux')
+    cur_team.add_unit('Lux')
+    cur_team.add_unit('Lux')
     cur_team.add_unit('Lux')
     cur_team.add_unit('Lux')
     print(cur_team)
