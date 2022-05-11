@@ -2,6 +2,7 @@
 
 
 import json
+import os
 from pathlib import Path
 import random
 import sys
@@ -54,6 +55,14 @@ class Unit:
 
         self.level = level
 
+        # Calculate sell cost
+        if level == 1:
+            self.sell_cost = cost
+        elif cost == 1 and level == 2:
+            self.sell_cost = 3
+        else:
+            self.sell_cost = 3 ** (level - 1) * cost - 1
+
     def __str__(self):
         """String representation of a unit."""
         if self.name == 'BLANK':
@@ -68,7 +77,7 @@ class Unit:
         """Hash units by name only."""
         return hash(self.name)
 
-    # This one is used by the __in__ builtin!
+    # This one is used by the in and == builtin!
     def __eq__(self, other):
         """Compare units by name."""
         if type(other) != Unit:
@@ -84,16 +93,17 @@ class Unit:
     def upgrade(self):
         """Return an upgraded version of the unit."""
         # Newly created 3 star units can no longer be rolled
-        # TODO
         if self.level == 2:
             # Remove all remaining instances of this champion from the pool
             global CHAMPION_POOL
-            CHAMPION_POOL = [unit for unit in CHAMPION_POOL[self.cost] if unit != self]
+            CHAMPION_POOL[self.cost] = [unit for unit in CHAMPION_POOL[self.cost] if unit != self]
+        
+        # Sell cost changes when unit is upgraded
         return Unit(self.cost, self.name, self.traits, self.level + 1)
 
 
 class Trait:
-    """Class containing trait information (incld. breakpoints and icon style)."""
+    """Class containing trait information (inclding breakpoints and icon style)."""
     def __init__(self, name, breakpoints, styles):
         self.name = name
         self.breakpoints = breakpoints
@@ -121,9 +131,10 @@ class Team:
         self.traits_dict = traits_dict
 
     def __str__(self):
-        """The String representation of a team."""
+        """Return the String representation of a team."""
         # Represent the units
-        str_team = [unit.name + ' ' + str(unit.level) + '\n' for unit in self.team]
+        str_team = [str([idx + 1]) + ' ' + unit.name + ' ' + str(unit.level) + \
+            ' (sells for ' + str(unit.sell_cost) + ')\n' for idx, unit in enumerate(self.team)]
     
         # Represent the traits
         str_traits = ''
@@ -140,8 +151,12 @@ class Team:
         return units + traits
 
     def __repr__(self):
-        """The self representation of a team."""
+        """Return the self representation of a team."""
         return str(self)
+
+    def __len__(self):
+        """Return the length of a team."""
+        return len(self.team)
 
     def add_unit(self, unit):
         """Add unit to a team."""
@@ -200,6 +215,34 @@ class Team:
             # Otherwise, just add the unit
             else:
                 self.team.append(new_unit)
+
+    def sell_unit(self, unit_index):
+        """Sell a unit from your board."""
+        assert type(unit_index) == int, "Error in trying to sell unit"
+        # Check if unit was unique
+        count = 0
+        sold_unit = self.team[unit_index]
+        for cur_unit in self.team:
+            if cur_unit == sold_unit:
+                count += 1
+
+        # If unit is unique, remove its traits
+        if count == 1:
+            for trait in sold_unit.traits:
+                self.traits[trait] -= 1
+
+                # If that brings the trait count to 0, remove that trait from the team's traits
+                if not self.traits[trait]:
+                    self.traits.pop(trait, None)
+
+        # Remove unit from team
+        self.team.pop(unit_index)
+
+        # Return it to the champion pool
+        base_unit = Unit(sold_unit.cost, sold_unit.name, sold_unit.traits)
+        quantities = [0, 1, 3, CHAMPION_AMOUNTS[sold_unit.cost]]
+        for _ in range(quantities[sold_unit.level]):
+            CHAMPION_POOL[sold_unit.cost].append(base_unit)
 
 
     def get_traits(self):
@@ -285,6 +328,12 @@ def roll(level):
 
 def display_roll(current_roll):
     """Display the champions in the current shop."""
+    # Clear console
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+    # Instructions
+    print("Input number keys to buy, 'd' to reroll, and 's' to see current team and traits.")
+
     # Convert current roll to string form
     str_roll = ''
     for idx, champ in enumerate(current_roll):
@@ -325,16 +374,42 @@ def main(input_dir):
         # Just break out of this look to generate a new shop
         next_in = input().strip()
         while next_in != 'd':
-            # Attempting to buy a unit
+            # Buy a unit using numbers
             if next_in in ['1', '2', '3', '4', '5']:
                 idx = int(next_in) - 1
                 cur_team.add_unit(cur_roll[idx].name)
                 cur_roll[idx] = Unit(None, 'BLANK', None)
 
-            # Display current team using 's'
+            # Display current team using 's' (also allows selling)
             if next_in == 's':
+                # Clear console
+                os.system('cls' if os.name == 'nt' else 'clear')
+
+                # Display team
                 print(cur_team)
-                input('Press any key to see the shop again.')
+
+                # If user wants to sell a unit
+                while True:
+                    next_in_sell = input("Input numbers to sell. Press any other key to see the shop again.\n")
+                    try:
+                        # If user does not attempt to sell a valid champion, return to shop screen
+                        index_to_sell = int(next_in_sell)
+                        if index_to_sell not in range(1, len(cur_team) + 1):
+                            break
+                        # Otherwise, sell the unit
+                        else:
+                            # Remember that the shop is 1 indexed but lists are 0 indexed
+                            cur_team.sell_unit(index_to_sell - 1)
+
+                            # Clear console
+                            os.system('cls' if os.name == 'nt' else 'clear')
+
+                            # Display team
+                            print(cur_team)
+
+                    # If user enters a value that cannot be interpreted as an integer, return to shop
+                    except ValueError:
+                        break
 
             # Display current shop
             display_roll(cur_roll)
