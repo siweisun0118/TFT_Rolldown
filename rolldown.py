@@ -4,7 +4,9 @@
 import json
 from pathlib import Path
 import random
+from re import T
 import sys
+from threading import Thread
 
 
 # Amount of each unit in pool
@@ -44,6 +46,20 @@ assert all([
     sum(TFT_LEVEL_11_ODDS) == 100]), "Error in level odds."
 
 
+# List of all champions in pool
+ONE_COSTS = []
+TWO_COSTS = []
+THREE_COSTS = []
+FOUR_COSTS = []
+FIVE_COSTS = []
+
+COST_DICT = {1: ONE_COSTS, 2: TWO_COSTS, 3: THREE_COSTS, 4: FOUR_COSTS, 5: FIVE_COSTS}
+
+
+# Cannot roll units after you 3 star them
+THREE_STARRED_UNITS = set()
+
+
 class Unit:
     """Class containing unit information."""
     def __init__(self, cost, name, traits, level=1):
@@ -61,6 +77,10 @@ class Unit:
         """Self representation of a unit."""
         return str(self)
 
+    def __hash__(self):
+        """Hash units by name only."""
+        return hash(self.name)
+
     # This one is used by the __in__ builtin!
     def __eq__(self, other):
         """Compare units by name."""
@@ -76,6 +96,9 @@ class Unit:
 
     def upgrade(self):
         """Return an upgraded version of the unit."""
+        # Newly created 3 star units can no longer be rolled
+        if self.level == 2:
+            THREE_STARRED_UNITS.add(self)
         return Unit(self.cost, self.name, self.traits, self.level + 1)
 
 
@@ -125,9 +148,9 @@ class Team:
         assert type(unit) == str, "Error attempting to add unknown type to team."
         try:
             new_unit = self.champions_dict[unit]
-        except ValueError:
-            print("ValueError raised, check champion spelling.")
-            sys.exit()
+        except KeyError:
+            print("KeyError raised, check champion spelling: " + unit)
+            return
 
         # If it's a unique unit, add its traits to the team
         if new_unit not in self.team:
@@ -231,6 +254,10 @@ def main(input_dir):
     cur_team.add_unit('Lux')
     cur_team.add_unit('Lux')
     cur_team.add_unit('Lux')
+    cur_team.add_unit('Garen')
+    cur_team.add_unit('Garen')
+    cur_team.add_unit('Yuumi')
+    cur_team.add_unit('Janna')
     print(cur_team)
 
 
