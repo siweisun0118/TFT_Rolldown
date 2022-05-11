@@ -4,9 +4,7 @@
 import json
 from pathlib import Path
 import random
-from re import T
 import sys
-from threading import Thread
 
 
 # Amount of each unit in pool for each cost
@@ -33,8 +31,6 @@ LEVEL_ODDS = {
     10: [5, 10, 20, 40, 25],
     11: [1, 2, 12, 50, 35]
 }
-
-
 # Make sure odds make sense
 assert all([sum(odds) == 100 for odds in LEVEL_ODDS.values()]), "Error in level odds."
 
@@ -46,6 +42,12 @@ CHAMPION_POOL = {1: [], 2: [], 3: [], 4: [], 5: []}
 class Unit:
     """Class containing unit information."""
     def __init__(self, cost, name, traits, level=1):
+        # Check if unit is a BLANK placeholder
+        if name == 'BLANK':
+            self.name = name
+            return
+        
+        # Information that the unit needs
         self.cost = cost
         self.name = name
         self.traits = [trait.strip() for trait in traits]
@@ -54,6 +56,8 @@ class Unit:
 
     def __str__(self):
         """String representation of a unit."""
+        if self.name == 'BLANK':
+            return 'BLANK\n'
         return self.name + ', ' + str(self.cost) + ', ' + ', '.join(self.traits) + '\n'
 
     def __repr__(self):
@@ -100,7 +104,7 @@ class Trait:
         """String representation of a trait."""
         str_breaks = [str(breaks) for breaks in self.breakpoints]
         str_styles = [str(styles) for styles in self.styles]
-        return self.name + ': ' + '/'.join(str_breaks) + ' ' + 'with styles ' + '/'.join(str_styles) + '\n'
+        return self.name + ': ' + '/'.join(str_breaks) + ' ' + 'with style(s) ' + '/'.join(str_styles) + '\n'
 
     def __repr__(self):
         """Self representation of a trait."""
@@ -118,10 +122,21 @@ class Team:
 
     def __str__(self):
         """The String representation of a team."""
+        # Represent the units
         str_team = [unit.name + ' ' + str(unit.level) + '\n' for unit in self.team]
-        str_traits = [str(trait) + ' ' + str(amount) for trait, amount in self.traits.items()]
+    
+        # Represent the traits
+        str_traits = ''
+        for trait, amount in self.traits.items():
+            if amount >= self.traits_dict[trait].breakpoints[-1]:
+                str_traits += str(trait) + ' '  + str(amount) + '/' + str(self.traits_dict[trait].breakpoints[-1]) + '\n'
+            else:
+                next_breakpoint = next(bp for bp in self.traits_dict[trait].breakpoints if bp >= amount)
+                str_traits += str(trait) + ' '  + str(amount) + '/' + str(next_breakpoint) + '\n'
+
+        # Put it all together
         units = "This is the current team:\n" + ''.join(str_team) + '\n'
-        traits = "Here are the current traits:\n" + '\n'.join(str_traits)
+        traits = "Here are the current traits:\n" + str_traits
         return units + traits
 
     def __repr__(self):
@@ -130,12 +145,18 @@ class Team:
 
     def add_unit(self, unit):
         """Add unit to a team."""
-        # Error checking
         assert type(unit) == str, "Error attempting to add unknown type to team."
+        # BLANKS are units that were already bought
+        # Do nothing if user attempts to buy an empty slot
+        if unit == 'BLANK':
+            print('There is no unit in this slot')
+            return
+
+        # Error checking
         try:
             new_unit = self.champions_dict[unit]
         except KeyError:
-            print("KeyError raised, check champion spelling: " + unit)
+            print('KeyError raised, check champion spelling: ' + unit)
             return
 
         # Remove the unit from the champion pool
@@ -262,13 +283,64 @@ def roll(level):
     return results
 
 
+def display_roll(current_roll):
+    """Display the champions in the current shop."""
+    # Convert current roll to string form
+    str_roll = ''
+    for idx, champ in enumerate(current_roll):
+        str_roll += '[' + str(idx + 1) + '] ' + str(champ)
+
+    # Display current roll
+    print(str_roll, end='')
+
+
 def main(input_dir):
     """Simulate a rolldown."""
     # champions is dict of names to Units, traits is dict of names to Traits
     champions_dict, traits_dict = read_database(input_dir)
+
+    # The team that the user will be building
     cur_team = Team(champions_dict, traits_dict)
-    cur_team.add_unit('Akali')
-    print(CHAMPION_POOL)
+
+    # First, read in a level between 1 and 11 inclusive
+    # Lots of error checking to make sure user doesn't enter in an invalid value
+    while True:
+        try:
+            level = int(input('Please enter your current level between 1 and 11 inclusive: '))
+            while level not in range(1, 12):
+                level = int(input('Please enter your current level between 1 and 11 inclusive: '))
+            break
+        except ValueError:
+            continue
+    
+    # Now we can start generating rolls
+    while True:
+        # Generate new roll
+        cur_roll = roll(level)
+
+        # Display shop
+        display_roll(cur_roll)
+
+        # Reroll using 'd'
+        # Just break out of this look to generate a new shop
+        next_in = input().strip()
+        while next_in != 'd':
+            # Attempting to buy a unit
+            if next_in in ['1', '2', '3', '4', '5']:
+                idx = int(next_in) - 1
+                cur_team.add_unit(cur_roll[idx].name)
+                cur_roll[idx] = Unit(None, 'BLANK', None)
+
+            # Display current team using 's'
+            if next_in == 's':
+                print(cur_team)
+                input('Press any key to see the shop again.')
+
+            # Display current shop
+            display_roll(cur_roll)
+
+            # Read in next input
+            next_in = input().strip()
 
 
 if __name__ == '__main__':
