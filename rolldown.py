@@ -9,55 +9,38 @@ import sys
 from threading import Thread
 
 
-# Amount of each unit in pool
-TFT_1_COSTS_AMOUNT = 29
-TFT_2_COSTS_AMOUNT = 22
-TFT_3_COSTS_AMOUNT = 18
-TFT_4_COSTS_AMOUNT = 12
-TFT_5_COSTS_AMOUNT = 10
+# Amount of each unit in pool for each cost
+CHAMPION_AMOUNTS = {
+    1: 29,
+    2: 22,
+    3: 18,
+    4: 12,
+    5: 10
+}
 
 
 # Odds at each level
-TFT_LEVEL_1_ODDS = [100, 0, 0, 0, 0]
-TFT_LEVEL_2_ODDS = [100, 0, 0, 0, 0]
-TFT_LEVEL_3_ODDS = [75, 25, 0, 0, 0]
-TFT_LEVEL_4_ODDS = [55, 30, 15, 0, 0]
-TFT_LEVEL_5_ODDS = [45, 33, 20, 2, 0]
-TFT_LEVEL_6_ODDS = [25, 40, 30, 5, 0]
-TFT_LEVEL_7_ODDS = [19, 30, 35, 15, 1]
-TFT_LEVEL_8_ODDS = [16, 20, 35, 25, 4]
-TFT_LEVEL_9_ODDS = [9, 15, 30, 30, 16]
-TFT_LEVEL_10_ODDS = [5, 10, 20, 40, 25]
-TFT_LEVEL_11_ODDS = [1, 2, 12, 50, 35]
+LEVEL_ODDS = {
+    1: [100, 0, 0, 0, 0],
+    2: [100, 0, 0, 0, 0],
+    3: [75, 25, 0, 0, 0],
+    4: [55, 30, 15, 0, 0],
+    5: [45, 33, 20, 2, 0],
+    6: [25, 40, 30, 5, 0],
+    7: [19, 30, 35, 15, 1],
+    8: [16, 20, 35, 25, 4],
+    9: [9, 15, 30, 30, 16],
+    10: [5, 10, 20, 40, 25],
+    11: [1, 2, 12, 50, 35]
+}
 
 
 # Make sure odds make sense
-assert all([
-    sum(TFT_LEVEL_1_ODDS) == 100, 
-    sum(TFT_LEVEL_2_ODDS) == 100,
-    sum(TFT_LEVEL_3_ODDS) == 100,
-    sum(TFT_LEVEL_4_ODDS) == 100,
-    sum(TFT_LEVEL_5_ODDS) == 100,
-    sum(TFT_LEVEL_6_ODDS) == 100,
-    sum(TFT_LEVEL_7_ODDS) == 100,
-    sum(TFT_LEVEL_8_ODDS) == 100,
-    sum(TFT_LEVEL_9_ODDS) == 100,
-    sum(TFT_LEVEL_10_ODDS) == 100,
-    sum(TFT_LEVEL_11_ODDS) == 100]), "Error in level odds."
+assert all([sum(odds) == 100 for odds in LEVEL_ODDS.values()]), "Error in level odds."
 
 
-# List of all champions in pool
-ONE_COSTS = []
-TWO_COSTS = []
-THREE_COSTS = []
-FOUR_COSTS = []
-FIVE_COSTS = []
-
-COST_DICT = {1: ONE_COSTS, 2: TWO_COSTS, 3: THREE_COSTS, 4: FOUR_COSTS, 5: FIVE_COSTS}
-
-
-# Cannot roll units after you 3 star them
-THREE_STARRED_UNITS = set()
+# List of all champions in pool by cost
+CHAMPION_POOL = {1: [], 2: [], 3: [], 4: [], 5: []}
 
 
 class Unit:
@@ -97,8 +80,11 @@ class Unit:
     def upgrade(self):
         """Return an upgraded version of the unit."""
         # Newly created 3 star units can no longer be rolled
+        # TODO
         if self.level == 2:
-            THREE_STARRED_UNITS.add(self)
+            # Remove all remaining instances of this champion from the pool
+            global CHAMPION_POOL
+            CHAMPION_POOL = [unit for unit in CHAMPION_POOL[self.cost] if unit != self]
         return Unit(self.cost, self.name, self.traits, self.level + 1)
 
 
@@ -151,6 +137,9 @@ class Team:
         except KeyError:
             print("KeyError raised, check champion spelling: " + unit)
             return
+
+        # Remove the unit from the champion pool
+        CHAMPION_POOL[new_unit.cost].remove(new_unit)
 
         # If it's a unique unit, add its traits to the team
         if new_unit not in self.team:
@@ -222,6 +211,9 @@ def read_database(input_dir):
         # Add to champions list
         champions[champ['name']] = Unit(champ['cost'], champ['name'], champ['traits'])
 
+        # Add to champion pool
+        CHAMPION_POOL[champ['cost']] += [champions[champ['name']]] * CHAMPION_AMOUNTS[champ['cost']]
+
     # Parse trait data
     traits = {}
     for trait in traits_list:
@@ -239,26 +231,44 @@ def read_database(input_dir):
     return champions, traits
 
 
+def roll(level):
+    """Roll for champions based on level."""
+    assert level in range(1, 12)
+    # 5 Slots
+    # For each slot, we roll a random cost
+    odds = LEVEL_ODDS[level]
+    costs = random.choices(population=[1, 2, 3, 4, 5], weights=odds, k=5)
+
+    # For each result, we choose a random champion from CHAMPION_POOL
+    # We don't need global keyword because CHAMPION_POOL is mutable
+    results = []
+    for cost in costs:
+        # If there are no more champions of the cost (unlikely but possible),
+        # simply choose a random champion
+        if not CHAMPION_POOL[cost]:
+            print('Out of', cost, 'costs!')
+
+            # Build a pool of all champions to choose a replacement
+            total_pool = [unit for ls in CHAMPION_POOL.values() for unit in ls]
+            replacement = random.choice(total_pool)
+            results.append(replacement)
+            print('The replacement unit is', replacement)
+
+        else:
+            # Add result to list of resulting rolls
+            resulting_champ = random.choice(CHAMPION_POOL[cost])
+            results.append(resulting_champ)
+
+    return results
+
+
 def main(input_dir):
     """Simulate a rolldown."""
     # champions is dict of names to Units, traits is dict of names to Traits
-    champions, traits = read_database(input_dir)
-    cur_team = Team(champions, traits)
-    cur_team.add_unit('Lux')
-    cur_team.add_unit('Lux')
-    cur_team.add_unit('Garen')
-    cur_team.add_unit('Lux')
-    cur_team.add_unit('Lux')
-    cur_team.add_unit('Lux')
-    cur_team.add_unit('Lux')
-    cur_team.add_unit('Lux')
-    cur_team.add_unit('Lux')
-    cur_team.add_unit('Lux')
-    cur_team.add_unit('Garen')
-    cur_team.add_unit('Garen')
-    cur_team.add_unit('Yuumi')
-    cur_team.add_unit('Janna')
-    print(cur_team)
+    champions_dict, traits_dict = read_database(input_dir)
+    cur_team = Team(champions_dict, traits_dict)
+    cur_team.add_unit('Akali')
+    print(CHAMPION_POOL)
 
 
 if __name__ == '__main__':
