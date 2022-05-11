@@ -111,13 +111,13 @@ class Trait:
         assert len(breakpoints) == len(styles), 'Error reading in traits'
 
     def __str__(self):
-        """String representation of a trait."""
+        """Return string representation of a trait."""
         str_breaks = [str(breaks) for breaks in self.breakpoints]
         str_styles = [str(styles) for styles in self.styles]
         return self.name + ': ' + '/'.join(str_breaks) + ' ' + 'with style(s) ' + '/'.join(str_styles) + '\n'
 
     def __repr__(self):
-        """Self representation of a trait."""
+        """Return self representation of a trait."""
         return str(self)
 
 
@@ -361,7 +361,7 @@ def main(input_dir):
             break
         except ValueError:
             continue
-    
+
     # Now we can start generating rolls
     while True:
         # Generate new roll
