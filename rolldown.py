@@ -334,7 +334,8 @@ def display_roll(current_roll, gold):
     os.system('cls' if os.name == 'nt' else 'clear')
 
     # Instructions
-    print("Input number keys to buy, 'd' to reroll, and 's' to see current team and traits.")
+    print("Use number keys to buy, 'd' to reroll, and 's' to see current team and traits.")
+    print("Press 'p' to restart.")
     print('Your current gold amount is:', gold)
     if gold < 2:
         print('You do not have enough gold to reroll!')
@@ -369,7 +370,8 @@ def main(input_dir):
             gold = int(input('Please enter the amount of gold you want to start with: '))
             break
         except ValueError:
-            continue
+            print('Invalid input, restarting...')
+            os.execv(sys.executable, ['python'] + sys.argv)
 
     # Now we can start generating rolls
     while True:
@@ -407,7 +409,7 @@ def main(input_dir):
 
                 # If user wants to sell a unit
                 while True:
-                    next_in_sell = input("Input numbers to sell. Press any other key to see the shop again.\nYour current gold amount is: " + str(gold) + '\n')
+                    next_in_sell = input("Use numbers to sell. Press any other key to see the shop again.\nYour current gold amount is: " + str(gold) + '\n')
                     try:
                         # If user does not attempt to sell a valid champion, return to shop screen
                         index_to_sell = int(next_in_sell)
@@ -428,6 +430,11 @@ def main(input_dir):
                     # If user enters a value that cannot be interpreted as an integer, return to shop
                     except ValueError:
                         break
+
+            # Use 'p' to restart
+            if next_in == 'p':
+                print('restarting...')
+                os.execv(sys.executable, ['python'] + sys.argv)
 
             # Display current shop
             display_roll(cur_roll, gold)
