@@ -8,6 +8,9 @@ import random
 import sys
 
 
+random.seed(112358)
+
+
 # Amount of each unit in pool for each cost
 CHAMPION_AMOUNTS = {
     1: 29,
@@ -95,7 +98,6 @@ class Unit:
         # Newly created 3 star units can no longer be rolled
         if self.level == 2:
             # Remove all remaining instances of this champion from the pool
-            global CHAMPION_POOL
             CHAMPION_POOL[self.cost] = [unit for unit in CHAMPION_POOL[self.cost] if unit != self]
         
         # Sell cost changes when unit is upgraded
@@ -326,13 +328,16 @@ def roll(level):
     return results
 
 
-def display_roll(current_roll):
+def display_roll(current_roll, gold):
     """Display the champions in the current shop."""
     # Clear console
     os.system('cls' if os.name == 'nt' else 'clear')
 
     # Instructions
     print("Input number keys to buy, 'd' to reroll, and 's' to see current team and traits.")
+    print('Your current gold amount is:', gold)
+    if gold < 2:
+        print('You do not have enough gold to reroll!')
 
     # Convert current roll to string form
     str_roll = ''
@@ -355,9 +360,13 @@ def main(input_dir):
     # Lots of error checking to make sure user doesn't enter in an invalid value
     while True:
         try:
+            # Set level
             level = int(input('Please enter your current level between 1 and 11 inclusive: '))
             while level not in range(1, 12):
                 level = int(input('Please enter your current level between 1 and 11 inclusive: '))
+
+            # Set starting gold
+            gold = int(input('Please enter the amount of gold you want to start with: '))
             break
         except ValueError:
             continue
@@ -365,10 +374,12 @@ def main(input_dir):
     # Now we can start generating rolls
     while True:
         # Generate new roll
-        cur_roll = roll(level)
+        # Do not generate a new roll if gold is negative
+        if gold >= 0:
+            cur_roll = roll(level)
 
         # Display shop
-        display_roll(cur_roll)
+        display_roll(cur_roll, gold)
 
         # Reroll using 'd'
         # Just break out of this look to generate a new shop
@@ -377,8 +388,14 @@ def main(input_dir):
             # Buy a unit using numbers
             if next_in in ['1', '2', '3', '4', '5']:
                 idx = int(next_in) - 1
-                cur_team.add_unit(cur_roll[idx].name)
-                cur_roll[idx] = Unit(None, 'BLANK', None)
+                # Remove cost from current gold and add gold to team
+                if gold >= cur_roll[idx].cost:
+                    gold -= cur_roll[idx].cost
+                    cur_team.add_unit(cur_roll[idx].name)
+                    cur_roll[idx] = Unit(None, 'BLANK', None)
+                else:
+                    # print("You don't have enough gold!")
+                    pass
 
             # Display current team using 's' (also allows selling)
             if next_in == 's':
@@ -390,15 +407,16 @@ def main(input_dir):
 
                 # If user wants to sell a unit
                 while True:
-                    next_in_sell = input("Input numbers to sell. Press any other key to see the shop again.\n")
+                    next_in_sell = input("Input numbers to sell. Press any other key to see the shop again.\nYour current gold amount is: " + str(gold) + '\n')
                     try:
                         # If user does not attempt to sell a valid champion, return to shop screen
                         index_to_sell = int(next_in_sell)
                         if index_to_sell not in range(1, len(cur_team) + 1):
                             break
-                        # Otherwise, sell the unit
+                        # Otherwise, sell the unit and add its sell cost to your total gold
                         else:
                             # Remember that the shop is 1 indexed but lists are 0 indexed
+                            gold += cur_team.team[index_to_sell - 1].sell_cost
                             cur_team.sell_unit(index_to_sell - 1)
 
                             # Clear console
@@ -412,10 +430,14 @@ def main(input_dir):
                         break
 
             # Display current shop
-            display_roll(cur_roll)
+            display_roll(cur_roll, gold)
 
             # Read in next input
             next_in = input().strip()
+
+        # Since we rerolled, reduce gold by 2
+        if gold >= 2:
+            gold -= 2
 
 
 if __name__ == '__main__':
