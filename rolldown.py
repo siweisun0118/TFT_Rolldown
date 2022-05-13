@@ -11,6 +11,9 @@ import sys
 from termcolor import colored
 
 
+from getch import getch
+
+
 random.seed(112358)
 
 
@@ -392,7 +395,7 @@ def main(input_dir):
 
         # Reroll using 'd'
         # Just break out of this look to generate a new shop
-        next_in = input().strip()
+        next_in = getch()
         while next_in != 'd':
             # Buy a unit using numbers
             if next_in in ['1', '2', '3', '4', '5']:
@@ -416,7 +419,7 @@ def main(input_dir):
 
                 # If user wants to sell a unit
                 while True:
-                    next_in_sell = input("Use numbers to sell. Press any other key to see the shop again.\nYour current gold amount is: " + str(gold) + '\n')
+                    next_in_sell = input("Use numbers + 'enter' to sell. Press any other key to see the shop again.\nYour current gold amount is: " + str(gold) + '\n')
                     try:
                         # If user does not attempt to sell a valid champion, return to shop screen
                         index_to_sell = int(next_in_sell)
@@ -447,7 +450,7 @@ def main(input_dir):
             display_roll(cur_roll, gold, cur_team.team)
 
             # Read in next input
-            next_in = input().strip()
+            next_in = getch()
 
         # Since we rerolled, reduce gold by 2
         if gold >= 2:
