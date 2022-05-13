@@ -8,6 +8,9 @@ import random
 import sys
 
 
+from termcolor import colored
+
+
 random.seed(112358)
 
 
@@ -328,7 +331,7 @@ def roll(level):
     return results
 
 
-def display_roll(current_roll, gold):
+def display_roll(current_roll, gold, cur_team):
     """Display the champions in the current shop."""
     # Clear console
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -343,7 +346,10 @@ def display_roll(current_roll, gold):
     # Convert current roll to string form
     str_roll = ''
     for idx, champ in enumerate(current_roll):
-        str_roll += '[' + str(idx + 1) + '] ' + str(champ)
+        if champ in cur_team:
+            str_roll += colored('[' + str(idx + 1) + '] ' + str(champ), 'green')
+        else:
+            str_roll += '[' + str(idx + 1) + '] ' + str(champ)
 
     # Display current roll
     print(str_roll, end='')
@@ -374,14 +380,15 @@ def main(input_dir):
             os.execv(sys.executable, ['python'] + sys.argv)
 
     # Now we can start generating rolls
+    reroll = True
     while True:
         # Generate new roll
         # Do not generate a new roll if gold is negative
-        if gold >= 0:
+        if reroll:
             cur_roll = roll(level)
 
         # Display shop
-        display_roll(cur_roll, gold)
+        display_roll(cur_roll, gold, cur_team.team)
 
         # Reroll using 'd'
         # Just break out of this look to generate a new shop
@@ -437,7 +444,7 @@ def main(input_dir):
                 os.execv(sys.executable, ['python'] + sys.argv)
 
             # Display current shop
-            display_roll(cur_roll, gold)
+            display_roll(cur_roll, gold, cur_team.team)
 
             # Read in next input
             next_in = input().strip()
@@ -445,6 +452,9 @@ def main(input_dir):
         # Since we rerolled, reduce gold by 2
         if gold >= 2:
             gold -= 2
+            reroll = True
+        else:
+            reroll = False
 
 
 if __name__ == '__main__':
