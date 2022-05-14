@@ -38,7 +38,7 @@ LEVEL_ODDS = {
     11: [1, 2, 12, 50, 35]
 }
 # Make sure odds make sense
-assert all([sum(odds) == 100 for odds in LEVEL_ODDS.values()]), "Error in level odds."
+assert all((sum(odds) == 100 for odds in LEVEL_ODDS.values())), "Error in level odds."
 
 
 # List of all champions in pool by cost
@@ -52,7 +52,7 @@ class Unit:
         if name == 'BLANK':
             self.name = name
             return
-        
+
         # Information that the unit needs
         self.cost = cost
         self.name = name
@@ -85,7 +85,7 @@ class Unit:
     # This one is used by the in and == builtin!
     def __eq__(self, other):
         """Compare units by name."""
-        if type(other) != Unit:
+        if not isinstance(other, Unit):
             return False
 
         # Check only name
@@ -101,7 +101,7 @@ class Unit:
         if self.level == 2:
             # Remove all remaining instances of this champion from the pool
             CHAMPION_POOL[self.cost] = [unit for unit in CHAMPION_POOL[self.cost] if unit != self]
-        
+
         # Sell cost changes when unit is upgraded
         return Unit(self.cost, self.name, self.traits, self.level + 1)
 
@@ -116,9 +116,9 @@ class Trait:
 
     def __str__(self):
         """Return string representation of a trait."""
-        str_breaks = [str(breaks) for breaks in self.breakpoints]
-        str_styles = [str(styles) for styles in self.styles]
-        return self.name + ': ' + '/'.join(str_breaks) + ' ' + 'with style(s) ' + '/'.join(str_styles) + '\n'
+        str_breaks = '/'.join([str(breaks) for breaks in self.breakpoints])
+        str_styles = '/'.join([str(styles) for styles in self.styles])
+        return self.name + ': ' + str_breaks + ' ' + 'with style(s) ' + str_styles + '\n'
 
     def __repr__(self):
         """Return self representation of a trait."""
@@ -139,15 +139,16 @@ class Team:
         # Represent the units
         str_team = [str([idx + 1]) + ' ' + unit.name + ' ' + str(unit.level) + \
             ' (sells for ' + str(unit.sell_cost) + ')\n' for idx, unit in enumerate(self.team)]
-    
+
         # Represent the traits
         str_traits = ''
         for trait, amount in self.traits.items():
             if amount >= self.traits_dict[trait].breakpoints[-1]:
-                str_traits += str(trait) + ' '  + str(amount) + '/' + str(self.traits_dict[trait].breakpoints[-1]) + '\n'
+                last_break = str(self.traits_dict[trait].breakpoints[-1])
+                str_traits += str(trait) + ' '  + str(amount) + '/' + last_break + '\n'
             else:
-                next_breakpoint = next(bp for bp in self.traits_dict[trait].breakpoints if bp >= amount)
-                str_traits += str(trait) + ' '  + str(amount) + '/' + str(next_breakpoint) + '\n'
+                next_bp = next(bp for bp in self.traits_dict[trait].breakpoints if bp >= amount)
+                str_traits += str(trait) + ' '  + str(amount) + '/' + str(next_bp) + '\n'
 
         # Put it all together
         units = "This is the current team:\n" + ''.join(str_team) + '\n'
@@ -164,7 +165,7 @@ class Team:
 
     def add_unit(self, unit):
         """Add unit to a team."""
-        assert type(unit) == str, "Error attempting to add unknown type to team."
+        assert isinstance(unit, str), "Error attempting to add unknown type to team."
         # BLANKS are units that were already bought
         # Do nothing if user attempts to buy an empty slot
         if unit == 'BLANK':
@@ -188,7 +189,7 @@ class Team:
                     self.traits[trait] = 1
                 else:
                     self.traits[trait] += 1
-            
+
             # Finally, add the unit to the team
             self.team.append(new_unit)
 
@@ -207,10 +208,11 @@ class Team:
                 self.team.append(upgraded_unit)
 
                 # This can trigger a second upgrade
-                amount_2 = sum([1 if unit.unit_compare_level(upgraded_unit) else 0 for unit in self.team])
+                twos = [1 if unit.unit_compare_level(upgraded_unit) else 0 for unit in self.team]
+                amount_2 = sum(twos)
                 if amount_2 == 3:
                     # Remove previous copies
-                    self.team = [unit for unit in self.team if not unit.unit_compare_level(upgraded_unit)]
+                    self.team = [u for u in self.team if not u.unit_compare_level(upgraded_unit)]
 
                     # Add upgraded copy
                     upgraded_unit = upgraded_unit.upgrade()
@@ -222,7 +224,7 @@ class Team:
 
     def sell_unit(self, unit_index):
         """Sell a unit from your board."""
-        assert type(unit_index) == int, "Error in trying to sell unit"
+        assert isinstance(unit_index, int), "Error in trying to sell unit"
         # Check if unit was unique
         count = 0
         sold_unit = self.team[unit_index]
@@ -252,7 +254,7 @@ class Team:
     def get_traits(self):
         """Extract the activated traits from a team."""
         activated_traits = []
-        for trait, amount in self.traits.enumerate():
+        for trait, amount in self.traits.items():
             activated_traits.append(trait, amount)
 
         return activated_traits
@@ -261,11 +263,11 @@ class Team:
 def read_database(input_dir):
     """Read in units and traits."""
     # Read in units
-    with open(Path(input_dir) / 'champions.json') as champions_file:
+    with open(Path(input_dir) / 'champions.json', encoding='utf-8') as champions_file:
         champions_list = json.loads(champions_file.read())
 
     # Read in traits
-    with open(Path(input_dir) / 'traits.json') as traits_file:
+    with open(Path(input_dir) / 'traits.json', encoding='utf-8') as traits_file:
         traits_list = json.loads(traits_file.read())
 
     # Parse unit data
@@ -286,12 +288,11 @@ def read_database(input_dir):
     traits = {}
     for trait in traits_list:
         # Extract trait breakpoints and styles from trait data
-        # TODO: Make exception for Rival
         breakpoints = []
         styles = []
-        for breakpoint in trait['sets']:
-            breakpoints.append(breakpoint['min'])
-            styles.append(breakpoint['style'])
+        for b_p in trait['sets']:
+            breakpoints.append(b_p['min'])
+            styles.append(b_p['style'])
 
         # Add to traits list
         traits[trait['name']] = Trait(trait['name'], breakpoints, styles)
@@ -383,7 +384,7 @@ def main(input_dir):
     reroll = True
     while True:
         # Generate new roll
-        # Do not generate a new roll if gold is negative
+        # Do not generate a new roll if gold is too low
         if reroll:
             cur_roll = roll(level)
 
@@ -416,25 +417,27 @@ def main(input_dir):
 
                 # If user wants to sell a unit
                 while True:
-                    next_in_sell = input("Use numbers + 'enter' to sell. Press any other key to see the shop again.\nYour current gold amount is: " + str(gold) + '\n')
+                    next_in_sell = input("Use numbers + 'enter' to sell.\n" +
+                        "Press any other key to see the shop again.\n" +
+                        "Your current gold amount is: " + str(gold) + '\n')
                     try:
                         # If user does not attempt to sell a valid champion, return to shop screen
                         index_to_sell = int(next_in_sell)
                         if index_to_sell not in range(1, len(cur_team) + 1):
                             break
+
                         # Otherwise, sell the unit and add its sell cost to your total gold
-                        else:
-                            # Remember that the shop is 1 indexed but lists are 0 indexed
-                            gold += cur_team.team[index_to_sell - 1].sell_cost
-                            cur_team.sell_unit(index_to_sell - 1)
+                        # Remember that the shop is 1 indexed but lists are 0 indexed
+                        gold += cur_team.team[index_to_sell - 1].sell_cost
+                        cur_team.sell_unit(index_to_sell - 1)
 
-                            # Clear console
-                            os.system('cls' if os.name == 'nt' else 'clear')
+                        # Clear console
+                        os.system('cls' if os.name == 'nt' else 'clear')
 
-                            # Display team
-                            print(cur_team)
+                        # Display team
+                        print(cur_team)
 
-                    # If user enters a value that cannot be interpreted as an integer, return to shop
+                    # If user enters a value that cannot be interpreted as an int, return to shop
                     except ValueError:
                         break
 
