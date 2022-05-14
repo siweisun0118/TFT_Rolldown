@@ -1,20 +1,16 @@
 """Simulate rolls in TFT."""
 
-
 import json
 import os
 from pathlib import Path
 import random
 import sys
 
-
+from getch import getch
 from termcolor import colored
 
 
-from getch import getch
-
-
-random.seed(112358)
+# random.seed(112358)
 
 
 # Amount of each unit in pool for each cost
@@ -73,13 +69,13 @@ class Unit:
             self.sell_cost = 3 ** (level - 1) * cost - 1
 
     def __str__(self):
-        """String representation of a unit."""
+        """Return string representation of a unit."""
         if self.name == 'BLANK':
             return 'BLANK\n'
         return self.name + ', ' + str(self.cost) + ', ' + ', '.join(self.traits) + '\n'
 
     def __repr__(self):
-        """Self representation of a unit."""
+        """Return self representation of a unit."""
         return str(self)
 
     def __hash__(self):
@@ -342,6 +338,7 @@ def display_roll(current_roll, gold, cur_team):
     # Instructions
     print("Use number keys to buy, 'd' to reroll, and 's' to see current team and traits.")
     print("Press 'p' to restart.")
+    print("Press 'm' to quit.")
     print('Your current gold amount is:', gold)
     if gold < 2:
         print('You do not have enough gold to reroll!')
@@ -445,6 +442,11 @@ def main(input_dir):
             if next_in == 'p':
                 print('restarting...')
                 os.execv(sys.executable, ['python'] + sys.argv)
+
+            # Use 'm' to quit
+            if next_in == 'm':
+                print('Quitting...')
+                sys.exit()
 
             # Display current shop
             display_roll(cur_roll, gold, cur_team.team)
