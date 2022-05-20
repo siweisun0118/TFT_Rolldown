@@ -1,13 +1,15 @@
 """Simulate rolls in TFT."""
 
+
 import json
 import os
 from pathlib import Path
 import random
 import sys
 
-from getch import getch
+
 from termcolor import colored
+from getch import getch
 
 
 # random.seed(112358)
@@ -377,7 +379,7 @@ class Game:
         print(str_roll, end='')
 
     def buy_unit(self, cur_roll, next_in):
-        """Helper function that buys a unit for the team."""
+        """Buy a unit for the team."""
         idx = int(next_in) - 1
         # Remove cost from current gold and add gold to team
         cur_unit = cur_roll[idx]
@@ -388,6 +390,40 @@ class Game:
         else:
             # print("You don't have enough gold!")
             pass
+
+    def check_team(self):
+        """Check team and/or sell unit."""
+        # Clear console
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+        # Display team
+        print(self.team)
+
+        # If user wants to sell a unit
+        while True:
+            next_in_sell = input("Use numbers + 'enter' to sell.\n" +
+                "Press any other key to see the shop again.\n" +
+                "Your current gold amount is: " + str(self.gold) + '\n')
+            try:
+                # If user does not attempt to sell a valid champion, return to shop
+                index_to_sell = int(next_in_sell)
+                if index_to_sell not in range(1, len(self.team) + 1):
+                    break
+
+                # Otherwise, sell the unit and add its sell cost to your total gold
+                # Remember that the shop is 1 indexed but lists are 0 indexed
+                self.gold += self.team.team[index_to_sell - 1].sell_cost
+                self.team.sell_unit(index_to_sell - 1)
+
+                # Clear console
+                os.system('cls' if os.name == 'nt' else 'clear')
+
+                # Display team
+                print(self.team)
+
+            # If user enters a value that is not an int, return to shop
+            except ValueError:
+                break
 
     def rolldown(self):
         """Simulate the rolldown."""
@@ -432,42 +468,12 @@ class Game:
                     break
 
                 # Buy a unit using numbers
-                elif next_in in ['1', '2', '3', '4', '5']:
+                if next_in in ['1', '2', '3', '4', '5']:
                     self.buy_unit(cur_roll, next_in)
 
                 # Display current team using 's' (also allows selling)
                 elif next_in == 's':
-                    # Clear console
-                    os.system('cls' if os.name == 'nt' else 'clear')
-
-                    # Display team
-                    print(self.team)
-
-                    # If user wants to sell a unit
-                    while True:
-                        next_in_sell = input("Use numbers + 'enter' to sell.\n" +
-                            "Press any other key to see the shop again.\n" +
-                            "Your current gold amount is: " + str(self.gold) + '\n')
-                        try:
-                            # If user does not attempt to sell a valid champion, return to shop
-                            index_to_sell = int(next_in_sell)
-                            if index_to_sell not in range(1, len(self.team) + 1):
-                                break
-
-                            # Otherwise, sell the unit and add its sell cost to your total gold
-                            # Remember that the shop is 1 indexed but lists are 0 indexed
-                            self.gold += self.team.team[index_to_sell - 1].sell_cost
-                            self.team.sell_unit(index_to_sell - 1)
-
-                            # Clear console
-                            os.system('cls' if os.name == 'nt' else 'clear')
-
-                            # Display team
-                            print(self.team)
-
-                        # If user enters a value that is not an int, return to shop
-                        except ValueError:
-                            break
+                    self.check_team()
 
                 # Use 'p' to restart
                 elif next_in == 'p':
@@ -488,11 +494,7 @@ class Game:
                 next_in = getch()
 
             # Since we rerolled, reduce gold by 2
-            if self.gold >= 2:
-                self.gold -= 2
-                reroll = True
-            else:
-                reroll = False
+            self.gold, reroll = (self.gold - 2, True) if self.gold >= 2 else (self.gold, False)
 
 
 def main(input_dir):

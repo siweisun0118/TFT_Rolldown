@@ -1,2 +1,3 @@
 getch
 termcolor
+msvcrt; sys_platform == 'nt'
