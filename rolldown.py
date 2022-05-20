@@ -1,12 +1,14 @@
 """Simulate rolls in TFT."""
 
-
+# Standard libraries
 import json
 import os
 from pathlib import Path
 import random
 import sys
 
+
+# Pip managed packages
 # pylint: disable=import-error
 from termcolor import colored
 if os.name == 'nt':
@@ -15,39 +17,16 @@ else:
     from getch import getch
 
 
+# Local files
+# pylint: disable=wrong-import-position
+from constants import CHAMPION_POOL, CHAMPION_AMOUNTS, LEVEL_ODDS
+
+
 # random.seed(112358)
 
 
-# Amount of each unit in pool for each cost
-CHAMPION_AMOUNTS = {
-    1: 29,
-    2: 22,
-    3: 18,
-    4: 12,
-    5: 10
-}
-
-
-# Odds at each level
-LEVEL_ODDS = {
-    1: [100, 0, 0, 0, 0],
-    2: [100, 0, 0, 0, 0],
-    3: [75, 25, 0, 0, 0],
-    4: [55, 30, 15, 0, 0],
-    5: [45, 33, 20, 2, 0],
-    6: [25, 40, 30, 5, 0],
-    7: [19, 30, 35, 15, 1],
-    8: [16, 20, 35, 25, 4],
-    9: [9, 15, 30, 30, 16],
-    10: [5, 10, 20, 40, 25],
-    11: [1, 2, 12, 50, 35]
-}
 # Make sure odds make sense
 assert all((sum(odds) == 100 for odds in LEVEL_ODDS.values())), "Error in level odds."
-
-
-# List of all champions in pool by cost
-CHAMPION_POOL = {1: [], 2: [], 3: [], 4: [], 5: []}
 
 
 # Helper function to read input directory

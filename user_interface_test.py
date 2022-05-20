@@ -23,13 +23,13 @@ class Menu(QMainWindow):
         pixmap = QPixmap('TFT_Set_6/champions/Blitzcrank.png').scaledToWidth(300)
         label.setPixmap(pixmap)
         label.resize(1006, 596)
-        label.move(1006, 0)
+        label.move(300, 0)
 
         label = QLabel(self)
         pixmap = QPixmap('TFT_Set_6/champions/Braum.png').scaledToWidth(300)
         label.setPixmap(pixmap)
         label.resize(1006, 596)
-        label.move(503, 0)
+        label.move(600, 0)
 
         self.resize(1006, 596 * 3)
         self.showMaximized()

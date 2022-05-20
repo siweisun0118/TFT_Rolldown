@@ -1,0 +1,35 @@
+"""File containing all global constants used by rolldown."""
+
+
+# List of all champions in pool by cost
+CHAMPION_POOL = {1: [], 2: [], 3: [], 4: [], 5: []}
+
+
+# Amount of each unit in pool for each cost
+CHAMPION_AMOUNTS = {
+    1: 29,
+    2: 22,
+    3: 18,
+    4: 12,
+    5: 10
+}
+
+
+# Odds at each level
+LEVEL_ODDS = {
+    1: [100, 0, 0, 0, 0],
+    2: [100, 0, 0, 0, 0],
+    3: [75, 25, 0, 0, 0],
+    4: [55, 30, 15, 0, 0],
+    5: [45, 33, 20, 2, 0],
+    6: [25, 40, 30, 5, 0],
+    7: [19, 30, 35, 15, 1],
+    8: [16, 20, 35, 25, 4],
+    9: [9, 15, 30, 30, 16],
+    10: [5, 10, 20, 40, 25],
+    11: [1, 2, 12, 50, 35]
+}
+
+
+# Size of splash art
+CHAMPION_SPLASH_SIZE = (1006, 596)
