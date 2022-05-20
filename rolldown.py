@@ -7,9 +7,12 @@ from pathlib import Path
 import random
 import sys
 
-
+# pylint: disable=import-error
 from termcolor import colored
-from getch import getch
+if os.name == 'nt':
+    from msvcrt import getch
+else:
+    from getch import getch
 
 
 # random.seed(112358)
