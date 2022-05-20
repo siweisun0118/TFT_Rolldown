@@ -45,6 +45,47 @@ assert all((sum(odds) == 100 for odds in LEVEL_ODDS.values())), "Error in level 
 CHAMPION_POOL = {1: [], 2: [], 3: [], 4: [], 5: []}
 
 
+# Helper function to read input directory
+def read_database(input_dir):
+    """Read in units and traits."""
+    # Read in units
+    with open(Path(input_dir) / 'champions.json', encoding='utf-8') as champions_file:
+        champions_list = json.loads(champions_file.read())
+
+    # Read in traits
+    with open(Path(input_dir) / 'traits.json', encoding='utf-8') as traits_file:
+        traits_list = json.loads(traits_file.read())
+
+    # Parse unit data
+    champions = {}
+    for champ in champions_list:
+        # If champion has fewer than 2 traits, ignore it
+        # Since it is a target dummy, voidspawn, tome, Veigar, etc.
+        if len(champ['traits']) < 2:
+            continue
+
+        # Add to champions list
+        champions[champ['name']] = Unit(champ['cost'], champ['name'], champ['traits'])
+
+        # Add to champion pool
+        CHAMPION_POOL[champ['cost']] += [champions[champ['name']]] * CHAMPION_AMOUNTS[champ['cost']]
+
+    # Parse trait data
+    traits = {}
+    for trait in traits_list:
+        # Extract trait breakpoints and styles from trait data
+        breakpoints = []
+        styles = []
+        for b_p in trait['sets']:
+            breakpoints.append(b_p['min'])
+            styles.append(b_p['style'])
+
+        # Add to traits list
+        traits[trait['name']] = Trait(trait['name'], breakpoints, styles)
+
+    return champions, traits
+
+
 class Unit:
     """Class containing unit information."""
     def __init__(self, cost, name, traits, level=1):
@@ -163,6 +204,10 @@ class Team:
         """Return the length of a team."""
         return len(self.team)
 
+    def __contains__(self, item):
+        """Make Team play nicely with 'in'."""
+        return item in self.team
+
     def add_unit(self, unit):
         """Add unit to a team."""
         assert isinstance(unit, str), "Error attempting to add unknown type to team."
@@ -260,209 +305,201 @@ class Team:
         return activated_traits
 
 
-def read_database(input_dir):
-    """Read in units and traits."""
-    # Read in units
-    with open(Path(input_dir) / 'champions.json', encoding='utf-8') as champions_file:
-        champions_list = json.loads(champions_file.read())
+class Game:
+    """Class that runs and manages the rolldown."""
+    def __init__(self, input_dir):
+        # Read in database
+        champions_dict, traits_dict = read_database(input_dir)
+        self.champions_dict = champions_dict
+        self.traits_dict = traits_dict
 
-    # Read in traits
-    with open(Path(input_dir) / 'traits.json', encoding='utf-8') as traits_file:
-        traits_list = json.loads(traits_file.read())
+        # Create new team
+        self.team = Team(self.champions_dict, self.traits_dict)
 
-    # Parse unit data
-    champions = {}
-    for champ in champions_list:
-        # If champion has fewer than 2 traits, ignore it
-        # Since it is a target dummy, voidspawn, tome, Veigar, etc.
-        if len(champ['traits']) < 2:
-            continue
+        # Gold and level member variables
+        # This is set by user input in self.rolldown()
+        self.gold = None
+        self.level = None
 
-        # Add to champions list
-        champions[champ['name']] = Unit(champ['cost'], champ['name'], champ['traits'])
+    # Helper function that simulates a single roll based on level
+    def roll(self):
+        """Roll for champions based on level."""
+        assert self.level in range(1, 12)
+        # 5 Slots
+        # For each slot, we roll a random cost
+        odds = LEVEL_ODDS[self.level]
+        costs = random.choices(population=[1, 2, 3, 4, 5], weights=odds, k=5)
 
-        # Add to champion pool
-        CHAMPION_POOL[champ['cost']] += [champions[champ['name']]] * CHAMPION_AMOUNTS[champ['cost']]
+        # For each result, we choose a random champion from CHAMPION_POOL
+        # We don't need global keyword because CHAMPION_POOL is mutable
+        results = []
+        for cost in costs:
+            # If there are no more champions of the cost (unlikely but possible),
+            # simply choose a random champion
+            if not CHAMPION_POOL[cost]:
+                print('Out of', cost, 'costs!')
 
-    # Parse trait data
-    traits = {}
-    for trait in traits_list:
-        # Extract trait breakpoints and styles from trait data
-        breakpoints = []
-        styles = []
-        for b_p in trait['sets']:
-            breakpoints.append(b_p['min'])
-            styles.append(b_p['style'])
+                # Build a pool of all champions to choose a replacement
+                total_pool = [unit for ls in CHAMPION_POOL.values() for unit in ls]
+                replacement = random.choice(total_pool)
+                results.append(replacement)
+                print('The replacement unit is', replacement)
 
-        # Add to traits list
-        traits[trait['name']] = Trait(trait['name'], breakpoints, styles)
+            else:
+                # Add result to list of resulting rolls
+                resulting_champ = random.choice(CHAMPION_POOL[cost])
+                results.append(resulting_champ)
 
-    return champions, traits
+        return results
 
+    def display_roll(self, current_roll):
+        """Display the champions in the current shop."""
+        # Clear console
+        os.system('cls' if os.name == 'nt' else 'clear')
 
-def roll(level):
-    """Roll for champions based on level."""
-    assert level in range(1, 12)
-    # 5 Slots
-    # For each slot, we roll a random cost
-    odds = LEVEL_ODDS[level]
-    costs = random.choices(population=[1, 2, 3, 4, 5], weights=odds, k=5)
+        # Instructions
+        print("Use number keys to buy, 'd' to reroll, and 's' to see current team and traits.")
+        print("Press 'p' to restart.")
+        print("Press 'm' to quit.")
+        print('Your current gold amount is:', self.gold)
+        if self.gold < 2:
+            print('You do not have enough gold to reroll!')
 
-    # For each result, we choose a random champion from CHAMPION_POOL
-    # We don't need global keyword because CHAMPION_POOL is mutable
-    results = []
-    for cost in costs:
-        # If there are no more champions of the cost (unlikely but possible),
-        # simply choose a random champion
-        if not CHAMPION_POOL[cost]:
-            print('Out of', cost, 'costs!')
+        # Convert current roll to string form
+        str_roll = ''
+        for idx, champ in enumerate(current_roll):
+            if champ in self.team:
+                str_roll += colored('[' + str(idx + 1) + '] ' + str(champ), 'green')
+            else:
+                str_roll += '[' + str(idx + 1) + '] ' + str(champ)
 
-            # Build a pool of all champions to choose a replacement
-            total_pool = [unit for ls in CHAMPION_POOL.values() for unit in ls]
-            replacement = random.choice(total_pool)
-            results.append(replacement)
-            print('The replacement unit is', replacement)
+        # Display current roll
+        print(str_roll, end='')
 
+    def buy_unit(self, cur_roll, next_in):
+        """Helper function that buys a unit for the team."""
+        idx = int(next_in) - 1
+        # Remove cost from current gold and add gold to team
+        cur_unit = cur_roll[idx]
+        if cur_unit.name != 'BLANK' and self.gold >= cur_unit.cost:
+            self.gold -= cur_unit.cost
+            self.team.add_unit(cur_unit.name)
+            cur_roll[idx] = Unit(None, 'BLANK', None)
         else:
-            # Add result to list of resulting rolls
-            resulting_champ = random.choice(CHAMPION_POOL[cost])
-            results.append(resulting_champ)
+            # print("You don't have enough gold!")
+            pass
 
-    return results
+    def rolldown(self):
+        """Simulate the rolldown."""
+        # First, read in a level between 1 and 11 inclusive
+        # Lots of error checking to make sure user doesn't enter in an invalid value
+        while True:
+            try:
+                # Set level
+                user_in = input('Enter your current level between 1 and 11 inclusive: ')
+                start_level = int(user_in)
+                while start_level not in range(1, 12):
+                    user_in = input('Enter your current level between 1 and 11 inclusive: ')
+                    start_level = int(user_in)
 
+                # Set starting gold
+                start_gold = int(input('Enter the amount of gold you want to start with: '))
+                break
+            except ValueError:
+                print('Invalid input, restarting...')
+                os.execv(sys.executable, ['python'] + sys.argv)
 
-def display_roll(current_roll, gold, cur_team):
-    """Display the champions in the current shop."""
-    # Clear console
-    os.system('cls' if os.name == 'nt' else 'clear')
+        # Update member variables
+        self.gold = start_gold
+        self.level = start_level
 
-    # Instructions
-    print("Use number keys to buy, 'd' to reroll, and 's' to see current team and traits.")
-    print("Press 'p' to restart.")
-    print("Press 'm' to quit.")
-    print('Your current gold amount is:', gold)
-    if gold < 2:
-        print('You do not have enough gold to reroll!')
+        # Now we can start generating rolls
+        reroll = True
+        while True:
+            # Generate new roll
+            # Do not generate a new roll if gold is too low
+            if reroll:
+                cur_roll = self.roll()
 
-    # Convert current roll to string form
-    str_roll = ''
-    for idx, champ in enumerate(current_roll):
-        if champ in cur_team:
-            str_roll += colored('[' + str(idx + 1) + '] ' + str(champ), 'green')
-        else:
-            str_roll += '[' + str(idx + 1) + '] ' + str(champ)
+            # Display shop
+            self.display_roll(cur_roll)
 
-    # Display current roll
-    print(str_roll, end='')
+            # Read in input
+            next_in = getch()
+            while True:
+                # Reroll
+                if next_in == 'd':
+                    break
+
+                # Buy a unit using numbers
+                elif next_in in ['1', '2', '3', '4', '5']:
+                    self.buy_unit(cur_roll, next_in)
+
+                # Display current team using 's' (also allows selling)
+                elif next_in == 's':
+                    # Clear console
+                    os.system('cls' if os.name == 'nt' else 'clear')
+
+                    # Display team
+                    print(self.team)
+
+                    # If user wants to sell a unit
+                    while True:
+                        next_in_sell = input("Use numbers + 'enter' to sell.\n" +
+                            "Press any other key to see the shop again.\n" +
+                            "Your current gold amount is: " + str(self.gold) + '\n')
+                        try:
+                            # If user does not attempt to sell a valid champion, return to shop
+                            index_to_sell = int(next_in_sell)
+                            if index_to_sell not in range(1, len(self.team) + 1):
+                                break
+
+                            # Otherwise, sell the unit and add its sell cost to your total gold
+                            # Remember that the shop is 1 indexed but lists are 0 indexed
+                            self.gold += self.team.team[index_to_sell - 1].sell_cost
+                            self.team.sell_unit(index_to_sell - 1)
+
+                            # Clear console
+                            os.system('cls' if os.name == 'nt' else 'clear')
+
+                            # Display team
+                            print(self.team)
+
+                        # If user enters a value that is not an int, return to shop
+                        except ValueError:
+                            break
+
+                # Use 'p' to restart
+                elif next_in == 'p':
+                    print('restarting...')
+                    os.execv(sys.executable, ['python'] + sys.argv)
+
+                # Use 'm' to quit
+                elif next_in == 'm':
+                    print('Quitting...')
+                    print('Final results:')
+                    print(self.team)
+                    sys.exit()
+
+                # Display current shop
+                self.display_roll(cur_roll)
+
+                # Read in next input
+                next_in = getch()
+
+            # Since we rerolled, reduce gold by 2
+            if self.gold >= 2:
+                self.gold -= 2
+                reroll = True
+            else:
+                reroll = False
 
 
 def main(input_dir):
     """Simulate a rolldown."""
-    # champions is dict of names to Units, traits is dict of names to Traits
-    champions_dict, traits_dict = read_database(input_dir)
-
     # The team that the user will be building
-    cur_team = Team(champions_dict, traits_dict)
-
-    # First, read in a level between 1 and 11 inclusive
-    # Lots of error checking to make sure user doesn't enter in an invalid value
-    while True:
-        try:
-            # Set level
-            level = int(input('Please enter your current level between 1 and 11 inclusive: '))
-            while level not in range(1, 12):
-                level = int(input('Please enter your current level between 1 and 11 inclusive: '))
-
-            # Set starting gold
-            gold = int(input('Please enter the amount of gold you want to start with: '))
-            break
-        except ValueError:
-            print('Invalid input, restarting...')
-            os.execv(sys.executable, ['python'] + sys.argv)
-
-    # Now we can start generating rolls
-    reroll = True
-    while True:
-        # Generate new roll
-        # Do not generate a new roll if gold is too low
-        if reroll:
-            cur_roll = roll(level)
-
-        # Display shop
-        display_roll(cur_roll, gold, cur_team.team)
-
-        # Reroll using 'd'
-        # Just break out of this look to generate a new shop
-        next_in = getch()
-        while next_in != 'd':
-            # Buy a unit using numbers
-            if next_in in ['1', '2', '3', '4', '5']:
-                idx = int(next_in) - 1
-                # Remove cost from current gold and add gold to team
-                if gold >= cur_roll[idx].cost:
-                    gold -= cur_roll[idx].cost
-                    cur_team.add_unit(cur_roll[idx].name)
-                    cur_roll[idx] = Unit(None, 'BLANK', None)
-                else:
-                    # print("You don't have enough gold!")
-                    pass
-
-            # Display current team using 's' (also allows selling)
-            if next_in == 's':
-                # Clear console
-                os.system('cls' if os.name == 'nt' else 'clear')
-
-                # Display team
-                print(cur_team)
-
-                # If user wants to sell a unit
-                while True:
-                    next_in_sell = input("Use numbers + 'enter' to sell.\n" +
-                        "Press any other key to see the shop again.\n" +
-                        "Your current gold amount is: " + str(gold) + '\n')
-                    try:
-                        # If user does not attempt to sell a valid champion, return to shop screen
-                        index_to_sell = int(next_in_sell)
-                        if index_to_sell not in range(1, len(cur_team) + 1):
-                            break
-
-                        # Otherwise, sell the unit and add its sell cost to your total gold
-                        # Remember that the shop is 1 indexed but lists are 0 indexed
-                        gold += cur_team.team[index_to_sell - 1].sell_cost
-                        cur_team.sell_unit(index_to_sell - 1)
-
-                        # Clear console
-                        os.system('cls' if os.name == 'nt' else 'clear')
-
-                        # Display team
-                        print(cur_team)
-
-                    # If user enters a value that cannot be interpreted as an int, return to shop
-                    except ValueError:
-                        break
-
-            # Use 'p' to restart
-            if next_in == 'p':
-                print('restarting...')
-                os.execv(sys.executable, ['python'] + sys.argv)
-
-            # Use 'm' to quit
-            if next_in == 'm':
-                print('Quitting...')
-                sys.exit()
-
-            # Display current shop
-            display_roll(cur_roll, gold, cur_team.team)
-
-            # Read in next input
-            next_in = getch()
-
-        # Since we rerolled, reduce gold by 2
-        if gold >= 2:
-            gold -= 2
-            reroll = True
-        else:
-            reroll = False
+    game = Game(input_dir)
+    game.rolldown()
 
 
 if __name__ == '__main__':
