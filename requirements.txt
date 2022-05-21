@@ -1,3 +1,4 @@
 getch
 termcolor
 msvcrt; sys_platform == 'nt'
+pyqt5
