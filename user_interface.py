@@ -9,6 +9,7 @@ import sys
 from PyQt5.QtWidgets import QLabel, QMainWindow, QApplication
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
+from PyQt5 import QtCore
 
 
 # Local files
@@ -18,7 +19,7 @@ from rolldown import Game
 
 # Scaled splash to fit window (X by Y)
 SCALED_SPLASH_SIZE = (300, 100)
-LABEL_LOCATION = SCALED_SPLASH_SIZE[0] + 70
+LABEL_ROW = SCALED_SPLASH_SIZE[0] + 70
 LABEL_SIZE = (SCALED_SPLASH_SIZE[0], 60)
 RIGHT_ALIGN = LABEL_SIZE[0] - 20
 
@@ -34,6 +35,13 @@ class Menu(QMainWindow):
         # Display shop
         for idx, unit in enumerate(current_roll):
             self.display_unit(unit, idx * (SCALED_SPLASH_SIZE[0] + 1))
+            
+        # Reroll button
+        reroll = QLabel(self)
+        reroll.resize(*SCALED_SPLASH_SIZE)
+        reroll.setText('reroll')
+        reroll.move(500, 1000)
+        reroll.mousePressEvent = self.reroll
 
         self.resize(1006, 596 * 3)
         self.showMaximized()
@@ -53,19 +61,19 @@ class Menu(QMainWindow):
         label_map = QPixmap(f'rarities/{unit.cost}.png').scaled(*LABEL_SIZE)
         label_background.setPixmap(label_map)
         label_background.resize(*SCALED_SPLASH_SIZE)
-        label_background.move(col, LABEL_LOCATION)
+        label_background.move(col, LABEL_ROW)
 
         # Unit name
         label_name = QLabel(self)
         label_name.resize(*SCALED_SPLASH_SIZE)
         label_name.setText(f' {unit.name}')
-        label_name.move(col, LABEL_LOCATION)
+        label_name.move(col, LABEL_ROW)
 
         # Unit rarity
         label_rarity = QLabel(self)
         label_rarity.resize(*SCALED_SPLASH_SIZE)
         label_rarity.setText(f' {unit.cost}')
-        label_rarity.move(col + RIGHT_ALIGN, LABEL_LOCATION)
+        label_rarity.move(col + RIGHT_ALIGN, LABEL_ROW)
 
         # Make label and splash clickable
         label_background.mousePressEvent = self.buy_unit
@@ -77,6 +85,11 @@ class Menu(QMainWindow):
         """Buy a unit."""
         print("CLICKED")
         print(event.globalX(), event.globalY())
+        
+    def reroll(self, event):
+        """Reroll the shop."""
+        QtCore.QCoreApplication.quit()
+        QtCore.QProcess.startDetached(sys.executable, sys.argv)
 
 
 if __name__ == '__main__':
@@ -86,4 +99,5 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
     ex = Menu()
+
     sys.exit(app.exec_())
