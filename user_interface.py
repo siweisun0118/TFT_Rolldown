@@ -2,12 +2,15 @@
 import sys
 
 
+# Qt libraries
 from PyQt5.QtWidgets import QLabel, QMainWindow, QApplication
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 
 
+# Local files
 from constants import SPLASH_SIZE
+from rolldown import Game
 
 
 # Scaled splash to fit window (X by Y)
@@ -23,12 +26,11 @@ class Menu(QMainWindow):
         super().__init__()
         self.setWindowTitle("Rolldown")
 
+        current_roll = Game(sys.argv[1], 200, 10).roll()
+
         # Display shop
-        self.display_unit('Akali', 0, 5)
-        self.display_unit('Braum', SCALED_SPLASH_SIZE[0] + 1, 4)
-        self.display_unit('Twitch', 2 * (SCALED_SPLASH_SIZE[0] + 1), 1)
-        self.display_unit('Vi', 3 * (SCALED_SPLASH_SIZE[0] + 1), 2)
-        self.display_unit('Heimerdinger', 4 * (SCALED_SPLASH_SIZE[0] + 1), 3)
+        for idx, unit in enumerate(current_roll):
+            self.display_unit(unit.name, idx * (SCALED_SPLASH_SIZE[0] + 1), unit.cost)
 
         self.resize(1006, 596 * 3)
         self.showMaximized()

@@ -291,7 +291,7 @@ class Team:
 
 class Game:
     """Class that runs and manages the rolldown."""
-    def __init__(self, input_dir):
+    def __init__(self, input_dir, gold=None, level=None):
         # Read in database
         champions_dict, traits_dict = read_database(input_dir)
         self.champions_dict = champions_dict
@@ -302,8 +302,8 @@ class Game:
 
         # Gold and level member variables
         # This is set by user input in self.rolldown()
-        self.gold = None
-        self.level = None
+        self.gold = gold
+        self.level = level
 
     # Helper function that simulates a single roll based on level
     def roll(self):
