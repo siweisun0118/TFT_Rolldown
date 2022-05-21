@@ -1,4 +1,7 @@
-"""Testing pyqt."""
+"""Implmentation of the PyQt UI for rolldown."""
+
+
+# Standard libraries
 import sys
 
 
@@ -30,23 +33,24 @@ class Menu(QMainWindow):
 
         # Display shop
         for idx, unit in enumerate(current_roll):
-            self.display_unit(unit.name, idx * (SCALED_SPLASH_SIZE[0] + 1), unit.cost)
+            self.display_unit(unit, idx * (SCALED_SPLASH_SIZE[0] + 1))
 
         self.resize(1006, 596 * 3)
         self.showMaximized()
 
-    def display_unit(self, unit, col, rarity):
+    def display_unit(self, unit, col):
         """Display unit in the correct shop location."""
         # Image
         splash = QLabel(self)
-        splash_map = QPixmap(f'TFT_Set_6/champions/{unit}.png').scaled(300, 300, Qt.KeepAspectRatio)
+        splash_map = QPixmap(f'{sys.argv[1]}champions/{unit.id_name}.png'\
+            ).scaled(300, 300, Qt.KeepAspectRatio)
         splash.setPixmap(splash_map)
         splash.resize(*SPLASH_SIZE)
         splash.move(col, 0)
 
         # Label background color (rarity)
         label_background = QLabel(self)
-        label_map = QPixmap(f'rarities/{rarity}.png').scaled(*LABEL_SIZE)
+        label_map = QPixmap(f'rarities/{unit.cost}.png').scaled(*LABEL_SIZE)
         label_background.setPixmap(label_map)
         label_background.resize(*SCALED_SPLASH_SIZE)
         label_background.move(col, LABEL_LOCATION)
@@ -54,13 +58,13 @@ class Menu(QMainWindow):
         # Unit name
         label_name = QLabel(self)
         label_name.resize(*SCALED_SPLASH_SIZE)
-        label_name.setText(f' {unit}')
+        label_name.setText(f' {unit.name}')
         label_name.move(col, LABEL_LOCATION)
 
         # Unit rarity
         label_rarity = QLabel(self)
         label_rarity.resize(*SCALED_SPLASH_SIZE)
-        label_rarity.setText(f' {rarity}')
+        label_rarity.setText(f' {unit.cost}')
         label_rarity.move(col + RIGHT_ALIGN, LABEL_LOCATION)
 
         # Make label and splash clickable
@@ -76,6 +80,10 @@ class Menu(QMainWindow):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print('Usage: python user_interface.py {input_dir}')
+        sys.exit()
+
     app = QApplication(sys.argv)
     ex = Menu()
     sys.exit(app.exec_())

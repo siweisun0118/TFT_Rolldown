@@ -49,7 +49,8 @@ def read_database(input_dir):
             continue
 
         # Add to champions list
-        champions[champ['name']] = Unit(champ['cost'], champ['name'], champ['traits'])
+        champions[champ['name']] = Unit(champ['cost'], champ['name'], \
+            champ['traits'], champ['championId'])
 
         # Add to champion pool
         CHAMPION_POOL[champ['cost']] += [champions[champ['name']]] * CHAMPION_AMOUNTS[champ['cost']]
@@ -72,7 +73,7 @@ def read_database(input_dir):
 
 class Unit:
     """Class containing unit information."""
-    def __init__(self, cost, name, traits, level=1):
+    def __init__(self, cost, name, traits, id_name, level=1):
         # Check if unit is a BLANK placeholder
         if name == 'BLANK':
             self.name = name
@@ -82,6 +83,7 @@ class Unit:
         self.cost = cost
         self.name = name
         self.traits = [trait.strip() for trait in traits]
+        self.id_name = id_name
 
         self.level = level
 
@@ -274,7 +276,7 @@ class Team:
         self.team.pop(unit_index)
 
         # Return it to the champion pool
-        base_unit = Unit(sold_unit.cost, sold_unit.name, sold_unit.traits)
+        base_unit = Unit(sold_unit.cost, sold_unit.name, sold_unit.traits, sold_unit.id_name)
         quantities = [0, 1, 3, CHAMPION_AMOUNTS[sold_unit.cost]]
         for _ in range(quantities[sold_unit.level]):
             CHAMPION_POOL[sold_unit.cost].append(base_unit)
@@ -368,7 +370,7 @@ class Game:
         if cur_unit.name != 'BLANK' and self.gold >= cur_unit.cost:
             self.gold -= cur_unit.cost
             self.team.add_unit(cur_unit.name)
-            cur_roll[idx] = Unit(None, 'BLANK', None)
+            cur_roll[idx] = Unit(None, 'BLANK', None, None)
         else:
             # print("You don't have enough gold!")
             pass
