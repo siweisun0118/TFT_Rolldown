@@ -3,11 +3,12 @@
 
 # Standard libraries
 import sys
+from os.path import exists
 
 
 # Qt libraries
 from PyQt5.QtWidgets import QLabel, QMainWindow, QApplication
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt
 
 
@@ -25,7 +26,7 @@ RIGHT_ALIGN = LABEL_SIZE[0] - 20
 
 
 class Menu(QMainWindow):
-    """Main testing window."""
+    """Main rolldown window."""
     def __init__(self):
         super().__init__()
         # List of all displayed widgets
@@ -34,11 +35,13 @@ class Menu(QMainWindow):
         # Window
         self.setWindowTitle("Rolldown")
 
+        # Shop
         self.display_shop()
 
         # Reroll button
         reroll = QLabel(self)
         reroll.resize(*SCALED_SPLASH_SIZE)
+        reroll.setFont(QFont('Times', 20))
         reroll.setText('reroll')
         reroll.move(SPLASH_LOCATION, 1000)
         reroll.mousePressEvent = self.reroll
@@ -49,9 +52,14 @@ class Menu(QMainWindow):
     def display_unit(self, unit, col):
         """Display unit in the correct shop location."""
         # Image
+        # Check naming scheme of image
+        name = f'{sys.argv[1]}champions/{unit.name}.png'
+        if not exists(name):
+            name = f'{sys.argv[1]}champions/{unit.id_name}.png'
+
         splash = QLabel(self)
-        splash_map = QPixmap(f'{sys.argv[1]}champions/{unit.name}.png'\
-            ).scaled(SCALED_SPLASH_SIZE[0], SCALED_SPLASH_SIZE[0], Qt.KeepAspectRatio)
+        splash_map = QPixmap(name).scaled(SCALED_SPLASH_SIZE[0], \
+            SCALED_SPLASH_SIZE[0], Qt.KeepAspectRatio)
         splash.setPixmap(splash_map)
         splash.resize(*SPLASH_SIZE)
         splash.move(col, SPLASH_LOCATION)
@@ -80,9 +88,9 @@ class Menu(QMainWindow):
         label_rarity.show()
 
         # Make label and splash clickable
-        label_background.mousePressEvent = self.buy_unit
-        label_name.mousePressEvent = self.buy_unit
-        label_rarity.mousePressEvent = self.buy_unit
+        label_background.mouseReleaseEvent = self.buy_unit
+        label_name.mouseReleaseEvent = self.buy_unit
+        label_rarity.mouseReleaseEvent = self.buy_unit
         splash.mouseReleaseEvent = self.buy_unit
 
         return label_background, label_name, label_rarity, splash
@@ -100,6 +108,7 @@ class Menu(QMainWindow):
         print("CLICKED")
         print(event.globalX(), event.globalY())
 
+    # pylint: disable=unused-argument
     def reroll(self, event):
         """Reroll the shop."""
         # Delete old shop
@@ -110,6 +119,19 @@ class Menu(QMainWindow):
         # Display new shop
         self.displays = []
         self.display_shop()
+
+    # pylint: disable=invalid-name
+    def keyReleaseEvent(self, event):
+        """Capture user input."""
+        super().keyReleaseEvent(event)
+
+        # Quit
+        if event.key() == Qt.Key_Q:
+            QApplication.quit()
+
+        # Reroll
+        if event.key() == Qt.Key_D:
+            self.reroll(event)
 
 
 if __name__ == '__main__':
