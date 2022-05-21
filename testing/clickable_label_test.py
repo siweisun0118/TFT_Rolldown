@@ -35,18 +35,16 @@ class Window(QMainWindow):
   
         # adding action to a button
         button.clicked.connect(self.clickme)
-  
+
         # setting image to the button
         button.setStyleSheet("background-image : url(TFT_Set_6/champions/Akali.png);")
-        
+
         # Add label for champion name
         label = QLabel(self)
         label.setText('Akali')
         label.resize(1006, 596)
         label.move(x + 1006, y + 596)
-  
-  
-  
+
     # action method
     def clickme(self):
   
