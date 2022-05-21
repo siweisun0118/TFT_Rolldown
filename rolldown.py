@@ -130,7 +130,7 @@ class Unit:
             CHAMPION_POOL[self.cost] = [unit for unit in CHAMPION_POOL[self.cost] if unit != self]
 
         # Sell cost changes when unit is upgraded
-        return Unit(self.cost, self.name, self.traits, self.level + 1)
+        return Unit(self.cost, self.name, self.traits, self.id_name, self.level + 1)
 
 
 class Trait:
@@ -253,7 +253,7 @@ class Team:
             else:
                 self.team.append(new_unit)
 
-    def sell_unit(self, unit_index):
+    def remove_unit(self, unit_index):
         """Sell a unit from your board."""
         assert isinstance(unit_index, int), "Error in trying to sell unit"
         # Check if unit was unique
@@ -375,6 +375,10 @@ class Game:
             # print("You don't have enough gold!")
             pass
 
+    def sell_unit(self, index):
+        """Sell a unit from the team."""
+        self.team.remove_unit(index)
+
     def check_team(self):
         """Check team and/or sell unit."""
         # Clear console
@@ -397,7 +401,7 @@ class Game:
                 # Otherwise, sell the unit and add its sell cost to your total gold
                 # Remember that the shop is 1 indexed but lists are 0 indexed
                 self.gold += self.team.team[index_to_sell - 1].sell_cost
-                self.team.sell_unit(index_to_sell - 1)
+                self.sell_unit(index_to_sell - 1)
 
                 # Clear console
                 os.system('cls' if os.name == 'nt' else 'clear')

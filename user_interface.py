@@ -9,7 +9,6 @@ import sys
 from PyQt5.QtWidgets import QLabel, QMainWindow, QApplication
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
-from PyQt5 import QtCore
 
 
 # Local files
