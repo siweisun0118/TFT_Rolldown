@@ -12,10 +12,8 @@ from constants import SPLASH_SIZE
 
 # Scaled splash to fit window (X by Y)
 SCALED_SPLASH_SIZE = (300, 100)
-SCALED_HEIGHT = 370
-
-
-LABEL_SIZE = (300, 60)
+LABEL_LOCATION = SCALED_SPLASH_SIZE[0] + 70
+LABEL_SIZE = (SCALED_SPLASH_SIZE[0], 60)
 RIGHT_ALIGN = LABEL_SIZE[0] - 20
 
 
@@ -49,19 +47,19 @@ class Menu(QMainWindow):
         label_map = QPixmap(f'rarities/{rarity}.png').scaled(*LABEL_SIZE)
         label_background.setPixmap(label_map)
         label_background.resize(*SCALED_SPLASH_SIZE)
-        label_background.move(col, SCALED_HEIGHT)
+        label_background.move(col, LABEL_LOCATION)
 
         # Unit name
         label_name = QLabel(self)
         label_name.resize(*SCALED_SPLASH_SIZE)
         label_name.setText(f' {unit}')
-        label_name.move(col, SCALED_HEIGHT)
+        label_name.move(col, LABEL_LOCATION)
         
         # Unit rarity
         label_rarity = QLabel(self)
         label_rarity.resize(*SCALED_SPLASH_SIZE)
         label_rarity.setText(f' {rarity}')
-        label_rarity.move(col + RIGHT_ALIGN, SCALED_HEIGHT)
+        label_rarity.move(col + RIGHT_ALIGN, LABEL_LOCATION)
 
         # Make label and splash clickable
         label_background.mousePressEvent = self.buy_unit
