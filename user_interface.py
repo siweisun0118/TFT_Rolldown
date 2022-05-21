@@ -1,14 +1,14 @@
 """Testing pyqt."""
 import sys
 
-# pylint: disable=no-name-in-module
+
 from PyQt5.QtWidgets import QLabel, QMainWindow, QApplication
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 
 
-# pylint: disable=wrong-import-position
 from constants import SPLASH_SIZE
+
 
 # Scaled splash to fit window (X by Y)
 SCALED_SPLASH_SIZE = (300, 100)
@@ -54,7 +54,7 @@ class Menu(QMainWindow):
         label_name.resize(*SCALED_SPLASH_SIZE)
         label_name.setText(f' {unit}')
         label_name.move(col, LABEL_LOCATION)
-        
+
         # Unit rarity
         label_rarity = QLabel(self)
         label_rarity.resize(*SCALED_SPLASH_SIZE)
