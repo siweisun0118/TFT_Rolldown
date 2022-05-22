@@ -20,7 +20,7 @@ from rolldown import Game, Unit
 
 # Scaled splash to fit window (X by Y)
 SCALED_SPLASH_SIZE = (380, 100)
-SPLASH_LOCATION = 400
+SPLASH_LOCATION = 500
 LABEL_ROW = SPLASH_LOCATION + 370
 LABEL_SIZE = (SCALED_SPLASH_SIZE[0], 60)
 RIGHT_ALIGN = LABEL_SIZE[0] - 20
@@ -30,6 +30,12 @@ class Menu(QMainWindow):
     """Main rolldown window."""
     def __init__(self, cur_game):
         super().__init__()
+
+        self.setStyleSheet('QMainWindow {border-image: url(boards/Pink_TFT.jpg); \
+            background-position: center; \
+            background-repeat: no-repeat;}')
+
+        # Start new game
         self.game = cur_game
 
         # List of all displayed widgets
@@ -43,6 +49,13 @@ class Menu(QMainWindow):
         self.gold_label.move(1000, 500)
 
         # Reroll button
+        reroll_button = QLabel(self)
+        reroll_button.resize(*SCALED_SPLASH_SIZE)
+        reroll_button.setPixmap(QPixmap('rarities/reroll.png'))
+        reroll_button.move(SPLASH_LOCATION, 1000)
+        reroll_button.mousePressEvent = self.reroll
+
+        # Reroll label
         reroll = QLabel(self)
         reroll.resize(*SCALED_SPLASH_SIZE)
         reroll.setFont(QFont('Times', 20))
@@ -129,6 +142,10 @@ class Menu(QMainWindow):
         """Buy a unit."""
         index = int(source_object)
 
+        # Cannot purchase empty slots
+        if self.shop[index].name == 'BLANK':
+            return
+
         # Check if enough gold is available to purchase the unit
         # REMEMBER THAT SHOP IS 1-INDEXED
         if self.game.gold < self.shop[index].cost:
@@ -203,6 +220,7 @@ if __name__ == '__main__':
     # Set up rolldown
     game = Game(sys.argv[1], 10, 1)
 
+    # Set background
     app = QApplication(sys.argv)
     ex = Menu(game)
 
