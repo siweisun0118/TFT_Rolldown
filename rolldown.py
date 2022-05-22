@@ -312,9 +312,14 @@ class Game:
         return str(self.team)
 
     # Helper function that simulates a single roll based on level
-    def roll(self):
+    def roll(self, reroll=True):
         """Roll for champions based on level."""
         assert self.level in range(1, 12)
+
+        # If this roll is a reroll, cost 2 gold
+        if reroll:
+            self.gold -= 2
+
         # 5 Slots
         # For each slot, we roll a random cost
         odds = LEVEL_ODDS[self.level]
@@ -442,15 +447,17 @@ class Game:
         self.level = start_level
 
         # Now we can start generating rolls
+        first = True
         reroll = True
         while True:
             # Generate new roll
             # Do not generate a new roll if gold is too low
             if reroll:
-                cur_roll = self.roll()
+                cur_roll = self.roll(not first)
 
             # Display shop
             self.display_roll(cur_roll)
+            first = False
 
             # Read in input
             next_in = getch()
@@ -485,8 +492,8 @@ class Game:
                 # Read in next input
                 next_in = getch()
 
-            # Since we rerolled, reduce gold by 2
-            self.gold, reroll = (self.gold - 2, True) if self.gold >= 2 else (self.gold, False)
+            # Check if we can reroll
+            reroll = self.gold >= 2
 
 
 def main(input_dir):

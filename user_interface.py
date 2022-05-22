@@ -51,7 +51,7 @@ class Menu(QMainWindow):
         reroll.mousePressEvent = self.reroll
 
         # Shop
-        self.display_shop()
+        self.display_shop(first_roll=True)
 
         # Display window
         self.setWindowTitle("Rolldown")
@@ -112,9 +112,9 @@ class Menu(QMainWindow):
         label_rarity.mouseReleaseEvent = source
         splash.mouseReleaseEvent = source
 
-    def display_shop(self):
+    def display_shop(self, first_roll=False):
         """Display the current shop."""
-        current_roll = self.game.roll()
+        current_roll = self.game.roll(not first_roll)
 
         # Update current gold
         self.display_gold()
@@ -173,7 +173,7 @@ class Menu(QMainWindow):
         super().keyReleaseEvent(event)
 
         # Quit
-        if event.key() == Qt.Key_Q:
+        if event.key() == Qt.Key_M:
             print(self.game)
             QApplication.quit()
 
