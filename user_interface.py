@@ -52,7 +52,7 @@ class Menu(QMainWindow):
         reroll_button = QLabel(self)
         reroll_button.resize(*SCALED_SPLASH_SIZE)
         reroll_button.setPixmap(QPixmap('rarities/reroll.png'))
-        reroll_button.move(SPLASH_LOCATION, 1000)
+        reroll_button.move(500, 200)
         reroll_button.mousePressEvent = self.reroll
 
         # Reroll label
@@ -60,7 +60,7 @@ class Menu(QMainWindow):
         reroll.resize(*SCALED_SPLASH_SIZE)
         reroll.setFont(QFont('Times', 20))
         reroll.setText('Reroll')
-        reroll.move(SPLASH_LOCATION, 1000)
+        reroll.move(500, 200)
         reroll.mousePressEvent = self.reroll
 
         # Shop
@@ -96,20 +96,20 @@ class Menu(QMainWindow):
         label_background = QLabel(self)
         label_map = QPixmap(f'rarities/{unit.cost}.png').scaled(*LABEL_SIZE)
         label_background.setPixmap(label_map)
-        label_background.resize(*SCALED_SPLASH_SIZE)
+        label_background.resize(*LABEL_SIZE)
         label_background.move(col, LABEL_ROW)
         label_background.show()
 
         # Unit name
         label_name = QLabel(self)
-        label_name.resize(*SCALED_SPLASH_SIZE)
+        label_name.resize(*LABEL_SIZE)
         label_name.setText(f' {unit.name}')
         label_name.move(col, LABEL_ROW)
         label_name.show()
 
         # Unit rarity
         label_rarity = QLabel(self)
-        label_rarity.resize(*SCALED_SPLASH_SIZE)
+        label_rarity.resize(*LABEL_SIZE)
         label_rarity.setText(f' {unit.cost}')
         label_rarity.move(col + RIGHT_ALIGN, LABEL_ROW)
         label_rarity.show()
