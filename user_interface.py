@@ -2,6 +2,7 @@
 
 
 # Standard libraries
+from functools import partial
 import sys
 from os.path import exists
 
@@ -14,7 +15,7 @@ from PyQt5.QtCore import Qt
 
 # Local files
 from constants import SPLASH_SIZE
-from rolldown import Game
+from rolldown import Game, Unit
 
 
 # Scaled splash to fit window (X by Y)
@@ -27,10 +28,13 @@ RIGHT_ALIGN = LABEL_SIZE[0] - 20
 
 class Menu(QMainWindow):
     """Main rolldown window."""
-    def __init__(self):
+    def __init__(self, cur_game):
         super().__init__()
+        self.game = cur_game
+
         # List of all displayed widgets
         self.displays = []
+        self.shop = []
 
         # Window
         self.setWindowTitle("Rolldown")
@@ -87,26 +91,52 @@ class Menu(QMainWindow):
         label_rarity.move(col + RIGHT_ALIGN, LABEL_ROW)
         label_rarity.show()
 
-        # Make label and splash clickable
-        label_background.mouseReleaseEvent = self.buy_unit
-        label_name.mouseReleaseEvent = self.buy_unit
-        label_rarity.mouseReleaseEvent = self.buy_unit
-        splash.mouseReleaseEvent = self.buy_unit
+        # Append to display and shop
+        self.shop.append(unit)
+        self.displays.append((splash, label_background, label_name, label_rarity))
 
-        return label_background, label_name, label_rarity, splash
+        # Make label and splash clickable
+        source = partial(self.buy_unit, source_object=(len(self.shop) - 1))
+        label_background.mouseReleaseEvent = source
+        label_name.mouseReleaseEvent = source
+        label_rarity.mouseReleaseEvent = source
+        splash.mouseReleaseEvent = source
 
     def display_shop(self):
         """Display the current shop."""
-        current_roll = Game(sys.argv[1], 200, 10).roll()
+        current_roll = self.game.roll()
 
         # Display shop
         for idx, unit in enumerate(current_roll):
-            self.displays.append(self.display_unit(unit, idx * (SCALED_SPLASH_SIZE[0] + 1)))
+            self.display_unit(unit, idx * (SCALED_SPLASH_SIZE[0] + 1))
 
-    def buy_unit(self, event):
+    # pylint: disable=unused-argument
+    def buy_unit(self, event, source_object=None):
         """Buy a unit."""
-        print("CLICKED")
-        print(event.globalX(), event.globalY())
+        index = int(source_object)
+
+        # Add unit to team
+        # REMEMBER THAT SHOP IS 1-INDEXED
+        self.game.buy_unit(self.shop, index + 1)
+
+        # Remove unit from shop
+        self.shop[index] = Unit(None, 'BLANK', None, None)
+
+        # Remove widgets from display
+        initial_map = QPixmap('rarities/blank.png')
+        for idx, widget in enumerate(self.displays[index]):
+            # Rescale splash and label
+            if idx == 0:
+                first = initial_map.scaled(widget.width(), widget.height())
+                final = first.scaled(SCALED_SPLASH_SIZE[0], \
+                    SCALED_SPLASH_SIZE[0], Qt.KeepAspectRatio)
+                widget.setPixmap(final)
+            elif idx == 1:
+                final = initial_map.scaled(*LABEL_SIZE)
+                widget.setPixmap(final)
+            # Replace name and cost with blank text
+            else:
+                widget.setText('')
 
     # pylint: disable=unused-argument
     def reroll(self, event):
@@ -118,6 +148,7 @@ class Menu(QMainWindow):
 
         # Display new shop
         self.displays = []
+        self.shop = []
         self.display_shop()
 
     # pylint: disable=invalid-name
@@ -127,6 +158,7 @@ class Menu(QMainWindow):
 
         # Quit
         if event.key() == Qt.Key_Q:
+            print(self.game)
             QApplication.quit()
 
         # Reroll
@@ -139,7 +171,10 @@ if __name__ == '__main__':
         print('Usage: python user_interface.py {input_dir}')
         sys.exit()
 
-    app = QApplication(sys.argv)
-    ex = Menu()
+    # Set up rolldown
+    game = Game(sys.argv[1], 200, 1)
 
-    sys.exit(app.exec_())
+    app = QApplication(sys.argv)
+    ex = Menu(game)
+
+    app.exec_()

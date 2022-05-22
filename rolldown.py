@@ -307,6 +307,10 @@ class Game:
         self.gold = gold
         self.level = level
 
+    def __str__(self):
+        """Display the current team"""
+        return str(self.team)
+
     # Helper function that simulates a single roll based on level
     def roll(self):
         """Roll for champions based on level."""
