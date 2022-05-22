@@ -35,7 +35,7 @@ class Menu(QMainWindow):
         # List of all displayed widgets
         self.displays = []
         self.shop = []
-        
+
         # Current gold
         self.gold_label = QLabel(self)
         self.gold_label.resize(*SCALED_SPLASH_SIZE)
@@ -114,7 +114,8 @@ class Menu(QMainWindow):
 
     def display_shop(self, first_roll=False):
         """Display the current shop."""
-        current_roll = self.game.roll(not first_roll)
+        # Roll for units
+        current_roll = self.game.roll(first_roll)
 
         # Update current gold
         self.display_gold()
@@ -128,8 +129,12 @@ class Menu(QMainWindow):
         """Buy a unit."""
         index = int(source_object)
 
-        # Add unit to team
+        # Check if enough gold is available to purchase the unit
         # REMEMBER THAT SHOP IS 1-INDEXED
+        if self.game.gold < self.shop[index].cost:
+            return
+
+        # Add unit to team
         self.game.buy_unit(self.shop, index + 1)
 
         # Remove unit from shop
@@ -157,6 +162,10 @@ class Menu(QMainWindow):
     # pylint: disable=unused-argument
     def reroll(self, event):
         """Reroll the shop."""
+        # Check if roll is allowed
+        if self.game.gold < 2:
+            return
+
         # Delete old shop
         for disp in self.displays:
             for widget in disp:
@@ -171,6 +180,10 @@ class Menu(QMainWindow):
     def keyReleaseEvent(self, event):
         """Capture user input."""
         super().keyReleaseEvent(event)
+
+        # Ensure that key is only registered once
+        if event.isAutoRepeat():
+            return
 
         # Quit
         if event.key() == Qt.Key_M:
@@ -188,7 +201,7 @@ if __name__ == '__main__':
         sys.exit()
 
     # Set up rolldown
-    game = Game(sys.argv[1], 200, 1)
+    game = Game(sys.argv[1], 10, 1)
 
     app = QApplication(sys.argv)
     ex = Menu(game)
