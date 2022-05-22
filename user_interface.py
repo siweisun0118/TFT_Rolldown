@@ -35,23 +35,33 @@ class Menu(QMainWindow):
         # List of all displayed widgets
         self.displays = []
         self.shop = []
-
-        # Window
-        self.setWindowTitle("Rolldown")
-
-        # Shop
-        self.display_shop()
+        
+        # Current gold
+        self.gold_label = QLabel(self)
+        self.gold_label.resize(*SCALED_SPLASH_SIZE)
+        self.gold_label.setFont(QFont('Times', 20))
+        self.gold_label.move(1000, 500)
 
         # Reroll button
         reroll = QLabel(self)
         reroll.resize(*SCALED_SPLASH_SIZE)
         reroll.setFont(QFont('Times', 20))
-        reroll.setText('reroll')
+        reroll.setText('Reroll')
         reroll.move(SPLASH_LOCATION, 1000)
         reroll.mousePressEvent = self.reroll
 
+        # Shop
+        self.display_shop()
+
+        # Display window
+        self.setWindowTitle("Rolldown")
         self.resize(1006, 596 * 3)
         self.showMaximized()
+
+
+    def display_gold(self):
+        """Display the current amount of gold owned by player."""
+        self.gold_label.setText('Gold: ' + str(self.game.gold))
 
     def display_unit(self, unit, col):
         """Display unit in the correct shop location."""
@@ -106,6 +116,9 @@ class Menu(QMainWindow):
         """Display the current shop."""
         current_roll = self.game.roll()
 
+        # Update current gold
+        self.display_gold()
+
         # Display shop
         for idx, unit in enumerate(current_roll):
             self.display_unit(unit, idx * (SCALED_SPLASH_SIZE[0] + 1))
@@ -137,6 +150,9 @@ class Menu(QMainWindow):
             # Replace name and cost with blank text
             else:
                 widget.setText('')
+
+        # Update current gold
+        self.display_gold()
 
     # pylint: disable=unused-argument
     def reroll(self, event):
