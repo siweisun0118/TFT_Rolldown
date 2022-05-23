@@ -8,9 +8,9 @@ from os.path import exists
 
 
 # Qt libraries
-from PyQt5.QtWidgets import QLabel, QMainWindow, QApplication, QInputDialog
+from PyQt5.QtWidgets import QLabel, QMainWindow, QApplication, QInputDialog, QPushButton
 from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QProcess
 
 
 # Local files
@@ -28,26 +28,68 @@ RIGHT_ALIGN = LABEL_SIZE[0] - 20
 
 class Menu(QMainWindow):
     """Main rolldown window."""
-    def __init__(self, cur_game):
+    def __init__(self):
         super().__init__()
 
+        # Define necessary attributes
+        self.game = None
+        self.displays = None
+        self.shop = None
+        self.gold_label = None
+        self.level_label = None
+        self.instructions = None
+
+        # Display window
+        self.setWindowTitle("Rolldown")
+        self.resize(1006, 596 * 3)
+        self.showMaximized()
+
+        # Start button
+        self.start_button = QPushButton('Start', self)
+        self.start_button.resize(500, 100)
+        self.start_button.move(700, 500)
+        self.start_button.show()
+        self.start_button.clicked.connect(self.take_inputs)
+
+    def start_game(self):
+        """Start the rolldown."""
         self.setStyleSheet('QMainWindow {border-image: url(boards/Pink_TFT.jpg); \
             background-position: center; \
             background-repeat: no-repeat;}')
 
-        # Start new game using inputs from user
-        self.game = cur_game
-        self.game.gold, self.game.level = self.take_inputs()
+        # Remove start button
+        self.start_button.deleteLater()
 
         # List of all displayed widgets
         self.displays = []
         self.shop = []
+
+        # Instructions
+        inst1 = "Press 'd' or 'Reroll' to see a new shop (costs 2 gold)\n"
+        inst2 = "Click champions to buy them\n"
+        inst3 = "Press 'm' to quit (Final team shown in terminal)\n"
+        inst4 = "Press 'p' to restart"
+        self.instructions = QLabel(self)
+        self.instructions.resize(2 * SCALED_SPLASH_SIZE[0], 2 * SCALED_SPLASH_SIZE[1])
+        self.instructions.setFont(QFont('Times', 20))
+        self.instructions.setText(inst1 + inst2 + inst3 + inst4)
+        self.instructions.move(900, 100)
+        self.instructions.setStyleSheet('color: white')
+        self.instructions.show()
 
         # Current gold
         self.gold_label = QLabel(self)
         self.gold_label.resize(*SCALED_SPLASH_SIZE)
         self.gold_label.setFont(QFont('Times', 20))
         self.gold_label.move(1000, 500)
+        self.gold_label.show()
+
+        # Current level
+        self.level_label = QLabel(self)
+        self.level_label.resize(*SCALED_SPLASH_SIZE)
+        self.level_label.setFont(QFont('Times', 20))
+        self.level_label.move(1000, 450)
+        self.level_label.show()
 
         # Reroll button
         reroll_button = QLabel(self)
@@ -55,6 +97,7 @@ class Menu(QMainWindow):
         reroll_button.setPixmap(QPixmap('rarities/reroll.png'))
         reroll_button.move(500, 200)
         reroll_button.mousePressEvent = self.reroll
+        reroll_button.show()
 
         # Reroll label
         reroll = QLabel(self)
@@ -63,28 +106,30 @@ class Menu(QMainWindow):
         reroll.setText('Reroll')
         reroll.move(500, 200)
         reroll.mousePressEvent = self.reroll
+        reroll.show()
 
         # Shop
         self.display_shop(first_roll=True)
 
-        # Display window
-        self.setWindowTitle("Rolldown")
-        self.resize(1006, 596 * 3)
-        self.showMaximized()
-
     def take_inputs(self):
         """Take in inputs from user."""
-        gold, _ = QInputDialog.getText(
-            self, 'Input Gold', 'Enter starting gold:')
-
-        level, _ = QInputDialog.getText(
-            self, 'Input Level', 'Enter starting level:')
-
-        return int(gold), int(level)
+        gold, done1 = QInputDialog.getText(self, 'input dialog', 'Enter starting gold:')
+        level, done2 = QInputDialog.getText(self, 'input dialog',
+            'Enter starting level (1-11 inclusive):')
+        if done1 and done2:
+            # Start new game using inputs from user
+            while int(level) not in range(1, 12):
+                level, _ = QInputDialog.getText(self, 'input dialog',
+                                                'Enter starting level (1-11 inclusive):')
+            self.game = Game(sys.argv[1], int(gold), int(level))
+            self.start_game()
+        else:
+            QApplication.quit()
 
     def display_gold(self):
-        """Display the current amount of gold owned by player."""
+        """Display the current gold and level."""
         self.gold_label.setText('Gold: ' + str(self.game.gold))
+        self.level_label.setText('Level: ' + str(self.game.level))
 
     def display_unit(self, unit, col):
         """Display unit in the correct shop location."""
@@ -221,17 +266,20 @@ class Menu(QMainWindow):
         if event.key() == Qt.Key_D:
             self.reroll(event)
 
+        # Restart
+        if event.key() == Qt.Key_P:
+            QApplication.quit()
+            QProcess.startDetached(sys.executable, sys.argv)
+
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('Usage: python user_interface.py {input_dir}')
         sys.exit()
 
-    # Set up rolldown
-    game = Game(sys.argv[1], 10, 1)
-
     # Set background
     app = QApplication(sys.argv)
-    ex = Menu(game)
 
+    # Start application
+    ex = Menu()
     app.exec_()

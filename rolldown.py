@@ -178,7 +178,7 @@ class Team:
                 str_traits += str(trait) + ' '  + str(amount) + '/' + str(next_bp) + '\n'
 
         # Put it all together
-        units = "This is the current team:\n" + ''.join(str_team) + '\n'
+        units = "\nThis is the current team:\n" + ''.join(str_team) + '\n'
         traits = "Here are the current traits:\n" + str_traits
         return units + traits
 
