@@ -1,4 +1,4 @@
-getch
+getch; sys_platform == 'linux'
 termcolor
 msvcrt; sys_platform == 'nt'
 pyqt5
