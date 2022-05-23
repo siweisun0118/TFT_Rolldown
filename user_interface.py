@@ -8,7 +8,7 @@ from os.path import exists
 
 
 # Qt libraries
-from PyQt5.QtWidgets import QLabel, QMainWindow, QApplication
+from PyQt5.QtWidgets import QLabel, QMainWindow, QApplication, QInputDialog
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt
 
@@ -35,8 +35,9 @@ class Menu(QMainWindow):
             background-position: center; \
             background-repeat: no-repeat;}')
 
-        # Start new game
+        # Start new game using inputs from user
         self.game = cur_game
+        self.game.gold, self.game.level = self.take_inputs()
 
         # List of all displayed widgets
         self.displays = []
@@ -71,6 +72,15 @@ class Menu(QMainWindow):
         self.resize(1006, 596 * 3)
         self.showMaximized()
 
+    def take_inputs(self):
+        """Take in inputs from user."""
+        gold, _ = QInputDialog.getText(
+            self, 'Input Gold', 'Enter starting gold:')
+
+        level, _ = QInputDialog.getText(
+            self, 'Input Level', 'Enter starting level:')
+
+        return int(gold), int(level)
 
     def display_gold(self):
         """Display the current amount of gold owned by player."""
