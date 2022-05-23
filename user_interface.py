@@ -136,9 +136,9 @@ class Menu(QMainWindow):
         """Display unit in the correct shop location."""
         # Image
         # Check naming scheme of image
-        name = Path(f'{sys.argv[1]}champions') / f'{unit.name}.png'
+        name = Path(sys.argv[1]) / 'champions' / f'{unit.name}.png'
         if not name.is_file():
-            name = str(Path(f'{sys.argv[1]}champions') / f'{unit.id_name}.png')
+            name = Path(sys.argv[1]) / 'champions' / f'{unit.id_name}.png'
         name = str(name)
 
         splash = QLabel(self)
