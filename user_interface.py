@@ -4,7 +4,7 @@
 # Standard libraries
 from functools import partial
 import sys
-from os.path import exists
+from pathlib import Path
 
 
 # Qt libraries
@@ -53,9 +53,10 @@ class Menu(QMainWindow):
 
     def start_game(self):
         """Start the rolldown."""
-        self.setStyleSheet('QMainWindow {border-image: url(boards/Pink_TFT.jpg); \
+        background = str(Path('boards') / 'Pink_TFT.jpg')
+        self.setStyleSheet(f'QMainWindow {{border-image: url({background}); \
             background-position: center; \
-            background-repeat: no-repeat;}')
+            background-repeat: no-repeat;}}')
 
         # Remove start button
         self.start_button.deleteLater()
@@ -135,9 +136,10 @@ class Menu(QMainWindow):
         """Display unit in the correct shop location."""
         # Image
         # Check naming scheme of image
-        name = f'{sys.argv[1]}champions/{unit.name}.png'
-        if not exists(name):
-            name = f'{sys.argv[1]}champions/{unit.id_name}.png'
+        name = Path(f'{sys.argv[1]}champions') / f'{unit.name}.png'
+        if not name.is_file():
+            name = str(Path(f'{sys.argv[1]}champions') / f'{unit.id_name}.png')
+        name = str(name)
 
         splash = QLabel(self)
         splash_map = QPixmap(name).scaled(SCALED_SPLASH_SIZE[0], \
@@ -149,7 +151,7 @@ class Menu(QMainWindow):
 
         # Label background color (rarity)
         label_background = QLabel(self)
-        label_map = QPixmap(f'rarities/{unit.cost}.png').scaled(*LABEL_SIZE)
+        label_map = QPixmap(str(Path('rarities') / f'{unit.cost}.png')).scaled(*LABEL_SIZE)
         label_background.setPixmap(label_map)
         label_background.resize(*LABEL_SIZE)
         label_background.move(col, LABEL_ROW)
@@ -213,7 +215,7 @@ class Menu(QMainWindow):
         self.shop[index] = Unit(None, 'BLANK', None, None)
 
         # Remove widgets from display
-        initial_map = QPixmap('rarities/blank.png')
+        initial_map = QPixmap(str(Path('rarities') / 'blank.png'))
         for idx, widget in enumerate(self.displays[index]):
             # Rescale splash and label
             if idx == 0:
