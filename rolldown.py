@@ -12,7 +12,7 @@ import sys
 # pylint: disable=import-error
 from termcolor import colored
 if os.name == 'nt':
-    from msvcrt import getch
+    from msvcrt import getwch as getch
 else:
     from getch import getch
 
