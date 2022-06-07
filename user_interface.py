@@ -53,8 +53,8 @@ class Menu(QMainWindow):
 
     def start_game(self):
         """Start the rolldown."""
-        background = str(Path('boards') / 'Pink_TFT.jpg')
-        self.setStyleSheet(f'QMainWindow {{border-image: url({background}); \
+        background = str(Path('Boards') / 'Pink_TFT.jpg')
+        self.setStyleSheet(f'centralwidget {{border-image: url({background}); \
             background-position: center; \
             background-repeat: no-repeat;}}')
 
@@ -279,7 +279,6 @@ if __name__ == '__main__':
         print('Usage: python user_interface.py {input_dir}')
         sys.exit()
 
-    # Set background
     app = QApplication(sys.argv)
 
     # Start application
