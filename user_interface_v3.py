@@ -12,8 +12,7 @@ from pathlib import Path
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-# Path to local resources
-GEN_ASSETS = Path('General Assets')
+from constants import GEN_ASSETS
 
 
 def pathlib_path(root, ext):
@@ -403,7 +402,8 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.Reroll)
         self.gridLayout_2.addWidget(self.Reroll_Level, 1, 0, 1, 1)
 
-        gold_and_level = (self.Level_Up, self.Reroll)
+        # TODO: Add leveling
+        gold_and_level = self.Gold_Label
 
         # Shop
         self.Shop = QtWidgets.QGroupBox(self.UI_Box)
@@ -441,6 +441,7 @@ class Ui_MainWindow(object):
         self.Shop_Cost_1.setGeometry(QtCore.QRect(110, 170, 81, 41))
         self.Shop_Cost_1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.Shop_Cost_1.setObjectName("Shop_Cost_1")
+        self.Shop_Cost_1.setStyleSheet('color: gold')
         self.horizontalLayout.addWidget(self.Slot_1)
 
         shop.append(self.Slot_1)
@@ -467,6 +468,7 @@ class Ui_MainWindow(object):
         self.Shop_Cost_2.setGeometry(QtCore.QRect(110, 170, 81, 41))
         self.Shop_Cost_2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.Shop_Cost_2.setObjectName("Shop_Cost_2")
+        self.Shop_Cost_2.setStyleSheet('color: gold')
         self.Shop_Rarity_2.raise_()
         self.Shop_Icon_2.raise_()
         self.Shop_Cost_2.raise_()
@@ -492,6 +494,7 @@ class Ui_MainWindow(object):
         self.Shop_Cost_3.setGeometry(QtCore.QRect(110, 170, 81, 41))
         self.Shop_Cost_3.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.Shop_Cost_3.setObjectName("Shop_Cost_3")
+        self.Shop_Cost_3.setStyleSheet('color: gold')
         self.Shop_Rarity_3 = QtWidgets.QLabel(self.Slot_3)
         self.Shop_Rarity_3.setGeometry(QtCore.QRect(10, 160, 191, 61))
         self.Shop_Rarity_3.setText("")
@@ -522,6 +525,7 @@ class Ui_MainWindow(object):
         self.Shop_Cost_4.setGeometry(QtCore.QRect(110, 170, 81, 41))
         self.Shop_Cost_4.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.Shop_Cost_4.setObjectName("Shop_Cost_4")
+        self.Shop_Cost_4.setStyleSheet('color: gold')
         self.Shop_Rarity_4 = QtWidgets.QLabel(self.Slot_4)
         self.Shop_Rarity_4.setGeometry(QtCore.QRect(10, 160, 191, 61))
         self.Shop_Rarity_4.setText("")
@@ -552,6 +556,7 @@ class Ui_MainWindow(object):
         self.Shop_Cost_5.setGeometry(QtCore.QRect(110, 170, 81, 41))
         self.Shop_Cost_5.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.Shop_Cost_5.setObjectName("Shop_Cost_5")
+        self.Shop_Cost_5.setStyleSheet('color: gold')
         self.Shop_Rarity_5 = QtWidgets.QLabel(self.Slot_5)
         self.Shop_Rarity_5.setGeometry(QtCore.QRect(10, 160, 191, 61))
         self.Shop_Rarity_5.setText("")
@@ -1025,7 +1030,7 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
+        # self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
         return shop, traits, units, gold_and_level

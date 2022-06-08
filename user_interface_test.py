@@ -2,14 +2,17 @@
 
 import sys
 from pathlib import Path
+from functools import partial
 
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QInputDialog
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt, QProcess
 
 
-from user_interface_v3 import Ui_MainWindow, GEN_ASSETS
+from user_interface_v3 import Ui_MainWindow
 from rolldown import Game
+from constants import GEN_ASSETS
 
 
 class MainWindow(QMainWindow):
@@ -27,7 +30,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
 
         # Access to UI widgets
-        self.shop, self.traits, self.units, self.gold_and_level = self.ui.setupUi(self, input_dir)
+        self.shop, self.traits, self.units, self.gold = self.ui.setupUi(self, input_dir)
 
         # Start the rolldown
         self.start_game()
@@ -49,12 +52,59 @@ class MainWindow(QMainWindow):
 
     def start_game(self):
         """Start the rolldown."""
-        self.display_shop(first_roll=True)
+        # Attach buy function to units in shop
+        for idx, slot in enumerate(self.shop):
+            source = partial(self.buy_unit, source_object=idx)
+            slot.mouseReleaseEvent = source
 
-    def display_shop(self, first_roll=False):
+        # Display first shop
+        self.display_new_shop(first_roll=True)
+
+    def reroll(self):
+        """Reroll the shop."""
+        # Check if roll is allowed
+        if self.game.gold < 2:
+            return
+
+        # Display new shop
+        self.display_new_shop()
+
+    def keyReleaseEvent(self, event):
+        """Capture user input."""
+        super().keyReleaseEvent(event)
+
+        # Ensure that key is only registered once
+        if event.isAutoRepeat():
+            return
+
+        # Quit
+        if event.key() == Qt.Key_M:
+            print(self.game)
+            QApplication.quit()
+
+        # Reroll
+        if event.key() == Qt.Key_D:
+            self.reroll()
+
+        # Restart
+        if event.key() == Qt.Key_P:
+            QApplication.quit()
+            QProcess.startDetached(sys.executable, sys.argv)
+
+    def display_gold(self):
+        """Display the current gold/exp the player has."""
+        self.gold.setText(f'Gold: {self.game.gold}')
+
+    def display_new_shop(self, first_roll=False):
         """Display the current shop."""
+        # Assert that player has enough gold to roll
+        assert first_roll or self.game.gold >= 2, 'ASSERTION ERROR: NOT ENOUGH GOLD TO ROLL'
+
         # Roll for units
         current_roll = self.game.roll(first_roll)
+
+        # Update gold
+        self.display_gold()
 
         # Display rolled units
         for idx, unit in enumerate(current_roll):
@@ -79,7 +129,10 @@ class MainWindow(QMainWindow):
             # Display unit cost
             cost_label = self.shop[idx].findChild(QLabel, f'Shop_Cost_{idx + 1}')
             cost_label.setText(f'{unit.cost}G')
-            cost_label.setStyleSheet('color: gold')
+
+    def buy_unit(self, event, source_object=None):
+        """Buy a unit from the shop."""
+        print(source_object)
 
 
 if __name__ == "__main__":
