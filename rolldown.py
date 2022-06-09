@@ -204,7 +204,10 @@ class Team:
             return
 
         # Remove the unit from the champion pool
-        CHAMPION_POOL[new_unit.cost].remove(new_unit)
+        try:
+            CHAMPION_POOL[new_unit.cost].remove(new_unit)
+        except ValueError:
+            pass
 
         # If it's a unique unit, add its traits to the team
         if new_unit not in self.team:

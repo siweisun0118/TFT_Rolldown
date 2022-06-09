@@ -8,7 +8,6 @@ from functools import partial
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QInputDialog
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QProcess
-from numpy import isin
 
 
 from user_interface_v3 import Ui_MainWindow, pathlib_path
