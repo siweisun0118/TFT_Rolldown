@@ -103,7 +103,7 @@
   },
   {
     "key": "Set5_Cannoneer",
-    "name": "Cannoneers",
+    "name": "Cannoneer",
     "description": "Every 5th Cannoneer attack is replaced with a cannon shot that deals a percent of that attack's damage in an explosion around the target as physical damage.",
     "type": "class",
     "sets": [

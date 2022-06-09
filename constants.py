@@ -1,4 +1,5 @@
 """File containing all global constants used by rolldown."""
+from pathlib import Path
 
 
 # List of all champions in pool by cost
@@ -31,5 +32,22 @@ LEVEL_ODDS = {
 }
 
 
+# EXP needed to level
+LEVEL_EXP = {
+    1: 2,
+    2: 2,
+    3: 6,
+    4: 10,
+    5: 20,
+    6: 36,
+    7: 50,
+    8: 80,
+    9: 100
+}
+
+
 # Size of splash art
 SPLASH_SIZE = (1006, 596)
+
+# Path to local resources
+GEN_ASSETS = Path('General Assets')

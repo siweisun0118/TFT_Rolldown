@@ -19,7 +19,7 @@ else:
 
 # Local files
 # pylint: disable=wrong-import-position
-from constants import CHAMPION_POOL, CHAMPION_AMOUNTS, LEVEL_ODDS
+from constants import CHAMPION_POOL, CHAMPION_AMOUNTS, LEVEL_ODDS, LEVEL_EXP
 
 
 # random.seed(112358)
@@ -168,14 +168,7 @@ class Team:
             ' (sells for ' + str(unit.sell_cost) + ')\n' for idx, unit in enumerate(self.team)]
 
         # Represent the traits
-        str_traits = ''
-        for trait, amount in self.traits.items():
-            if amount >= self.traits_dict[trait].breakpoints[-1]:
-                last_break = str(self.traits_dict[trait].breakpoints[-1])
-                str_traits += str(trait) + ' '  + str(amount) + '/' + last_break + '\n'
-            else:
-                next_bp = next(bp for bp in self.traits_dict[trait].breakpoints if bp >= amount)
-                str_traits += str(trait) + ' '  + str(amount) + '/' + str(next_bp) + '\n'
+        str_traits = '\n'.join(self.get_traits())
 
         # Put it all together
         units = "\nThis is the current team:\n" + ''.join(str_team) + '\n'
@@ -284,11 +277,16 @@ class Team:
 
     def get_traits(self):
         """Extract the activated traits from a team."""
-        activated_traits = []
+        str_traits = []
         for trait, amount in self.traits.items():
-            activated_traits.append(trait, amount)
+            if amount >= self.traits_dict[trait].breakpoints[-1]:
+                last_break = str(self.traits_dict[trait].breakpoints[-1])
+                str_traits.append(str(trait) + ' '  + str(amount) + '/' + last_break)
+            else:
+                next_bp = next(bp for bp in self.traits_dict[trait].breakpoints if bp >= amount)
+                str_traits.append(str(trait) + ' '  + str(amount) + '/' + str(next_bp))
 
-        return activated_traits
+        return str_traits
 
 
 class Game:
@@ -306,6 +304,7 @@ class Game:
         # This is set by user input in self.rolldown()
         self.gold = gold
         self.level = level
+        self.exp = 0
 
     def __str__(self):
         """Display the current team"""
@@ -356,7 +355,9 @@ class Game:
         print("Use number keys to buy, 'd' to reroll, and 's' to see current team and traits.")
         print("Press 'p' to restart.")
         print("Press 'm' to quit.")
+        print("Press 'f' to buy exp (4 gold for 4 exp).")
         print('Your current gold amount is:', self.gold)
+        print(f'Your current level is: {self.level}   {self.exp} / {LEVEL_EXP[self.level]}')
         if self.gold < 2:
             print('You do not have enough gold to reroll!')
 
@@ -386,6 +387,10 @@ class Game:
 
     def sell_unit(self, index):
         """Sell a unit from the team."""
+        # Add gold equal to sell cost of unit
+        self.gold += self.team.team[index].sell_cost
+
+        # Remove unit from team
         self.team.remove_unit(index)
 
     def check_team(self):
@@ -400,7 +405,8 @@ class Game:
         while True:
             next_in_sell = input("Use numbers + 'enter' to sell.\n" +
                 "Press any other key to see the shop again.\n" +
-                "Your current gold amount is: " + str(self.gold) + '\n')
+                "Your current gold amount is: " + str(self.gold) + '\n' +
+                f'Your current level is: {self.level}   {self.exp} / {LEVEL_EXP[self.level]}\n')
             try:
                 # If user does not attempt to sell a valid champion, return to shop
                 index_to_sell = int(next_in_sell)
@@ -409,7 +415,6 @@ class Game:
 
                 # Otherwise, sell the unit and add its sell cost to your total gold
                 # Remember that the shop is 1 indexed but lists are 0 indexed
-                self.gold += self.team.team[index_to_sell - 1].sell_cost
                 self.sell_unit(index_to_sell - 1)
 
                 # Clear console
@@ -421,6 +426,21 @@ class Game:
             # If user enters a value that is not an int, return to shop
             except ValueError:
                 break
+
+    def buy_exp(self):
+        """Buy experience to level up."""
+        # Can't buy exp if not enough gold or level 10
+        if self.gold < 4 or self.level > 9:
+            return
+
+        # Add exp, subtract gold
+        self.exp += 4
+        self.gold -= 4
+
+        # Check for level up
+        while self.exp >= LEVEL_EXP[self.level]:
+            self.exp -= LEVEL_EXP[self.level]
+            self.level += 1
 
     def rolldown(self):
         """Simulate the rolldown."""
@@ -466,8 +486,12 @@ class Game:
                 if next_in == 'd':
                     break
 
+                # Buy EXP
+                if next_in == 'f':
+                    self.buy_exp()
+
                 # Buy a unit using numbers
-                if next_in in ['1', '2', '3', '4', '5']:
+                elif next_in in ['1', '2', '3', '4', '5']:
                     self.buy_unit(cur_roll, next_in)
 
                 # Display current team using 's' (also allows selling)

@@ -10,8 +10,8 @@
     "championId": "TFT5_Aatrox",
     "cost": 1,
     "traits": [
-      "Set5_Redeemed",
-      "Set5_Legionnaire"
+      "Redeemed",
+      "Legionnaire"
     ]
   },
   {
@@ -19,8 +19,8 @@
     "championId": "TFT5_Akshan",
     "cost": 5,
     "traits": [
-      "Set5_Sentinel",
-      "Set5_Ranger"
+      "Sentinel",
+      "Ranger"
     ]
   },
   {
@@ -28,8 +28,8 @@
     "championId": "TFT5_Aphelios",
     "cost": 4,
     "traits": [
-      "Set5_Nightbringer",
-      "Set5_Ranger"
+      "Nightbringer",
+      "Ranger"
     ]
   },
   {
@@ -37,8 +37,8 @@
     "championId": "TFT5_Ashe",
     "cost": 3,
     "traits": [
-      "Set5_Draconic",
-      "Set5_Ranger"
+      "Draconic",
+      "Ranger"
     ]
   },
   {
@@ -46,8 +46,8 @@
     "championId": "TFT5_Brand",
     "cost": 2,
     "traits": [
-      "Set5_Abomination",
-      "Set5_Spellweaver"
+      "Abomination",
+      "Spellweaver"
     ]
   },
   {
@@ -55,8 +55,8 @@
     "championId": "TFT5_Diana",
     "cost": 4,
     "traits": [
-      "Set5_Nightbringer",
-      "Set5_Assassin"
+      "Nightbringer",
+      "Assassin"
     ]
   },
   {
@@ -64,8 +64,8 @@
     "championId": "TFT5_Draven",
     "cost": 4,
     "traits": [
-      "Set5_Forgotten",
-      "Set5_Legionnaire"
+      "Forgotten",
+      "Legionnaire"
     ]
   },
   {
@@ -73,9 +73,9 @@
     "championId": "TFT5_Fiddlesticks",
     "cost": 4,
     "traits": [
-      "Set5_Abomination",
-      "Set5_Revenant",
-      "Set5_Mystic"
+      "Abomination",
+      "Revenant",
+      "Mystic"
     ]
   },
   {
@@ -83,9 +83,9 @@
     "championId": "TFT5_Galio",
     "cost": 4,
     "traits": [
-      "Set5_Draconic",
-      "Set5_Sentinel",
-      "Set5_Knight"
+      "Draconic",
+      "Sentinel",
+      "Knight"
     ]
   },
   {
@@ -93,9 +93,9 @@
     "championId": "TFT5_Garen",
     "cost": 5,
     "traits": [
-      "Set5_Victorious",
-      "Set5_Dawnbringer",
-      "Set5_Knight"
+      "Victorious",
+      "Dawnbringer",
+      "Knight"
     ]
   },
   {
@@ -103,8 +103,8 @@
     "championId": "TFT5_Gragas",
     "cost": 1,
     "traits": [
-      "Set5_Dawnbringer",
-      "Set5_Brawler"
+      "Dawnbringer",
+      "Brawler"
     ]
   },
   {
@@ -112,8 +112,8 @@
     "championId": "TFT5_Gwen",
     "cost": 5,
     "traits": [
-      "Set5_Inanimate",
-      "Set5_Mystic"
+      "Inanimate",
+      "Mystic"
     ]
   },
   {
@@ -121,8 +121,8 @@
     "championId": "TFT5_Hecarim",
     "cost": 2,
     "traits": [
-      "Set5_Forgotten",
-      "Set5_Cavalier"
+      "Forgotten",
+      "Cavalier"
     ]
   },
   {
@@ -130,9 +130,9 @@
     "championId": "TFT5_Heimerdinger",
     "cost": 5,
     "traits": [
-      "Set5_Draconic",
-      "Set5_Renewer",
-      "Set5_Caretaker"
+      "Draconic",
+      "Renewer",
+      "Caretaker"
     ]
   },
   {
@@ -140,9 +140,9 @@
     "championId": "TFT5_Ivern",
     "cost": 4,
     "traits": [
-      "Set5_Revenant",
-      "Set5_Invoker",
-      "Set5_Renewer"
+      "Revenant",
+      "Invoker",
+      "Renewer"
     ]
   },
   {
@@ -150,9 +150,9 @@
     "championId": "TFT5_Irelia",
     "cost": 2,
     "traits": [
-      "Set5_Sentinel",
-      "Set5_Skirmisher",
-      "Set5_Legionnaire"
+      "Sentinel",
+      "Skirmisher",
+      "Legionnaire"
     ]
   },
   {
@@ -160,8 +160,8 @@
     "championId": "TFT5_Jax",
     "cost": 4,
     "traits": [
-      "Set5_Ironclad",
-      "Set5_Skirmisher"
+      "Ironclad",
+      "Skirmisher"
     ]
   },
   {
@@ -169,8 +169,8 @@
     "championId": "TFT5_Kalista",
     "cost": 1,
     "traits": [
-      "Set5_Abomination",
-      "Set5_Legionnaire"
+      "Abomination",
+      "Legionnaire"
     ]
   },
   {
@@ -178,8 +178,8 @@
     "championId": "TFT5_Karma",
     "cost": 4,
     "traits": [
-      "Set5_Dawnbringer",
-      "Set5_Invoker"
+      "Dawnbringer",
+      "Invoker"
     ]
   },
   {
@@ -187,8 +187,8 @@
     "championId": "TFT5_Kayle",
     "cost": 5,
     "traits": [
-      "Set5_Redeemed",
-      "Set5_Legionnaire"
+      "Redeemed",
+      "Legionnaire"
     ]
   },
   {
@@ -196,8 +196,8 @@
     "championId": "TFT5_Kennen",
     "cost": 2,
     "traits": [
-      "Set5_Hellion",
-      "Set5_Skirmisher"
+      "Hellion",
+      "Skirmisher"
     ]
   },
   {
@@ -205,8 +205,8 @@
     "championId": "TFT5_Khazix",
     "cost": 1,
     "traits": [
-      "Set5_Dawnbringer",
-      "Set5_Assassin"
+      "Dawnbringer",
+      "Assassin"
     ]
   },
   {
@@ -214,8 +214,8 @@
     "championId": "TFT5_Kled",
     "cost": 1,
     "traits": [
-      "Set5_Hellion",
-      "Set5_Cavalier"
+      "Hellion",
+      "Cavalier"
     ]
   },
   {
@@ -223,8 +223,8 @@
     "championId": "TFT5_LeeSin",
     "cost": 3,
     "traits": [
-      "Set5_Nightbringer",
-      "Set5_Skirmisher"
+      "Nightbringer",
+      "Skirmisher"
     ]
   },
   {
@@ -232,8 +232,8 @@
     "championId": "TFT5_Leona",
     "cost": 1,
     "traits": [
-      "Set5_Redeemed",
-      "Set5_Knight"
+      "Redeemed",
+      "Knight"
     ]
   },
   {
@@ -241,8 +241,8 @@
     "championId": "TFT5_Lucian",
     "cost": 4,
     "traits": [
-      "Set5_Sentinel",
-      "Set5_Cannoneer"
+      "Sentinel",
+      "Cannoneer"
     ]
   },
   {
@@ -250,8 +250,8 @@
     "championId": "TFT5_Lulu",
     "cost": 3,
     "traits": [
-      "Set5_Hellion",
-      "Set5_Mystic"
+      "Hellion",
+      "Mystic"
     ]
   },
   {
@@ -259,8 +259,8 @@
     "championId": "TFT5_Lux",
     "cost": 3,
     "traits": [
-      "Set5_Redeemed",
-      "Set5_Mystic"
+      "Redeemed",
+      "Mystic"
     ]
   },
   {
@@ -268,8 +268,8 @@
     "championId": "TFT5_MissFortune",
     "cost": 3,
     "traits": [
-      "Set5_Forgotten",
-      "Set5_Cannoneer"
+      "Forgotten",
+      "Cannoneer"
     ]
   },
   {
@@ -277,8 +277,8 @@
     "championId": "TFT5_Nautilus",
     "cost": 2,
     "traits": [
-      "Set5_Ironclad",
-      "Set5_Knight"
+      "Ironclad",
+      "Knight"
     ]
   },
   {
@@ -286,8 +286,8 @@
     "championId": "TFT5_Nidalee",
     "cost": 3,
     "traits": [
-      "Set5_Dawnbringer",
-      "Set5_Skirmisher"
+      "Dawnbringer",
+      "Skirmisher"
     ]
   },
   {
@@ -295,8 +295,8 @@
     "championId": "TFT5_Nocturne",
     "cost": 3,
     "traits": [
-      "Set5_Revenant",
-      "Set5_Assassin"
+      "Revenant",
+      "Assassin"
     ]
   },
   {
@@ -304,8 +304,8 @@
     "championId": "TFT5_Nunu",
     "cost": 3,
     "traits": [
-      "Set5_Abomination",
-      "Set5_Brawler"
+      "Abomination",
+      "Brawler"
     ]
   },
   {
@@ -313,8 +313,8 @@
     "championId": "TFT5_Olaf",
     "cost": 1,
     "traits": [
-      "Set5_Sentinel",
-      "Set5_Skirmisher"
+      "Sentinel",
+      "Skirmisher"
     ]
   },
   {
@@ -322,8 +322,8 @@
     "championId": "TFT5_Poppy",
     "cost": 1,
     "traits": [
-      "Set5_Hellion",
-      "Set5_Knight"
+      "Hellion",
+      "Knight"
     ]
   },
   {
@@ -331,8 +331,8 @@
     "championId": "TFT5_Pyke",
     "cost": 2,
     "traits": [
-      "Set5_Sentinel",
-      "Set5_Assassin"
+      "Sentinel",
+      "Assassin"
     ]
   },
   {
@@ -340,8 +340,8 @@
     "championId": "TFT5_Rakan",
     "cost": 3,
     "traits": [
-      "Set5_Sentinel",
-      "Set5_Renewer"
+      "Sentinel",
+      "Renewer"
     ]
   },
   {
@@ -349,9 +349,9 @@
     "championId": "TFT5_Rell",
     "cost": 4,
     "traits": [
-      "Set5_Redeemed",
-      "Set5_Ironclad",
-      "Set5_Cavalier"
+      "Redeemed",
+      "Ironclad",
+      "Cavalier"
     ]
   },
   {
@@ -359,8 +359,8 @@
     "championId": "TFT5_Riven",
     "cost": 3,
     "traits": [
-      "Set5_Dawnbringer",
-      "Set5_Legionnaire"
+      "Dawnbringer",
+      "Legionnaire"
     ]
   },
   {
@@ -368,9 +368,9 @@
     "championId": "TFT5_Sejuani",
     "cost": 2,
     "traits": [
-      "Set5_Brawler",
-      "Set5_Nightbringer",
-      "Set5_Cavalier"
+      "Brawler",
+      "Nightbringer",
+      "Cavalier"
     ]
   },
   {
@@ -378,8 +378,8 @@
     "championId": "TFT5_Senna",
     "cost": 1,
     "traits": [
-      "Set5_Sentinel",
-      "Set5_Cannoneer"
+      "Sentinel",
+      "Cannoneer"
     ]
   },
   {
@@ -387,8 +387,8 @@
     "championId": "TFT5_Sett",
     "cost": 2,
     "traits": [
-      "Set5_Draconic",
-      "Set5_Brawler"
+      "Draconic",
+      "Brawler"
     ]
   },
   {
@@ -396,8 +396,8 @@
     "championId": "TFT5_Soraka",
     "cost": 2,
     "traits": [
-      "Set5_Dawnbringer",
-      "Set5_Renewer"
+      "Dawnbringer",
+      "Renewer"
     ]
   },
   {
@@ -405,8 +405,8 @@
     "championId": "TFT5_Syndra",
     "cost": 2,
     "traits": [
-      "Set5_Redeemed",
-      "Set5_Invoker"
+      "Redeemed",
+      "Invoker"
     ]
   },
   {
@@ -414,9 +414,9 @@
     "championId": "TFT5_Teemo",
     "cost": 5,
     "traits": [
-      "Set5_Cruel",
-      "Set5_Hellion",
-      "Set5_Invoker"
+      "Cruel",
+      "Hellion",
+      "Invoker"
     ]
   },
   {
@@ -424,8 +424,8 @@
     "championId": "TFT5_Thresh",
     "cost": 2,
     "traits": [
-      "Set5_Forgotten",
-      "Set5_Knight"
+      "Forgotten",
+      "Knight"
     ]
   },
   {
@@ -433,8 +433,8 @@
     "championId": "TFT5_Tristana",
     "cost": 2,
     "traits": [
-      "Set5_Hellion",
-      "Set5_Cannoneer"
+      "Hellion",
+      "Cannoneer"
     ]
   },
   {
@@ -442,8 +442,8 @@
     "championId": "TFT5_Udyr",
     "cost": 1,
     "traits": [
-      "Set5_Draconic",
-      "Set5_Skirmisher"
+      "Draconic",
+      "Skirmisher"
     ]
   },
   {
@@ -451,8 +451,8 @@
     "championId": "TFT5_Varus",
     "cost": 2,
     "traits": [
-      "Set5_Redeemed",
-      "Set5_Ranger"
+      "Redeemed",
+      "Ranger"
     ]
   },
   {
@@ -460,8 +460,8 @@
     "championId": "TFT5_Vayne",
     "cost": 1,
     "traits": [
-      "Set5_Forgotten",
-      "Set5_Ranger"
+      "Forgotten",
+      "Ranger"
     ]
   },
   {
@@ -469,8 +469,8 @@
     "championId": "TFT5_Velkoz",
     "cost": 4,
     "traits": [
-      "Set5_Redeemed",
-      "Set5_Spellweaver"
+      "Redeemed",
+      "Spellweaver"
     ]
   },
   {
@@ -478,9 +478,9 @@
     "championId": "TFT5_Viego",
     "cost": 5,
     "traits": [
-      "Set5_Forgotten",
-      "Set5_Skirmisher",
-      "Set5_Assassin"
+      "Forgotten",
+      "Skirmisher",
+      "Assassin"
     ]
   },
   {
@@ -488,8 +488,8 @@
     "championId": "TFT5_Vladimir",
     "cost": 1,
     "traits": [
-      "Set5_Nightbringer",
-      "Set5_Renewer"
+      "Nightbringer",
+      "Renewer"
     ]
   },
   {
@@ -497,8 +497,8 @@
     "championId": "TFT5_Volibear",
     "cost": 5,
     "traits": [
-      "Set5_Revenant",
-      "Set5_Brawler"
+      "Revenant",
+      "Brawler"
     ]
   },
   {
@@ -506,8 +506,8 @@
     "championId": "TFT5_Yasuo",
     "cost": 3,
     "traits": [
-      "Set5_Nightbringer",
-      "Set5_Legionnaire"
+      "Nightbringer",
+      "Legionnaire"
     ]
   },
   {
@@ -515,8 +515,8 @@
     "championId": "TFT5_Ziggs",
     "cost": 1,
     "traits": [
-      "Set5_Hellion",
-      "Set5_Spellweaver"
+      "Hellion",
+      "Spellweaver"
     ]
   },
   {
@@ -524,8 +524,8 @@
     "championId": "TFT5_Zyra",
     "cost": 3,
     "traits": [
-      "Set5_Draconic",
-      "Set5_Spellweaver"
+      "Draconic",
+      "Spellweaver"
     ]
   }
 ]
