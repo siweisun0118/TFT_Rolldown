@@ -379,6 +379,8 @@ class Ui_MainWindow(object):
         self.Reroll_Level.setObjectName("Reroll_Level")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.Reroll_Level)
         self.verticalLayout.setObjectName("verticalLayout")
+
+        # Gold label
         self.Gold_Label = QtWidgets.QLabel(self.Reroll_Level)
         font = QtGui.QFont()
         font.setPointSize(24)
@@ -388,22 +390,38 @@ class Ui_MainWindow(object):
         "}")
         self.Gold_Label.setObjectName("Gold_Label")
         self.verticalLayout.addWidget(self.Gold_Label)
+
+        # Level label
+        self.Level_Label = QtWidgets.QLabel(self.Reroll_Level)
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.Level_Label.setFont(font)
+        self.Level_Label.setStyleSheet("QLabel{\n"
+                "color: blue;\n"
+        "}")
+        self.Level_Label.setObjectName("Level_Label")
+        self.verticalLayout.addWidget(self.Level_Label)
+
+        # Level-up button
         self.Level_Up = QtWidgets.QLabel(self.Reroll_Level)
         self.Level_Up.setText("")
         self.Level_Up.setPixmap(QtGui.QPixmap("General Assets/Level.png"))
         self.Level_Up.setScaledContents(True)
         self.Level_Up.setObjectName("Level_Up")
         self.verticalLayout.addWidget(self.Level_Up)
+
+        # Reroll
         self.Reroll = QtWidgets.QLabel(self.Reroll_Level)
         self.Reroll.setText("")
         self.Reroll.setPixmap(QtGui.QPixmap("General Assets/Reroll.png"))
         self.Reroll.setScaledContents(True)
         self.Reroll.setObjectName("Reroll")
         self.verticalLayout.addWidget(self.Reroll)
+
         self.gridLayout_2.addWidget(self.Reroll_Level, 1, 0, 1, 1)
 
         # TODO: Add leveling
-        gold_and_level = (self.Gold_Label, self.Reroll)
+        gold_and_level = (self.Gold_Label, self.Reroll, self.Level_Label, self.Level_Up)
 
         # Shop
         self.Shop = QtWidgets.QGroupBox(self.UI_Box)
