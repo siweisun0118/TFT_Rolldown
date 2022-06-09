@@ -32,7 +32,9 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
 
         # Access to UI widgets
-        self.shop_widgets, self.traits, self.units, self.gold_label = self.ui.setupUi(self, input_dir)
+        self.shop_widgets, self.traits, self.units, gold_level = self.ui.setupUi(self, input_dir)
+        self.gold_label = gold_level[0]
+        self.reroll_label = gold_level[1]
 
         # Current shop
         self.cur_shop = None
@@ -62,10 +64,14 @@ class MainWindow(QMainWindow):
             source = partial(self.buy_unit, idx=idx)
             slot.mouseReleaseEvent = source
 
+        # Attach reroll function to reroll button
+        # TODO: Implement leveling up
+        self.reroll_label.mouseReleaseEvent = self.reroll
+
         # Display first shop
         self.display_new_shop(first_roll=True)
 
-    def reroll(self):
+    def reroll(self, event):
         """Reroll the shop."""
         # Check if roll is allowed
         if self.game.gold < 2:
@@ -89,7 +95,7 @@ class MainWindow(QMainWindow):
 
         # Reroll
         if event.key() == Qt.Key_D:
-            self.reroll()
+            self.reroll(event)
 
         # Restart
         if event.key() == Qt.Key_P:
@@ -159,7 +165,11 @@ class MainWindow(QMainWindow):
             stats_widget = self.units[idx].findChild(QLabel, f'Unit_Stats_{idx + 1}')
 
             # Display correct information
-            stats_widget.setText(str(unit.level))
+            stats_widget.setText(f'{unit.level} Star')
+
+            # Attach selling functionality
+            source = partial(self.sell_unit, idx=idx)
+            self.units[idx].mouseReleaseEvent = source
 
         # White out remaining slots
         for slot in range(len(self.game.team), 18):
@@ -170,6 +180,9 @@ class MainWindow(QMainWindow):
             # White out star level
             stats_widget = self.units[slot].findChild(QLabel, f'Unit_Stats_{slot + 1}')
             stats_widget.setText('')
+
+            # Remove selling functionality
+            self.units[slot].mouseReleaseEvent = None
 
     def display_traits(self):
         """Display the current traits on the team."""
@@ -198,14 +211,14 @@ class MainWindow(QMainWindow):
             stats_widget.setText(trait_breakpoints)
 
         # White out remaining slots
-        for slot in range(len(self.game.team), 18):
+        for slot in range(len(traits), 18):
             # White out icon
             icon_widget = self.traits[slot].findChild(QLabel, f'Trait_Icon_{slot + 1}')
             icon_widget.setPixmap(QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
 
             # White out star level
             stats_widget = self.traits[slot].findChild(QLabel, f'Trait_Amount_{slot + 1}')
-            stats_widget.setText('')
+            stats_widget.setText('   ')
 
     def buy_unit(self, event, idx):
         """Buy a unit from the shop."""
@@ -230,6 +243,19 @@ class MainWindow(QMainWindow):
         for widget in self.shop_widgets[idx].children():
             if isinstance(widget, QLabel):
                 widget.setPixmap(QPixmap(pathlib_path(GEN_ASSETS, 'blank.png')))
+
+        # Update gold count
+        self.display_gold()
+
+        # Update units
+        self.display_team()
+
+        # Update traits
+        self.display_traits()
+
+    def sell_unit(self, event, idx):
+        """Sell a unit from the team."""
+        self.game.sell_unit(idx)
 
         # Update gold count
         self.display_gold()

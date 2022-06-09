@@ -403,7 +403,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2.addWidget(self.Reroll_Level, 1, 0, 1, 1)
 
         # TODO: Add leveling
-        gold_and_level = self.Gold_Label
+        gold_and_level = (self.Gold_Label, self.Reroll)
 
         # Shop
         self.Shop = QtWidgets.QGroupBox(self.UI_Box)

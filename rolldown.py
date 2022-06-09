@@ -384,6 +384,10 @@ class Game:
 
     def sell_unit(self, index):
         """Sell a unit from the team."""
+        # Add gold equal to sell cost of unit
+        self.gold += self.team.team[index].sell_cost
+
+        # Remove unit from team
         self.team.remove_unit(index)
 
     def check_team(self):
@@ -407,7 +411,6 @@ class Game:
 
                 # Otherwise, sell the unit and add its sell cost to your total gold
                 # Remember that the shop is 1 indexed but lists are 0 indexed
-                self.gold += self.team.team[index_to_sell - 1].sell_cost
                 self.sell_unit(index_to_sell - 1)
 
                 # Clear console
