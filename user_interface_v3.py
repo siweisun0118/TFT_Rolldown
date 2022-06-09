@@ -109,7 +109,7 @@ class Ui_MainWindow(object):
         self.Unit_Stats_3 = QtWidgets.QLabel(self.Unit_3)
         self.Unit_Stats_3.setGeometry(QtCore.QRect(70, 20, 101, 31))
         self.Unit_Stats_3.setObjectName("Unit_Stats_3")
-        self.gridLayout_4.addWidget(self.Unit_3, 0, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.Unit_3, 2, 0, 1, 1)
 
         units.append(self.Unit_3)
 
@@ -126,7 +126,7 @@ class Ui_MainWindow(object):
         self.Unit_Stats_4 = QtWidgets.QLabel(self.Unit_4)
         self.Unit_Stats_4.setGeometry(QtCore.QRect(70, 20, 101, 31))
         self.Unit_Stats_4.setObjectName("Unit_Stats_4")
-        self.gridLayout_4.addWidget(self.Unit_4, 1, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.Unit_4, 3, 0, 1, 1)
 
         units.append(self.Unit_4)
 
@@ -143,7 +143,7 @@ class Ui_MainWindow(object):
         self.Unit_Stats_5 = QtWidgets.QLabel(self.Unit_5)
         self.Unit_Stats_5.setGeometry(QtCore.QRect(70, 20, 101, 31))
         self.Unit_Stats_5.setObjectName("Unit_Stats_5")
-        self.gridLayout_4.addWidget(self.Unit_5, 2, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.Unit_5, 4, 0, 1, 1)
 
         units.append(self.Unit_5)
 
@@ -160,7 +160,7 @@ class Ui_MainWindow(object):
         self.Unit_Stats_6 = QtWidgets.QLabel(self.Unit_6)
         self.Unit_Stats_6.setGeometry(QtCore.QRect(70, 20, 101, 31))
         self.Unit_Stats_6.setObjectName("Unit_Stats_6")
-        self.gridLayout_4.addWidget(self.Unit_6, 2, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.Unit_6, 5, 0, 1, 1)
 
         units.append(self.Unit_6)
 
@@ -177,7 +177,7 @@ class Ui_MainWindow(object):
         self.Unit_Stats_7 = QtWidgets.QLabel(self.Unit_7)
         self.Unit_Stats_7.setGeometry(QtCore.QRect(70, 20, 101, 31))
         self.Unit_Stats_7.setObjectName("Unit_Stats_7")
-        self.gridLayout_4.addWidget(self.Unit_7, 3, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.Unit_7, 0, 1, 1, 1)
 
         units.append(self.Unit_7)
 
@@ -194,7 +194,7 @@ class Ui_MainWindow(object):
         self.Unit_Stats_8 = QtWidgets.QLabel(self.Unit_8)
         self.Unit_Stats_8.setGeometry(QtCore.QRect(70, 20, 101, 31))
         self.Unit_Stats_8.setObjectName("Unit_Stats_8")
-        self.gridLayout_4.addWidget(self.Unit_8, 3, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.Unit_8, 1, 1, 1, 1)
 
         units.append(self.Unit_8)
 
@@ -211,7 +211,7 @@ class Ui_MainWindow(object):
         self.Unit_Stats_9 = QtWidgets.QLabel(self.Unit_9)
         self.Unit_Stats_9.setGeometry(QtCore.QRect(70, 20, 101, 31))
         self.Unit_Stats_9.setObjectName("Unit_Stats_9")
-        self.gridLayout_4.addWidget(self.Unit_9, 4, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.Unit_9, 2, 1, 1, 1)
 
         units.append(self.Unit_9)
 
@@ -228,7 +228,7 @@ class Ui_MainWindow(object):
         self.Unit_Stats_10 = QtWidgets.QLabel(self.Unit_10)
         self.Unit_Stats_10.setGeometry(QtCore.QRect(70, 20, 101, 31))
         self.Unit_Stats_10.setObjectName("Unit_Stats_10")
-        self.gridLayout_4.addWidget(self.Unit_10, 4, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.Unit_10, 3, 1, 1, 1)
 
         units.append(self.Unit_10)
 
@@ -245,7 +245,7 @@ class Ui_MainWindow(object):
         self.Unit_Stats_11 = QtWidgets.QLabel(self.Unit_11)
         self.Unit_Stats_11.setGeometry(QtCore.QRect(70, 20, 101, 31))
         self.Unit_Stats_11.setObjectName("Unit_Stats_11")
-        self.gridLayout_4.addWidget(self.Unit_11, 5, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.Unit_11, 4, 1, 1, 1)
 
         units.append(self.Unit_11)
 

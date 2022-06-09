@@ -8,10 +8,11 @@ from functools import partial
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QInputDialog
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QProcess
+from numpy import isin
 
 
-from user_interface_v3 import Ui_MainWindow
-from rolldown import Game
+from user_interface_v3 import Ui_MainWindow, pathlib_path
+from rolldown import Game, Unit
 from constants import GEN_ASSETS
 
 
@@ -19,8 +20,9 @@ class MainWindow(QMainWindow):
     """Main UI Window."""
     def __init__(self, input_dir):
         super(MainWindow, self).__init__()
+        self.game = None
 
-        # Input director
+        # Input directory
         self.input_dir = Path(input_dir)
 
         # Take in inputs
@@ -30,7 +32,10 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
 
         # Access to UI widgets
-        self.shop, self.traits, self.units, self.gold = self.ui.setupUi(self, input_dir)
+        self.shop_widgets, self.traits, self.units, self.gold_label = self.ui.setupUi(self, input_dir)
+
+        # Current shop
+        self.cur_shop = None
 
         # Start the rolldown
         self.start_game()
@@ -53,8 +58,8 @@ class MainWindow(QMainWindow):
     def start_game(self):
         """Start the rolldown."""
         # Attach buy function to units in shop
-        for idx, slot in enumerate(self.shop):
-            source = partial(self.buy_unit, source_object=idx)
+        for idx, slot in enumerate(self.shop_widgets):
+            source = partial(self.buy_unit, idx=idx)
             slot.mouseReleaseEvent = source
 
         # Display first shop
@@ -93,7 +98,7 @@ class MainWindow(QMainWindow):
 
     def display_gold(self):
         """Display the current gold/exp the player has."""
-        self.gold.setText(f'Gold: {self.game.gold}')
+        self.gold_label.setText(f'Gold: {self.game.gold}')
 
     def display_new_shop(self, first_roll=False):
         """Display the current shop."""
@@ -101,15 +106,15 @@ class MainWindow(QMainWindow):
         assert first_roll or self.game.gold >= 2, 'ASSERTION ERROR: NOT ENOUGH GOLD TO ROLL'
 
         # Roll for units
-        current_roll = self.game.roll(first_roll)
+        self.cur_shop = self.game.roll(first_roll)
 
         # Update gold
         self.display_gold()
 
         # Display rolled units
-        for idx, unit in enumerate(current_roll):
+        for idx, unit in enumerate(self.cur_shop):
             # Display unit splash
-            splash_label = self.shop[idx].findChild(QLabel, f'Shop_Icon_{idx + 1}')
+            splash_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Icon_{idx + 1}')
             # Get name of file
             name = self.input_dir / 'champions' / f'{unit.name}.png'
             if not name.is_file():
@@ -118,22 +123,122 @@ class MainWindow(QMainWindow):
             splash_label.setPixmap(splash)
 
             # Display unit rarity
-            rarity_label = self.shop[idx].findChild(QLabel, f'Shop_Rarity_{idx + 1}')
+            rarity_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Rarity_{idx + 1}')
             rarity = QPixmap(str(GEN_ASSETS / 'rarities' / f'{unit.cost}.png'))
             rarity_label.setPixmap(rarity)
 
             # Display unit name
-            name_label = self.shop[idx].findChild(QLabel, f'Shop_Name_{idx + 1}')
+            name_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Name_{idx + 1}')
             name_label.setText(unit.name)
 
             # Display unit cost
-            cost_label = self.shop[idx].findChild(QLabel, f'Shop_Cost_{idx + 1}')
+            cost_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Cost_{idx + 1}')
             cost_label.setText(f'{unit.cost}G')
 
-    def buy_unit(self, event, source_object=None):
-        """Buy a unit from the shop."""
-        print(source_object)
+    def display_team(self):
+        """Displays all the units currently bought."""
+        # For every unit on the team
+        for idx, unit in enumerate(self.game.team.team):
+            # Can't display more than 18 units at once
+            if idx > 17:
+                return
 
+            # Find the icon widget
+            icon_widget = self.units[idx].findChild(QLabel, f'Unit_Icon_{idx + 1}')
+
+            # Get the splash
+            name = self.input_dir / 'champions' / f'{unit.name}.png'
+            if not name.is_file():
+                name = self.input_dir / 'champions' / f'{unit.id_name}.png'
+            splash = QPixmap(str(name))
+
+            # Set label to splash
+            icon_widget.setPixmap(splash)
+
+            # Find the star level text widget
+            stats_widget = self.units[idx].findChild(QLabel, f'Unit_Stats_{idx + 1}')
+
+            # Display correct information
+            stats_widget.setText(str(unit.level))
+
+        # White out remaining slots
+        for slot in range(len(self.game.team), 18):
+            # White out icon
+            icon_widget = self.units[slot].findChild(QLabel, f'Unit_Icon_{slot + 1}')
+            icon_widget.setPixmap(QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
+
+            # White out star level
+            stats_widget = self.units[slot].findChild(QLabel, f'Unit_Stats_{slot + 1}')
+            stats_widget.setText('')
+
+    def display_traits(self):
+        """Display the current traits on the team."""
+        # For every trait on the team
+        traits = self.game.team.get_traits()
+        for idx, trait in enumerate(traits):
+            # Can't display more than 18 traits at once
+            if idx > 17:
+                return
+
+            # Find the icon widget
+            icon_widget = self.traits[idx].findChild(QLabel, f'Trait_Icon_{idx + 1}')
+
+            # Get the icon
+            trait_name, trait_breakpoints = trait.split(' ', 1)
+            name = self.input_dir / 'traits' / f'{trait_name}.png'
+            splash = QPixmap(str(name))
+
+            # Set label to splash
+            icon_widget.setPixmap(splash)
+
+            # Find the star level text widget
+            stats_widget = self.traits[idx].findChild(QLabel, f'Trait_Amount_{idx + 1}')
+
+            # Display correct information
+            stats_widget.setText(trait_breakpoints)
+
+        # White out remaining slots
+        for slot in range(len(self.game.team), 18):
+            # White out icon
+            icon_widget = self.traits[slot].findChild(QLabel, f'Trait_Icon_{slot + 1}')
+            icon_widget.setPixmap(QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
+
+            # White out star level
+            stats_widget = self.traits[slot].findChild(QLabel, f'Trait_Amount_{slot + 1}')
+            stats_widget.setText('')
+
+    def buy_unit(self, event, idx):
+        """Buy a unit from the shop."""
+        assert isinstance(idx, int)
+
+        # Add unit to team
+        # Cannot purchase empty slots
+        if self.cur_shop[idx].name == 'BLANK':
+            return
+
+        # Check if enough gold is available to purchase the unit
+        if self.game.gold < self.cur_shop[idx].cost:
+            return
+
+        # Add unit to team (shop needs to be 1-indexed)
+        self.game.buy_unit(self.cur_shop, idx + 1)
+
+        # Replace unit with blank
+        self.cur_shop[idx] = Unit(None, 'BLANK', None, None)
+
+        # Replace labels
+        for widget in self.shop_widgets[idx].children():
+            if isinstance(widget, QLabel):
+                widget.setPixmap(QPixmap(pathlib_path(GEN_ASSETS, 'blank.png')))
+
+        # Update gold count
+        self.display_gold()
+
+        # Update units
+        self.display_team()
+
+        # Update traits
+        self.display_traits()
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

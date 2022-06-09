@@ -168,14 +168,7 @@ class Team:
             ' (sells for ' + str(unit.sell_cost) + ')\n' for idx, unit in enumerate(self.team)]
 
         # Represent the traits
-        str_traits = ''
-        for trait, amount in self.traits.items():
-            if amount >= self.traits_dict[trait].breakpoints[-1]:
-                last_break = str(self.traits_dict[trait].breakpoints[-1])
-                str_traits += str(trait) + ' '  + str(amount) + '/' + last_break + '\n'
-            else:
-                next_bp = next(bp for bp in self.traits_dict[trait].breakpoints if bp >= amount)
-                str_traits += str(trait) + ' '  + str(amount) + '/' + str(next_bp) + '\n'
+        str_traits = '\n'.join(self.get_traits())
 
         # Put it all together
         units = "\nThis is the current team:\n" + ''.join(str_team) + '\n'
@@ -284,11 +277,16 @@ class Team:
 
     def get_traits(self):
         """Extract the activated traits from a team."""
-        activated_traits = []
+        str_traits = []
         for trait, amount in self.traits.items():
-            activated_traits.append(trait, amount)
+            if amount >= self.traits_dict[trait].breakpoints[-1]:
+                last_break = str(self.traits_dict[trait].breakpoints[-1])
+                str_traits.append(str(trait) + ' '  + str(amount) + '/' + last_break)
+            else:
+                next_bp = next(bp for bp in self.traits_dict[trait].breakpoints if bp >= amount)
+                str_traits.append(str(trait) + ' '  + str(amount) + '/' + str(next_bp))
 
-        return activated_traits
+        return str_traits
 
 
 class Game:
