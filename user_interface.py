@@ -345,6 +345,7 @@ if __name__ == "__main__":
 
     window = MainWindow(sys.argv[1])
     window.setFixedSize(window.size())
-    window.showMaximized()
+    window.move(0, 0)
+    window.show()
 
     sys.exit(app.exec())
