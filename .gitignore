@@ -4,3 +4,6 @@ __pycache__
 !packages.sh
 generate.py
 *rc.py
+.pylintrc
+resources.qrc
+user_interface_v3.ui
