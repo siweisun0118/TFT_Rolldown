@@ -40,6 +40,27 @@ class MainWindow(QMainWindow):
         # Current shop
         self.cur_shop = None
 
+        # Attach trait labels to shop_widgets
+        for idx, widget in enumerate(self.shop_widgets):
+            # Unit can have up to 3 traits
+            for i in range(3):
+                splash_label = widget.findChild(QLabel, f'Shop_Icon_{idx + 1}')
+
+                # Display trait icon
+                trait_icon = QLabel(splash_label)
+                trait_icon.setObjectName(f'Shop_Trait_Icon_{idx}_{i}')
+                trait_icon.setFixedSize(20, 20)
+                trait_icon.move(8, 25 + i * 40)
+                trait_icon.setScaledContents(True)
+
+                # Display trait name
+                trait_label = QLabel(splash_label)
+                trait_label.setStyleSheet('color: rgb(210, 210, 210); font-weight: bold')
+                trait_label.setText('')
+                trait_label.setObjectName(f'Shop_Trait_{idx}_{i}')
+                trait_label.setFixedSize(80, 30)
+                trait_label.move(30, 20 + i * 40)
+
         # Start the rolldown
         self.start_game()
 
@@ -164,6 +185,27 @@ class MainWindow(QMainWindow):
             cost_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Cost_{idx + 1}')
             cost_label.setText(f'{unit.cost}G')
 
+            # Display unit traits
+            for i, trait in enumerate(unit.traits):
+                # Display trait icon
+                trait_icon = splash_label.findChild(QLabel, f'Shop_Trait_Icon_{idx}_{i}')
+                icon = QPixmap(str(self.input_dir / 'traits' / f'{trait}.png'))
+                trait_icon.setPixmap(icon)
+
+                # Display trait name
+                trait_label = splash_label.findChild(QLabel, f'Shop_Trait_{idx}_{i}')
+                trait_label.setText(trait)
+
+            # Only display as many traits as needed
+            for i in range(len(unit.traits), 3):
+                # Clear trait icon
+                trait_icon = splash_label.findChild(QLabel, f'Shop_Trait_Icon_{idx}_{i}')
+                trait_icon.setPixmap(QPixmap())
+
+                # Clear trait name
+                trait_label = splash_label.findChild(QLabel, f'Shop_Trait_{idx}_{i}')
+                trait_label.setText('')
+
     def display_team(self):
         """Displays all the units currently bought."""
         # For every unit on the team
@@ -265,7 +307,12 @@ class MainWindow(QMainWindow):
         # Replace labels
         for widget in self.shop_widgets[idx].children():
             if isinstance(widget, QLabel):
+                # Replace slot with blank
                 widget.setPixmap(QPixmap(pathlib_path(GEN_ASSETS, 'blank.png')))
+
+                # Clear out trait information
+                for child in widget.children():
+                    child.setPixmap(QPixmap())
 
         # Update gold count
         self.display_gold()

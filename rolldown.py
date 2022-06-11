@@ -442,6 +442,13 @@ class Game:
 
         # Check for level up
         while self.exp >= LEVEL_EXP[self.level]:
+            # If leveling to 10, break
+            if self.level == 9:
+                self.level += 1
+                self.exp = 0
+                break
+
+            # Increment level by 1 and decrease exp
             self.exp -= LEVEL_EXP[self.level]
             self.level += 1
 
