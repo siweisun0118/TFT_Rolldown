@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 from functools import partial
 
-
+# pylint: disable=no-name-in-module
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QInputDialog
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QProcess
@@ -18,7 +18,7 @@ from constants import GEN_ASSETS, LEVEL_EXP
 class MainWindow(QMainWindow):
     """Main UI Window."""
     def __init__(self, input_dir):
-        super(MainWindow, self).__init__()
+        super().__init__()
         self.game = None
 
         # Input directory
@@ -28,10 +28,10 @@ class MainWindow(QMainWindow):
         self.take_inputs()
 
         # Start main UI window
-        self.ui = Ui_MainWindow()
+        self.u_i = Ui_MainWindow()
 
         # Access to UI widgets
-        self.shop_widgets, self.traits, self.units, gold_level = self.ui.setupUi(self, input_dir)
+        self.shop_widgets, self.traits, self.units, gold_level = self.u_i.setupUi(self, input_dir)
         self.gold_label = gold_level[0]
         self.reroll_label = gold_level[1]
         self.level_label = gold_level[2]
@@ -96,6 +96,7 @@ class MainWindow(QMainWindow):
         self.display_exp()
         self.display_new_shop(first_roll=True)
 
+    # pylint: disable=unused-argument
     def reroll(self, event):
         """Reroll the shop."""
         # Check if roll is allowed
@@ -105,6 +106,7 @@ class MainWindow(QMainWindow):
         # Display new shop
         self.display_new_shop()
 
+    # pylint: disable=unused-argument
     def buy_exp(self, event):
         """Buy exp."""
         # Check if enough gold
@@ -116,6 +118,7 @@ class MainWindow(QMainWindow):
         self.display_exp()
         self.display_gold()
 
+    # pylint: disable=unused-argument, invalid-name
     def keyReleaseEvent(self, event):
         """Capture user input."""
         super().keyReleaseEvent(event)
@@ -148,7 +151,8 @@ class MainWindow(QMainWindow):
 
     def display_exp(self):
         """Display the current level and exp the player has."""
-        self.level_label.setText(f'Level: {self.game.level}  {self.game.exp} / {LEVEL_EXP[self.game.level]}')
+        exp = f'Level: {self.game.level}  {self.game.exp} / {LEVEL_EXP[self.game.level]}'
+        self.level_label.setText(exp)
 
     def display_new_shop(self, first_roll=False):
         """Display the current shop."""
@@ -169,8 +173,7 @@ class MainWindow(QMainWindow):
             name = self.input_dir / 'champions' / f'{unit.name}.png'
             if not name.is_file():
                 name = self.input_dir / 'champions' / f'{unit.id_name}.png'
-            splash = QPixmap(str(name))
-            splash_label.setPixmap(splash)
+            splash_label.setPixmap(QPixmap(str(name)))
 
             # Display unit rarity
             rarity_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Rarity_{idx + 1}')

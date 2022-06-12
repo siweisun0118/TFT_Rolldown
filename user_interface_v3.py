@@ -1,3 +1,6 @@
+"""Generate the UI for rolldown."""
+# pylint: disable=all
+
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'user_interface_v3.ui'
@@ -420,7 +423,7 @@ class Ui_MainWindow(object):
 
         self.gridLayout_2.addWidget(self.Reroll_Level, 1, 0, 1, 1)
 
-        # TODO: Add leveling
+        # Gold and leveling section
         gold_and_level = (self.Gold_Label, self.Reroll, self.Level_Label, self.Level_Up)
 
         # Shop
