@@ -1,0 +1,577 @@
+[
+    {
+        "name": "Astral",
+        "sets": [
+            {
+                "max": 5,
+                "min": 3,
+                "style": 1
+            },
+            {
+                "max": 8,
+                "min": 6,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 9,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Bard",
+        "sets": [
+            {
+                "max": 25000,
+                "min": 1,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Guild",
+        "sets": [
+            {
+                "max": 1,
+                "min": 1,
+                "style": 1
+            },
+            {
+                "max": 2,
+                "min": 2,
+                "style": 2
+            },
+            {
+                "max": 3,
+                "min": 3,
+                "style": 2
+            },
+            {
+                "max": 4,
+                "min": 4,
+                "style": 2
+            },
+            {
+                "max": 5,
+                "min": 5,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 6,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Jade",
+        "sets": [
+            {
+                "max": 5,
+                "min": 3,
+                "style": 1
+            },
+            {
+                "max": 8,
+                "min": 6,
+                "style": 2
+            },
+            {
+                "max": 11,
+                "min": 9,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 12,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Mirage",
+        "sets": [
+            {
+                "max": 3,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 5,
+                "min": 4,
+                "style": 2
+            },
+            {
+                "max": 7,
+                "min": 6,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 8,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Ragewing",
+        "sets": [
+            {
+                "max": 5,
+                "min": 3,
+                "style": 1
+            },
+            {
+                "max": 8,
+                "min": 6,
+                "style": 2
+            },
+            {
+                "max": 25000,
+                "min": 9,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Revel",
+        "sets": [
+            {
+                "max": 2,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 3,
+                "min": 3,
+                "style": 2
+            },
+            {
+                "max": 4,
+                "min": 4,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 5,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Scalescorn",
+        "sets": [
+            {
+                "max": 3,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 5,
+                "min": 4,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 6,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Astral",
+        "sets": [
+            {
+                "max": 4,
+                "min": 3,
+                "style": 1
+            },
+            {
+                "max": 6,
+                "min": 5,
+                "style": 2
+            },
+            {
+                "max": 8,
+                "min": 7,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 9,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Tempest",
+        "sets": [
+            {
+                "max": 3,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 5,
+                "min": 4,
+                "style": 2
+            },
+            {
+                "max": 7,
+                "min": 6,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 8,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Trainer",
+        "sets": [
+            {
+                "max": 2,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 25000,
+                "min": 3,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Whispers",
+        "sets": [
+            {
+                "max": 3,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 5,
+                "min": 4,
+                "style": 2
+            },
+            {
+                "max": 7,
+                "min": 6,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 8,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Assassins",
+        "sets": [
+            {
+                "max": 3,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 5,
+                "min": 4,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 6,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Bruiser",
+        "sets": [
+            {
+                "max": 3,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 5,
+                "min": 4,
+                "style": 2
+            },
+            {
+                "max": 7,
+                "min": 6,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 8,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Cannoneer",
+        "sets": [
+            {
+                "max": 2,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 3,
+                "min": 3,
+                "style": 2
+            },
+            {
+                "max": 4,
+                "min": 4,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 5,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Cavalier",
+        "sets": [
+            {
+                "max": 2,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 3,
+                "min": 3,
+                "style": 2
+            },
+            {
+                "max": 4,
+                "min": 4,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 5,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Dragon",
+        "sets": [
+            {
+                "max": 1,
+                "min": 1,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Dragonmancer",
+        "sets": [
+            {
+                "max": 5,
+                "min": 3,
+                "style": 1
+            },
+            {
+                "max": 8,
+                "min": 6,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 9,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Evoker",
+        "sets": [
+            {
+                "max": 3,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 5,
+                "min": 4,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 6,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Guardian",
+        "sets": [
+            {
+                "max": 3,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 5,
+                "min": 4,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 6,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Legend",
+        "sets": [
+            {
+                "max": 25000,
+                "min": 3,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Mage",
+        "sets": [
+            {
+                "max": 4,
+                "min": 3,
+                "style": 1
+            },
+            {
+                "max": 6,
+                "min": 5,
+                "style": 2
+            },
+            {
+                "max": 8,
+                "min": 7,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 9,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Mystic",
+        "sets": [
+            {
+                "max": 2,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 3,
+                "min": 3,
+                "style": 2
+            },
+            {
+                "max": 4,
+                "min": 4,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 5,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Shapeshifter",
+        "sets": [
+            {
+                "max": 3,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 5,
+                "min": 4,
+                "style": 2
+            },
+            {
+                "max": 25000,
+                "min": 6,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Spellthief",
+        "sets": [
+            {
+                "max": 25000,
+                "min": 1,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Starcaller",
+        "sets": [
+            {
+                "max": 25000,
+                "min": 1,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Swiftshot",
+        "sets": [
+            {
+                "max": 3,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 5,
+                "min": 4,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 6,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Warrior",
+        "sets": [
+            {
+                "max": 3,
+                "min": 2,
+                "style": 1
+            },
+            {
+                "max": 5,
+                "min": 4,
+                "style": 3
+            },
+            {
+                "max": 25000,
+                "min": 6,
+                "style": 4
+            }
+        ]
+    }
+]
