@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
 
                 # Display trait name
                 trait_label = QLabel(splash_label)
-                trait_label.setStyleSheet('color: rgb(210, 210, 210); font-weight: bold')
+                trait_label.setStyleSheet('color: rgb(0, 255, 0); font-weight: bold')
                 trait_label.setText('')
                 trait_label.setObjectName(f'Shop_Trait_{idx}_{i}')
                 trait_label.setFixedSize(80, 30)
