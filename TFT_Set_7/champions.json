@@ -1,0 +1,543 @@
+[
+    {
+        "championId": "TFT7_Aatrox",
+        "cost": 1,
+        "name": "Aatrox",
+        "traits": [
+            "Shimmerscale",
+            "Warrior"
+        ]
+    },
+    {
+        "championId": "TFT7_Ezreal",
+        "cost": 1,
+        "name": "Ezreal",
+        "traits": [
+            "Tempest",
+            "Swiftshot"
+        ]
+    },
+    {
+        "championId": "TFT7_Karma",
+        "cost": 1,
+        "name": "Karma",
+        "traits": [
+            "Jade",
+            "Dragonmancer"
+        ]
+    },
+    {
+        "championId": "TFT7_Heimerdinger",
+        "cost": 1,
+        "name": "Heimerdinger",
+        "traits": [
+            "Trainer",
+            "Mage"
+        ]
+    },
+    {
+        "championId": "TFT7_Leona",
+        "cost": 1,
+        "name": "Leona",
+        "traits": [
+            "Mirage",
+            "Guardian"
+        ]
+    },
+    {
+        "championId": "TFT7_Nidalee",
+        "cost": 1,
+        "name": "Nidalee",
+        "traits": [
+            "Astral",
+            "Shapeshifter"
+        ]
+    },
+    {
+        "championId": "TFT7_Sejuani",
+        "cost": 1,
+        "name": "Sejuani",
+        "traits": [
+            "Guild",
+            "Cavalier"
+        ]
+    },
+    {
+        "championId": "TFT7_Senna",
+        "cost": 1,
+        "name": "Senna",
+        "traits": [
+            "Ragewing",
+            "Cannoneer"
+        ]
+    },
+    {
+        "championId": "TFT7_Sett",
+        "cost": 1,
+        "name": "Sett",
+        "traits": [
+            "Ragewing",
+            "Dragonmancer"
+        ]
+    },
+    {
+        "championId": "TFT7_Skarner",
+        "cost": 1,
+        "name": "Skarner",
+        "traits": [
+            "Astral",
+            "Bruiser"
+        ]
+    },
+    {
+        "championId": "TFT7_Tahm",
+        "cost": 1,
+        "name": "Tahm Kench",
+        "traits": [
+            "Revel",
+            "Bruiser"
+        ]
+    },
+    {
+        "championId": "TFT7_Taric",
+        "cost": 1,
+        "name": "Taric",
+        "traits": [
+            "Jade",
+            "Guardian"
+        ]
+    },
+    {
+        "championId": "TFT7_Vladimir",
+        "cost": 1,
+        "name": "Vladimir",
+        "traits": [
+            "Astral",
+            "Mage"
+        ]
+    },
+    {
+        "championId": "TFT7_Ashe",
+        "cost": 2,
+        "name": "Ashe",
+        "traits": [
+            "Jade",
+            "Dragonmancer",
+            "Swiftshot"
+        ]
+    },
+    {
+        "championId": "TFT7_Braum",
+        "cost": 2,
+        "name": "Braum",
+        "traits": [
+            "Scalescorn",
+            "Guardian"
+        ]
+    },
+    {
+        "championId": "TFT7_Gnar",
+        "cost": 2,
+        "name": "Gnar",
+        "traits": [
+            "Jade",
+            "Shapeshifter"
+        ]
+    },
+    {
+        "championId": "TFT7_Jinx",
+        "cost": 2,
+        "name": "Jinx",
+        "traits": [
+            "Revel",
+            "Cannoneer"
+        ]
+    },
+    {
+        "championId": "TFT7_Kayn",
+        "cost": 2,
+        "name": "Kayn",
+        "traits": [
+            "Ragewing",
+            "Shimmerscale",
+            "Assassin"
+        ]
+    },
+    {
+        "championId": "TFT7_Lillia",
+        "cost": 2,
+        "name": "Lillia",
+        "traits": [
+            "Scalescorn",
+            "Cavalier",
+            "Mage"
+        ]
+    },
+    {
+        "championId": "TFT7_Nami",
+        "cost": 2,
+        "name": "Nami",
+        "traits": [
+            "Astral",
+            "Mage",
+            "Mystic"
+        ]
+    },
+    {
+        "championId": "TFT7_Qiyana",
+        "cost": 2,
+        "name": "Qiyana",
+        "traits": [
+            "Tempest",
+            "Assassin"
+        ]
+    },
+    {
+        "championId": "TFT7_Shen",
+        "cost": 2,
+        "name": "Shen",
+        "traits": [
+            "Ragewing",
+            "Bruiser",
+            "Warrior"
+        ]
+    },
+    {
+        "championId": "TFT7_Thresh",
+        "cost": 2,
+        "name": "Thresh",
+        "traits": [
+            "Whispers",
+            "Guardian"
+        ]
+    },
+    {
+        "championId": "TFT7_Tristana",
+        "cost": 2,
+        "name": "Tristana",
+        "traits": [
+            "Trainer",
+            "Cannoneer"
+        ]
+    },
+    {
+        "championId": "TFT7_Twitch",
+        "cost": 2,
+        "name": "Twitch",
+        "traits": [
+            "Guild",
+            "Swiftshot"
+        ]
+    },
+    {
+        "championId": "TFT7_Yone",
+        "cost": 2,
+        "name": "Yone",
+        "traits": [
+            "Mirage",
+            "Warrior"
+        ]
+    },
+    {
+        "championId": "TFT7_Anivia",
+        "cost": 3,
+        "name": "Anivia",
+        "traits": [
+            "Jade",
+            "Legend",
+            "Evoker"
+        ]
+    },
+    {
+        "championId": "TFT7_Diana",
+        "cost": 3,
+        "name": "Diana",
+        "traits": [
+            "Scalescorn",
+            "Assassin"
+        ]
+    },
+    {
+        "championId": "TFT7_Elise",
+        "cost": 3,
+        "name": "Elise",
+        "traits": [
+            "Whispers",
+            "Shapeshifter"
+        ]
+    },
+    {
+        "championId": "TFT7_Illaoi",
+        "cost": 3,
+        "name": "Illaoi",
+        "traits": [
+            "Astral",
+            "Bruiser"
+        ]
+    },
+    {
+        "championId": "TFT7_Lee",
+        "cost": 3,
+        "name": "Lee Sin",
+        "traits": [
+            "Tempest",
+            "Dragonmancer"
+        ]
+    },
+    {
+        "championId": "TFT7_Lulu",
+        "cost": 3,
+        "name": "Lulu",
+        "traits": [
+            "Trainer",
+            "Evoker",
+            "Mystic"
+        ]
+    },
+    {
+        "championId": "TFT7_Nunu",
+        "cost": 3,
+        "name": "Nunu",
+        "traits": [
+            "Mirage",
+            "Cavalier"
+        ]
+    },
+    {
+        "championId": "TFT7_Olaf",
+        "cost": 3,
+        "name": "Olaf",
+        "traits": [
+            "Scalescorn",
+            "Bruiser",
+            "Warrior"
+        ]
+    },
+    {
+        "championId": "TFT7_Ryze",
+        "cost": 3,
+        "name": "Ryze",
+        "traits": [
+            "Guild",
+            "Mage"
+        ]
+    },
+    {
+        "championId": "TFT7_Swain",
+        "cost": 3,
+        "name": "Swain",
+        "traits": [
+            "Ragewing",
+            "Dragonmancer",
+            "Shapeshifter"
+        ]
+    },
+    {
+        "championId": "TFT7_Sylas",
+        "cost": 3,
+        "name": "Sylas",
+        "traits": [
+            "Whispers",
+            "Bruiser",
+            "Mage"
+        ]
+    },
+    {
+        "championId": "TFT7_Varus",
+        "cost": 3,
+        "name": "Varus",
+        "traits": [
+            "Astral",
+            "Swiftshot"
+        ]
+    },
+    {
+        "championId": "TFT7_Volibear",
+        "cost": 3,
+        "name": "Volibear",
+        "traits": [
+            "Legend",
+            "Shimmerscale",
+            "Dragonmancer"
+        ]
+    },
+    {
+        "championId": "TFT7_Corki",
+        "cost": 4,
+        "name": "Corki",
+        "traits": [
+            "Revel",
+            "Cannoneer"
+        ]
+    },
+    {
+        "championId": "TFT7_Hecarim",
+        "cost": 4,
+        "name": "Hecarim",
+        "traits": [
+            "Ragewing",
+            "Cavalier"
+        ]
+    },
+    {
+        "championId": "TFT7_Neeko",
+        "cost": 4,
+        "name": "Neeko",
+        "traits": [
+            "Jade",
+            "Shapeshifter"
+        ]
+    },
+    {
+        "championId": "TFT7+Ornn",
+        "cost": 4,
+        "name": "Ornn",
+        "traits": [
+            "Legend",
+            "Tempest",
+            "Bruiser"
+        ]
+    },
+    {
+        "championId": "TFT7_Sona",
+        "cost": 4,
+        "name": "Sona",
+        "traits": [
+            "Revel",
+            "Evoker"
+        ]
+    },
+    {
+        "championId": "TFT7_Talon",
+        "cost": 4,
+        "name": "Talon",
+        "traits": [
+            "Guild",
+            "Assassin"
+        ]
+    },
+    {
+        "championId": "TFT7_Xayah",
+        "cost": 4,
+        "name": "Xayah",
+        "traits": [
+            "Ragewing",
+            "Swiftshot"
+        ]
+    },
+    {
+        "championId": "TFT7_Daeja",
+        "cost": 4,
+        "name": "Daeja",
+        "traits": [
+            "Mirage",
+            "Dragon"
+        ]
+    },
+    {
+        "championId": "TFT7_Idas",
+        "cost": 4,
+        "name": "Idas",
+        "traits": [
+            "Shimmerscale",
+            "Dragon",
+            "Guardian"
+        ]
+    },
+    {
+        "championId": "TFT7_Shi",
+        "cost": 4,
+        "name": "Shi Oh Yu",
+        "traits": [
+            "Jade",
+            "Dragon",
+            "Mystic"
+        ]
+    },
+    {
+        "championId": "TFT7_Syfen",
+        "cost": 4,
+        "name": "Syfen",
+        "traits": [
+            "Whispers",
+            "Dragon",
+            "Bruiser"
+        ]
+    },
+    {
+        "championId": "TFT7_Bard",
+        "cost": 5,
+        "name": "Bard",
+        "traits": [
+            "Guild",
+            "Mystic"
+        ]
+    },
+    {
+        "championId": "TFT7_Pyke",
+        "cost": 5,
+        "name": "Pyke",
+        "traits": [
+            "Whisper",
+            "Assassin"
+        ]
+    },
+    {
+        "championId": "TFT7_Soraka",
+        "cost": 5,
+        "name": "Soraka",
+        "traits": [
+            "Jade",
+            "Starcaller"
+        ]
+    },
+    {
+        "championId": "TFT7_Yasuo",
+        "cost": 5,
+        "name": "Yasuo",
+        "traits": [
+            "Mirage",
+            "Dragonmancer",
+            "Warrior"
+        ]
+    },
+    {
+        "championId": "TFT7_Zoe",
+        "cost": 5,
+        "name": "Zoe",
+        "traits": [
+            "Shimmerscale",
+            "Spellthief",
+            "Mage"
+        ]
+    },
+    {
+        "championId": "TFT7_Ao",
+        "cost": 5,
+        "name": "Ao Shin",
+        "traits": [
+            "Tempest",
+            "Dragon"
+        ]
+    },
+    {
+        "championId": "TFT7_Aurelion",
+        "cost": 5,
+        "name": "Aurelion Sol",
+        "traits": [
+            "Astral",
+            "Dragon",
+            "Evoker"
+        ]
+    },
+    {
+        "championId": "TFT7_Shyvana",
+        "cost": 5,
+        "name": "Shyvana",
+        "traits": [
+            "Ragewing",
+            "Dragon",
+            "Shapeshifter"
+        ]
+    }
+]
