@@ -87,6 +87,9 @@ class Unit:
 
         self.level = level
 
+        # SET 7: Added support for dragon units
+        self.real_cost = self.cost * 2 if 'Dragon' in self.traits else self.cost
+
         # Calculate sell cost
         if level == 1:
             self.sell_cost = cost
@@ -99,7 +102,7 @@ class Unit:
         """Return string representation of a unit."""
         if self.name == 'BLANK':
             return 'BLANK\n'
-        return self.name + ', ' + str(self.cost) + ', ' + ', '.join(self.traits) + '\n'
+        return self.name + ', ' + str(self.real_cost) + ', ' + ', '.join(self.traits) + '\n'
 
     def __repr__(self):
         """Return self representation of a unit."""
