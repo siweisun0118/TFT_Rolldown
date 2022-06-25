@@ -276,7 +276,7 @@ class MainWindow(QMainWindow):
             stats_widget = self.traits[idx].findChild(QLabel, f'Trait_Amount_{idx + 1}')
 
             # Display correct information
-            stats_widget.setText(f'{trait_name[:9]} {trait_breakpoints}')
+            stats_widget.setText(f'{trait_name[:7]} {trait_breakpoints}')
 
         # White out remaining slots
         for slot in range(len(traits), 18):
