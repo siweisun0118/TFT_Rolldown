@@ -92,11 +92,11 @@ class Unit:
 
         # Calculate sell cost
         if level == 1:
-            self.sell_cost = cost
+            self.sell_cost = self.real_cost
         elif cost == 1 and level == 2:
             self.sell_cost = 3
         else:
-            self.sell_cost = 3 ** (level - 1) * cost - 1
+            self.sell_cost = 3 ** (level - 1) * self.real_cost - 1
 
     def __str__(self):
         """Return string representation of a unit."""
@@ -383,8 +383,8 @@ class Game:
         idx = int(next_in) - 1
         # Remove cost from current gold and add gold to team
         cur_unit = cur_roll[idx]
-        if cur_unit.name != 'BLANK' and self.gold >= cur_unit.cost:
-            self.gold -= cur_unit.cost
+        if cur_unit.name != 'BLANK' and self.gold >= cur_unit.real_cost:
+            self.gold -= cur_unit.real_cost
             self.team.add_unit(cur_unit.name)
             cur_roll[idx] = Unit(None, 'BLANK', None, None)
         else:
