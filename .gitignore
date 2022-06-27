@@ -8,3 +8,4 @@ generate.py
 resources.qrc
 user_interface_v3.ui
 extract.py
+background.py
