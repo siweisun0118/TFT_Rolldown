@@ -130,7 +130,8 @@ class Unit:
         # Newly created 3 star units can no longer be rolled
         if self.level == 2:
             # Remove all remaining instances of this champion from the pool
-            CHAMPION_POOL[self.rarity] = [unit for unit in CHAMPION_POOL[self.rarity] if unit != self]
+            CHAMPION_POOL[self.rarity] = [unit for unit in CHAMPION_POOL[self.rarity] \
+                if unit != self]
 
         # Sell cost changes when unit is upgraded
         return Unit(self.rarity, self.name, self.traits, self.id_name, self.level + 1)

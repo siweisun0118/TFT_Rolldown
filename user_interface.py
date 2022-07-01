@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         self.input_dir = Path(input_dir)
 
         # Take in inputs
-        good = self.take_inputs()
+        self.take_inputs()
 
         # Start main UI window
         self.u_i = Ui_MainWindow()
