@@ -1,8 +1,10 @@
 """Simulate a Rolldown"""
 
-import sys
-from pathlib import Path
+
 from functools import partial
+from pathlib import Path
+import sys
+
 
 # pylint: disable=no-name-in-module
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QInputDialog
@@ -25,7 +27,7 @@ class MainWindow(QMainWindow):
         self.input_dir = Path(input_dir)
 
         # Take in inputs
-        self.take_inputs()
+        good = self.take_inputs()
 
         # Start main UI window
         self.u_i = Ui_MainWindow()
@@ -75,7 +77,7 @@ class MainWindow(QMainWindow):
             while int(level) not in range(1, 12):
                 level, _ = user_in.getText(self, 'input dialog',
                                                 'Enter starting level (1-11 inclusive):')
-            self.game = Game(sys.argv[1], int(gold), int(level))
+            self.game = Game(self.input_dir, int(gold), int(level))
         else:
             QApplication.quit()
 
@@ -177,7 +179,7 @@ class MainWindow(QMainWindow):
 
             # Display unit rarity
             rarity_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Rarity_{idx + 1}')
-            rarity = QPixmap(str(GEN_ASSETS / 'rarities' / f'{unit.cost}.png'))
+            rarity = QPixmap(str(GEN_ASSETS / 'rarities' / f'{unit.rarity}.png'))
             rarity_label.setPixmap(rarity)
 
             # Display unit name
@@ -339,16 +341,22 @@ class MainWindow(QMainWindow):
         # Update traits
         self.display_traits()
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print('Usage: python user_interface_test.py {input_dir}')
-        sys.exit()
 
-    app = QApplication(sys.argv)
+def main(input_dir):
+    """Start the rolldown."""
+    app = QApplication([input_dir])
 
-    window = MainWindow(sys.argv[1])
+    window = MainWindow(input_dir)
     window.setFixedSize(window.size())
     window.move(0, 0)
     window.show()
 
     sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print('Usage: python user_interface_test.py {input_dir}')
+        sys.exit()
+
+    main(sys.argv[1])

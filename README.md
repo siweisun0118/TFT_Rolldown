@@ -11,7 +11,7 @@ For the UI portion for Linux, also install the necessary apt packages:
 ./packages.sh
 ```
 If you're using WSL, you might need Windows 11.
-If you're using Command Prompt on Windows, you do not need to run `./packages.sh` or Windows 11.
+If you're using Command Prompt on Windows, you do not need to run `./packages.sh`.
 
 # Usage
 For the terminal-only rolldown simulator, use the following command:

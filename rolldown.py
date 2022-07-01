@@ -80,7 +80,7 @@ class Unit:
             return
 
         # Information that the unit needs
-        self.cost = cost
+        self.rarity = cost
         self.name = name
         self.traits = [trait.strip() for trait in traits]
         self.id_name = id_name
@@ -88,21 +88,21 @@ class Unit:
         self.level = level
 
         # SET 7: Added support for dragon units
-        self.real_cost = self.cost * 2 if 'Dragon' in self.traits else self.cost
+        self.cost = self.rarity * 2 if 'Dragon' in self.traits else self.rarity
 
         # Calculate sell cost
         if level == 1:
-            self.sell_cost = self.real_cost
+            self.sell_cost = self.cost
         elif cost == 1 and level == 2:
             self.sell_cost = 3
         else:
-            self.sell_cost = 3 ** (level - 1) * self.real_cost - 1
+            self.sell_cost = 3 ** (level - 1) * self.cost - 1
 
     def __str__(self):
         """Return string representation of a unit."""
         if self.name == 'BLANK':
             return 'BLANK\n'
-        return self.name + ', ' + str(self.real_cost) + ', ' + ', '.join(self.traits) + '\n'
+        return self.name + ', ' + str(self.cost) + ', ' + ', '.join(self.traits) + '\n'
 
     def __repr__(self):
         """Return self representation of a unit."""
@@ -130,10 +130,10 @@ class Unit:
         # Newly created 3 star units can no longer be rolled
         if self.level == 2:
             # Remove all remaining instances of this champion from the pool
-            CHAMPION_POOL[self.cost] = [unit for unit in CHAMPION_POOL[self.cost] if unit != self]
+            CHAMPION_POOL[self.rarity] = [unit for unit in CHAMPION_POOL[self.rarity] if unit != self]
 
         # Sell cost changes when unit is upgraded
-        return Unit(self.cost, self.name, self.traits, self.id_name, self.level + 1)
+        return Unit(self.rarity, self.name, self.traits, self.id_name, self.level + 1)
 
 
 class Trait:
@@ -208,7 +208,7 @@ class Team:
 
         # Remove the unit from the champion pool
         try:
-            CHAMPION_POOL[new_unit.cost].remove(new_unit)
+            CHAMPION_POOL[new_unit.rarity].remove(new_unit)
         except ValueError:
             pass
 
@@ -219,6 +219,10 @@ class Team:
                     self.traits[trait] = 1
                 else:
                     self.traits[trait] += 1
+
+            # If unit is a dragon, origin trait is tripled
+            if 'Dragon' in new_unit.traits:
+                self.traits[new_unit.traits[0]] += 2
 
             # Finally, add the unit to the team
             self.team.append(new_unit)
@@ -264,6 +268,10 @@ class Team:
 
         # If unit is unique, remove its traits
         if count == 1:
+            # If unit is a dragon, origin trait is tripled
+            if 'Dragon' in sold_unit.traits:
+                self.traits[sold_unit.traits[0]] -= 2
+
             for trait in sold_unit.traits:
                 self.traits[trait] -= 1
 
@@ -275,10 +283,10 @@ class Team:
         self.team.pop(unit_index)
 
         # Return it to the champion pool
-        base_unit = Unit(sold_unit.cost, sold_unit.name, sold_unit.traits, sold_unit.id_name)
-        quantities = [0, 1, 3, CHAMPION_AMOUNTS[sold_unit.cost]]
+        base_unit = Unit(sold_unit.rarity, sold_unit.name, sold_unit.traits, sold_unit.id_name)
+        quantities = [0, 1, 3, CHAMPION_AMOUNTS[sold_unit.rarity]]
         for _ in range(quantities[sold_unit.level]):
-            CHAMPION_POOL[sold_unit.cost].append(base_unit)
+            CHAMPION_POOL[sold_unit.rarity].append(base_unit)
 
 
     def get_traits(self):
@@ -383,8 +391,8 @@ class Game:
         idx = int(next_in) - 1
         # Remove cost from current gold and add gold to team
         cur_unit = cur_roll[idx]
-        if cur_unit.name != 'BLANK' and self.gold >= cur_unit.real_cost:
-            self.gold -= cur_unit.real_cost
+        if cur_unit.name != 'BLANK' and self.gold >= cur_unit.cost:
+            self.gold -= cur_unit.cost
             self.team.add_unit(cur_unit.name)
             cur_roll[idx] = Unit(None, 'BLANK', None, None)
         else:
