@@ -8,7 +8,7 @@ import random
 import sys
 
 
-# Pip managed packages
+# Third party libraries
 # pylint: disable=import-error
 from termcolor import colored
 if os.name == 'nt':
@@ -73,14 +73,14 @@ def read_database(input_dir):
 
 class Unit:
     """Class containing unit information."""
-    def __init__(self, cost, name, traits, id_name, level=1):
+    def __init__(self, rarity, name, traits, id_name, level=1):
         # Check if unit is a BLANK placeholder
         if name == 'BLANK':
             self.name = name
             return
 
         # Information that the unit needs
-        self.rarity = cost
+        self.rarity = rarity
         self.name = name
         self.traits = [trait.strip() for trait in traits]
         self.id_name = id_name
@@ -93,7 +93,7 @@ class Unit:
         # Calculate sell cost
         if level == 1:
             self.sell_cost = self.cost
-        elif cost == 1 and level == 2:
+        elif rarity == 1 and level == 2:
             self.sell_cost = 3
         else:
             self.sell_cost = 3 ** (level - 1) * self.cost - 1
@@ -111,6 +111,10 @@ class Unit:
     def __hash__(self):
         """Hash units by name only."""
         return hash(self.name)
+
+    def copy(self):
+        """Return a copy of the unit."""
+        return Unit(self.rarity, self.name, self.traits, self.id_name, self.level)
 
     # This one is used by the in and == builtin!
     def __eq__(self, other):
@@ -388,7 +392,7 @@ class Game:
         print(str_roll, end='')
 
     def buy_unit(self, cur_roll, next_in):
-        """Buy a unit for the team."""
+        """Buy a unit for the team (1-indexed)."""
         idx = int(next_in) - 1
         # Remove cost from current gold and add gold to team
         cur_unit = cur_roll[idx]
@@ -401,7 +405,7 @@ class Game:
             pass
 
     def sell_unit(self, index):
-        """Sell a unit from the team."""
+        """Sell a unit from the team (0-indexed)."""
         # Add gold equal to sell cost of unit
         self.gold += self.team.team[index].sell_cost
 
