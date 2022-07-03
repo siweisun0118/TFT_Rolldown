@@ -8,7 +8,8 @@ import sys
 
 # pylint: disable=no-name-in-module
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QInputDialog
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QGraphicsDropShadowEffect
+from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtCore import Qt, QProcess
 
 
@@ -176,6 +177,18 @@ class MainWindow(QMainWindow):
             if not name.is_file():
                 name = self.input_dir / 'champions' / f'{unit.id_name}.png'
             splash_label.setPixmap(QPixmap(str(name)))
+
+            # Add glow effect if a copy of the unit is already owned
+            if unit in self.game.team:
+                glow = QGraphicsDropShadowEffect()
+                glow.setOffset(0, 0)
+                glow.setBlurRadius(20)
+                glow.setColor(QColor(230, 230, 230, 255))
+                splash_label.setGraphicsEffect(glow)
+            else:
+                no_glow = QGraphicsDropShadowEffect()
+                no_glow.setColor(QColor(0, 0, 0, 255))
+                splash_label.setGraphicsEffect(no_glow)
 
             # Display unit rarity
             rarity_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Rarity_{idx + 1}')
