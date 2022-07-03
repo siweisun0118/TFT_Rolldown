@@ -1,17 +1,19 @@
 # Introduction
-Simulate the rolldown in a game of TFT
+Simulate the rolldown in a game of TFT.
 
 # Setup
 Install the necessary python libraries:
 ```
 python -m pip install -r requirements.txt
 ```
-For the UI portion for Linux, also install the necessary apt packages:
+If you do not have Windows 11, use the Windows Command Prompt (no additional setup needed).
+
+
+If you're using WSL or Linux, follow the instructions below. Windows 11 is required for WSL.
+Install the necessary apt packages:
 ```
 ./packages.sh
 ```
-If you're using WSL, you might need Windows 11.
-If you're using Command Prompt on Windows, you do not need to run `./packages.sh`.
 
 # Usage
 For the terminal-only rolldown simulator, use the following command:
