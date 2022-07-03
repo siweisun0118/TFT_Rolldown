@@ -392,7 +392,7 @@ class Game:
         print(str_roll, end='')
 
     def buy_unit(self, cur_roll, next_in):
-        """Buy a unit for the team."""
+        """Buy a unit for the team (1-indexed)."""
         idx = int(next_in) - 1
         # Remove cost from current gold and add gold to team
         cur_unit = cur_roll[idx]
@@ -405,7 +405,7 @@ class Game:
             pass
 
     def sell_unit(self, index):
-        """Sell a unit from the team."""
+        """Sell a unit from the team (0-indexed)."""
         # Add gold equal to sell cost of unit
         self.gold += self.team.team[index].sell_cost
 

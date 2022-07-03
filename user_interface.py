@@ -17,7 +17,7 @@ from PyQt5.QtCore import Qt, QProcess
 
 # Local files
 from user_interface_v3 import Ui_MainWindow, pathlib_path
-from rolldown import Game, Unit
+from rolldown import Game
 from constants import GEN_ASSETS, LEVEL_EXP
 
 
@@ -181,14 +181,6 @@ class MainWindow(QMainWindow):
                 name = self.input_dir / 'champions' / f'{unit.id_name}.png'
             splash_label.setPixmap(QPixmap(str(name)))
 
-            # Add glow effect if a copy of the unit is already owned
-            if unit in self.game.team:
-                glow = get_glow_effect()
-                splash_label.setGraphicsEffect(glow)
-            else:
-                no_glow = get_no_glow_effect()
-                splash_label.setGraphicsEffect(no_glow)
-
             # Display unit rarity
             rarity_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Rarity_{idx + 1}')
             rarity = QPixmap(str(GEN_ASSETS / 'rarities' / f'{unit.rarity}.png'))
@@ -222,6 +214,18 @@ class MainWindow(QMainWindow):
                 # Clear trait name
                 trait_label = splash_label.findChild(QLabel, f'Shop_Trait_{idx}_{i}')
                 trait_label.setText('')
+
+            # Add glow effect if a copy of the unit is already owned
+            if unit in self.game.team:
+                glow1 = get_glow_effect()
+                glow2 = get_glow_effect()
+                splash_label.setGraphicsEffect(glow1)
+                rarity_label.setGraphicsEffect(glow2)
+            else:
+                no_glow1 = get_no_glow_effect()
+                no_glow2 = get_no_glow_effect()
+                splash_label.setGraphicsEffect(no_glow1)
+                rarity_label.setGraphicsEffect(no_glow2)
 
     def display_team(self):
         """Displays all the units currently bought."""
@@ -323,17 +327,20 @@ class MainWindow(QMainWindow):
         for i, unit in enumerate(self.cur_shop):
             if unit == bought_unit:
                 # Glow effect
-                glow = get_glow_effect()
+                glow1 = get_glow_effect()
+                glow2 = get_glow_effect()
 
                 # Add glow effect to slot
                 splash = self.shop_widgets[i].findChild(QLabel, f'Shop_Icon_{i + 1}')
-                splash.setGraphicsEffect(glow)
+                rarity = self.shop_widgets[i].findChild(QLabel, f'Shop_Rarity_{i + 1}')
+                splash.setGraphicsEffect(glow1)
+                rarity.setGraphicsEffect(glow2)
 
         # Replace labels
         for widget in self.shop_widgets[idx].children():
             if isinstance(widget, QLabel):
                 # Clear out 'glow' effect from splash art
-                if 'Shop_Icon' in widget.objectName():
+                if widget.pixmap():
                     no_glow = get_no_glow_effect()
                     widget.setGraphicsEffect(no_glow)
 
@@ -355,6 +362,21 @@ class MainWindow(QMainWindow):
 
     def sell_unit(self, event, idx):
         """Sell a unit from the team."""
+        # Remove glow effect from shop, if applicable
+        sold_unit = self.game.team.team[idx]
+        for i, unit in enumerate(self.cur_shop):
+            if unit == sold_unit:
+                # Glow effect
+                glow1 = get_no_glow_effect()
+                glow2 = get_no_glow_effect()
+
+                # Add glow effect to slot
+                splash = self.shop_widgets[i].findChild(QLabel, f'Shop_Icon_{i + 1}')
+                rarity = self.shop_widgets[i].findChild(QLabel, f'Shop_Rarity_{i + 1}')
+                splash.setGraphicsEffect(glow1)
+                rarity.setGraphicsEffect(glow2)
+
+        # Sell unit
         self.game.sell_unit(idx)
 
         # Update gold count
@@ -375,6 +397,7 @@ def get_glow_effect():
     glow.setColor(QColor(230, 230, 230, 255))
 
     return glow
+
 
 def get_no_glow_effect():
     """Generate an instance of the 'no glow' effect."""
