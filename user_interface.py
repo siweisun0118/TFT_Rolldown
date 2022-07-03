@@ -332,9 +332,10 @@ class MainWindow(QMainWindow):
         # Replace labels
         for widget in self.shop_widgets[idx].children():
             if isinstance(widget, QLabel):
-                # Clear out 'glow' effect
-                no_glow = get_no_glow_effect()
-                # widget.setGraphicsEffect(no_glow)
+                # Clear out 'glow' effect from splash art
+                if 'Shop_Icon' in widget.objectName():
+                    no_glow = get_no_glow_effect()
+                    widget.setGraphicsEffect(no_glow)
 
                 # Replace slot with blank
                 widget.setPixmap(QPixmap(pathlib_path(GEN_ASSETS, 'blank.png')))
@@ -370,7 +371,7 @@ def get_glow_effect():
     """Generate an instance of the 'glow' effect."""
     glow = QGraphicsDropShadowEffect()
     glow.setOffset(0, 0)
-    glow.setBlurRadius(20)
+    glow.setBlurRadius(60)
     glow.setColor(QColor(230, 230, 230, 255))
 
     return glow
