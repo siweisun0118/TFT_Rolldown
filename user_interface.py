@@ -392,7 +392,7 @@ class MainWindow(QMainWindow):
 def get_glow_effect():
     """Generate an instance of the 'glow' effect."""
     glow = QGraphicsDropShadowEffect()
-    glow.setOffset(0, 0)
+    glow.setOffset(25, 10)
     glow.setBlurRadius(60)
     glow.setColor(QColor(230, 230, 230, 255))
 
