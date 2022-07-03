@@ -1,18 +1,21 @@
 """Simulate a Rolldown"""
 
 
+# Standard libraries
 from functools import partial
 from pathlib import Path
 import sys
 
 
 # pylint: disable=no-name-in-module
+# Third party libraries
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QInputDialog
 from PyQt5.QtWidgets import QGraphicsDropShadowEffect
 from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtCore import Qt, QProcess
 
 
+# Local files
 from user_interface_v3 import Ui_MainWindow, pathlib_path
 from rolldown import Game, Unit
 from constants import GEN_ASSETS, LEVEL_EXP
@@ -180,14 +183,10 @@ class MainWindow(QMainWindow):
 
             # Add glow effect if a copy of the unit is already owned
             if unit in self.game.team:
-                glow = QGraphicsDropShadowEffect()
-                glow.setOffset(0, 0)
-                glow.setBlurRadius(20)
-                glow.setColor(QColor(230, 230, 230, 255))
+                glow = get_glow_effect()
                 splash_label.setGraphicsEffect(glow)
             else:
-                no_glow = QGraphicsDropShadowEffect()
-                no_glow.setColor(QColor(0, 0, 0, 255))
+                no_glow = get_no_glow_effect()
                 splash_label.setGraphicsEffect(no_glow)
 
             # Display unit rarity
@@ -317,14 +316,26 @@ class MainWindow(QMainWindow):
             return
 
         # Add unit to team (shop needs to be 1-indexed)
+        bought_unit = self.cur_shop[idx].copy()
         self.game.buy_unit(self.cur_shop, idx + 1)
 
-        # Replace unit with blank
-        self.cur_shop[idx] = Unit(None, 'BLANK', None, None)
+        # Add glowing effect to other copies of the unit in shop
+        for i, unit in enumerate(self.cur_shop):
+            if unit == bought_unit:
+                # Glow effect
+                glow = get_glow_effect()
+
+                # Add glow effect to slot
+                splash = self.shop_widgets[i].findChild(QLabel, f'Shop_Icon_{i + 1}')
+                splash.setGraphicsEffect(glow)
 
         # Replace labels
         for widget in self.shop_widgets[idx].children():
             if isinstance(widget, QLabel):
+                # Clear out 'glow' effect
+                no_glow = get_no_glow_effect()
+                # widget.setGraphicsEffect(no_glow)
+
                 # Replace slot with blank
                 widget.setPixmap(QPixmap(pathlib_path(GEN_ASSETS, 'blank.png')))
 
@@ -353,6 +364,23 @@ class MainWindow(QMainWindow):
 
         # Update traits
         self.display_traits()
+
+
+def get_glow_effect():
+    """Generate an instance of the 'glow' effect."""
+    glow = QGraphicsDropShadowEffect()
+    glow.setOffset(0, 0)
+    glow.setBlurRadius(20)
+    glow.setColor(QColor(230, 230, 230, 255))
+
+    return glow
+
+def get_no_glow_effect():
+    """Generate an instance of the 'no glow' effect."""
+    no_glow = QGraphicsDropShadowEffect()
+    no_glow.setColor(QColor(0, 0, 0, 255))
+
+    return no_glow
 
 
 def main(input_dir):
