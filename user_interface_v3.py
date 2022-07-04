@@ -24,10 +24,9 @@ def pathlib_path(root, ext):
 
 
 class Ui_MainWindow(object):
-    def setupUi(self, MainWindow, input_dir):
-        root = Path(input_dir)
-
+    def setupUi(self, MainWindow):
         # Main Window
+        MainWindow.raise_()
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1366, 973)
         palette = QtGui.QPalette()

@@ -14,7 +14,6 @@ from PyQt5.QtWidgets import QGraphicsDropShadowEffect
 from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtCore import Qt, QProcess
 
-
 # Local files
 from user_interface_v3 import Ui_MainWindow, pathlib_path
 from rolldown import Game
@@ -37,7 +36,7 @@ class MainWindow(QMainWindow):
         self.u_i = Ui_MainWindow()
 
         # Access to UI widgets
-        self.shop_widgets, self.traits, self.units, gold_level = self.u_i.setupUi(self, input_dir)
+        self.shop_widgets, self.traits, self.units, gold_level = self.u_i.setupUi(self)
         self.gold_label = gold_level[0]
         self.reroll_label = gold_level[1]
         self.level_label = gold_level[2]
@@ -73,6 +72,7 @@ class MainWindow(QMainWindow):
     def take_inputs(self):
         """Take in inputs from user."""
         user_in = QInputDialog()
+        user_in.setWindowState(Qt.WindowActive)
         gold, done1 = user_in.getText(self, 'input dialog', 'Enter starting gold:')
         level, done2 = user_in.getText(self, 'input dialog',
             'Enter starting level (1-11 inclusive):')
@@ -392,7 +392,7 @@ class MainWindow(QMainWindow):
 def get_glow_effect():
     """Generate an instance of the 'glow' effect."""
     glow = QGraphicsDropShadowEffect()
-    glow.setOffset(25, 10)
+    glow.setOffset(15, 10)
     glow.setBlurRadius(60)
     glow.setColor(QColor(230, 230, 230, 255))
 
