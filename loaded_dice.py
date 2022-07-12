@@ -59,7 +59,7 @@ def loaded_dice(unit, level):
 
             else:
                 # Get new rarity and remove that rarity from contention
-                cost = random.choices(population=[1, 2, 3, 4, 5], weights=remaining_odds, k=1)
+                cost = random.choices(population=[1, 2, 3, 4, 5], weights=remaining_odds, k=1)[0]
                 remaining_odds[cost - 1] = 0
 
                 # Attempt to find more candidates
