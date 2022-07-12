@@ -18,7 +18,7 @@ from PyQt5.QtCore import Qt, QProcess
 # Local files
 from constants import GEN_ASSETS, LEVEL_EXP
 from loaded_dice import loaded_dice
-from rolldown import Game
+from rolldown import Game, Unit
 from user_interface_v3 import Ui_MainWindow, pathlib_path
 
 
@@ -260,7 +260,7 @@ class MainWindow(QMainWindow):
             stats_widget.setText(f'{unit.level} Star')
 
             # Attach selling functionality
-            source = partial(self.sell_unit, idx=idx)
+            source = partial(self.unit_clicked, idx=idx)
             self.units[idx].mouseReleaseEvent = source
 
         # White out remaining slots
@@ -317,11 +317,19 @@ class MainWindow(QMainWindow):
         if event.button() == Qt.LeftButton:
             self.buy_unit(event, idx)
         elif event.button() == Qt.RightButton:
-            self.loaded_dice(event, idx)
+            self.loaded_dice(self.cur_shop[idx])
 
-    def loaded_dice(self, event, idx):
+    def unit_clicked(self, event, idx):
+        """Determine whether to sell unit or use loaded dice."""
+        if event.button() == Qt.LeftButton:
+            self.sell_unit(event, idx)
+        elif event.button() == Qt.RightButton:
+            self.loaded_dice(self.game.team.team[idx])
+
+    def loaded_dice(self, unit):
         """Replace shop with loaded dice rolls (idx is 0-indexed)."""
-        result = loaded_dice(self.cur_shop[idx], self.game.level)
+        assert isinstance(unit, Unit)
+        result = loaded_dice(unit, self.game.level)
         self.display_new_shop(first_roll=True, loaded_shop=result)
 
     def buy_unit(self, event, idx):
