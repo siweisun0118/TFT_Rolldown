@@ -16,9 +16,10 @@ from PyQt5.QtCore import Qt, QProcess
 
 
 # Local files
-from user_interface_v3 import Ui_MainWindow, pathlib_path
-from rolldown import Game
 from constants import GEN_ASSETS, LEVEL_EXP
+from loaded_dice import loaded_dice
+from rolldown import Game
+from user_interface_v3 import Ui_MainWindow, pathlib_path
 
 
 class MainWindow(QMainWindow):
@@ -88,9 +89,10 @@ class MainWindow(QMainWindow):
 
     def start_game(self):
         """Start the rolldown."""
-        # Attach buy function to units in shop
+        # Attach functionality to units in shop
         for idx, slot in enumerate(self.shop_widgets):
-            source = partial(self.buy_unit, idx=idx)
+            # Buying and loaded dice functionality
+            source = partial(self.shop_clicked, idx=idx)
             slot.mouseReleaseEvent = source
 
         # Attach reroll function to reroll button
@@ -161,13 +163,16 @@ class MainWindow(QMainWindow):
         exp = f'Level: {self.game.level}  {self.game.exp} / {LEVEL_EXP[self.game.level]}'
         self.level_label.setText(exp)
 
-    def display_new_shop(self, first_roll=False):
+    def display_new_shop(self, first_roll=False, loaded_shop=None):
         """Display the current shop."""
         # Assert that player has enough gold to roll
         assert first_roll or self.game.gold >= 2, 'ASSERTION ERROR: NOT ENOUGH GOLD TO ROLL'
 
         # Roll for units
-        self.cur_shop = self.game.roll(first_roll)
+        if not loaded_shop:
+            self.cur_shop = self.game.roll(first_roll)
+        else:
+            self.cur_shop = loaded_shop
 
         # Update gold
         self.display_gold()
@@ -307,10 +312,21 @@ class MainWindow(QMainWindow):
             stats_widget = self.traits[slot].findChild(QLabel, f'Trait_Amount_{slot + 1}')
             stats_widget.setText('   ')
 
-    def buy_unit(self, event, idx):
-        """Buy a unit from the shop."""
-        assert isinstance(idx, int)
+    def shop_clicked(self, event, idx):
+        """Determine whether to buy unit or use loaded dice."""
+        if event.button() == Qt.LeftButton:
+            self.buy_unit(event, idx)
+        elif event.button() == Qt.RightButton:
+            self.loaded_dice(event, idx)
 
+    def loaded_dice(self, event, idx):
+        """Replace shop with loaded dice rolls (idx is 0-indexed)."""
+        result = loaded_dice(self.cur_shop[idx], self.game.level)
+        self.display_new_shop(first_roll=True, loaded_shop=result)
+
+    def buy_unit(self, event, idx):
+        """Buy a unit from the shop (idx is 0-indexed)."""
+        assert isinstance(idx, int)
         # Add unit to team
         # Cannot purchase empty slots
         if self.cur_shop[idx].name == 'BLANK':

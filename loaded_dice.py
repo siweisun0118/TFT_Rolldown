@@ -1,17 +1,21 @@
 """Simulate a loaded dice roll."""
 
 # Standard libaries
-from sys import argv, exit
+from copy import deepcopy
 import random
+from sys import argv, exit
 
 
 # Local files
 from constants import CHAMPION_POOL, LEVEL_ODDS, SHOP_SLOTS
-from rolldown import read_database
+from rolldown import read_database, Unit
 
 
 def loaded_dice(unit, level):
-    """Roll the loaded dice"""
+    """Roll the loaded dice."""
+    assert isinstance(unit, Unit), 'Error: invalid input for unit type'
+    assert isinstance(level, int), 'Error: invalid input for level'
+
     # Get odds at current level
     odds = LEVEL_ODDS[level]
 
@@ -36,7 +40,7 @@ def loaded_dice(unit, level):
         # If candidates is empty, reroll rarities until candidate is available
         # Remove already rolled rarity from contention
         remaining_rarities = set([1, 2, 3, 4, 5]) - set([i])
-        remaining_odds = LEVEL_ODDS.copy()
+        remaining_odds = deepcopy(LEVEL_ODDS)
         remaining_odds[level][i - 1] = 0
         while not candidates:
             # If we run out of rarities, just choose a random unit
@@ -59,6 +63,7 @@ def loaded_dice(unit, level):
         # Choose a random candidate
         results.append(random.choice(candidates))
 
+    # Return rolled shop
     return results
 
 

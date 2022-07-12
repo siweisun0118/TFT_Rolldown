@@ -1,7 +1,7 @@
 """Choose the terminal or graphical interface for rolldown."""
 
 
-# Current sets available
+# Set currently available
 sets = ['4.5', '5.5', '6', '7']
 
 
@@ -17,7 +17,7 @@ if __name__ == '__main__':
             A = int(input())
             cur_set = f'TFT_Set_{sets[A - 1]}'
             break
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, IndexError):
             continue
 
     # Get interface mode from user
