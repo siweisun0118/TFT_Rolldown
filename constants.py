@@ -2,6 +2,11 @@
 from pathlib import Path
 
 
+# Number of slots in shop and on bench
+SHOP_SLOTS = 5
+BENCH_SLOTS = 9
+
+
 # List of all champions in pool by cost
 CHAMPION_POOL = {1: [], 2: [], 3: [], 4: [], 5: []}
 

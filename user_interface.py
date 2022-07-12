@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import QGraphicsDropShadowEffect
 from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtCore import Qt, QProcess
 
+
 # Local files
 from user_interface_v3 import Ui_MainWindow, pathlib_path
 from rolldown import Game
