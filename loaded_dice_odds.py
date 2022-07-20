@@ -44,7 +44,7 @@ def loaded_dice_odds(desired_unit, champions):
             # Now for each level, calculate the odds of hitting the desired champion
             # For each champion candidate
             for level in range(1, 12):
-                current_odds = LEVEL_ODDS[level]
+                current_odds = reweight_odds(LEVEL_ODDS[level], possible_champions)
 
                 probability = current_odds[desired_unit.rarity - 1] / len(possible_champions[desired_unit.rarity])
 
@@ -76,14 +76,49 @@ def main(argv):
     # Print results
     # At least one copy of desired champion
     print(f'Probability of hitting at least one {desired_unit.name}')
+    print_column_names()
     for item in sorted(at_least_one.items(), key=lambda x: x[1][-1], reverse=True):
-        print(f'{item[0]: <12} {item[1]}')
+        print(f'{item[0]: <12} {" ".join(item[1])}')
 
     # Expected number of desired champions
     print()
     print(f'Expected number of {desired_unit.name}s')
-    for item in sorted(expected_number.items(), key=lambda x: x[-1], reverse=True):
-        print(f'{item[0]: <12} {item[1]}')
+    print_column_names()
+    for item in sorted(expected_number.items(), key=lambda x: x[1][-1], reverse=True):
+        print(f'{item[0]: <12} {" ".join(item[1])}')
+
+
+def print_column_names():
+    """Print the levels as column names."""
+    print(f'{"Level:" :<12}', end='')
+    for i in range(1, 12):
+        print(f' {i: <6}', end='')
+    print()
+
+
+def reweight_odds(odds, possible_champions):
+    """Reweight roll odds in case one rarity is not available for the champion."""
+    adjusted_odds = odds.copy()
+    available_rarities = [True, True, True, True, True]
+
+    # Check if any rarity is unavailable
+    for rarity in range(1, 6):
+        if rarity not in possible_champions:
+            available_rarities[rarity - 1] = False
+
+    # If any rarities are unavailable, set their odds to 0
+    for idx, available in enumerate(available_rarities):
+        if not available:
+            adjusted_odds[idx] = 0
+
+    # And then reweight the odds so that they add up to 100
+    try:
+        adjusted_odds = [x * 100 / sum(adjusted_odds) for x in adjusted_odds]
+    except ZeroDivisionError:
+        return [0, 0, 0, 0, 0]
+
+    # Return reweighted odds
+    return adjusted_odds
 
 
 if __name__ == '__main__':
