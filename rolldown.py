@@ -71,6 +71,12 @@ def read_database(input_dir):
     return champions, traits
 
 
+# Helper function to serialize custom classes
+def serialize(obj):
+    """Serialize the object by converting its contents to a string."""
+    return str(obj)
+
+
 class Unit:
     """Class containing unit information."""
     def __init__(self, rarity, name, traits, id_name, level=1):

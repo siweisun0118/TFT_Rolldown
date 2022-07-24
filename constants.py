@@ -1,4 +1,6 @@
 """File containing all global constants used by rolldown."""
+
+
 from pathlib import Path
 
 
@@ -58,3 +60,9 @@ SPLASH_SIZE = (1006, 596)
 
 # Path to local resources
 GEN_ASSETS = Path('General Assets')
+
+# Port number for rolldown server
+SERVER_PORT = 8000
+
+
+########### HELPER FUNCTIONS BELOW ###########
