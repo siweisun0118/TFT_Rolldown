@@ -7,7 +7,7 @@ import sys
 
 
 # Local files
-from constants import SERVER_PORT
+from resources import SERVER_PORT
 
 
 def init_rolldown_client(port):

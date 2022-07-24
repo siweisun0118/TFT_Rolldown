@@ -7,8 +7,7 @@ import sys
 
 
 # Local files
-from constants import SERVER_PORT, CHAMPION_POOL
-from rolldown import read_database, serialize
+from resources import SERVER_PORT, CHAMPION_POOL, read_database, serialize
 
 
 def close_connection(client_port):

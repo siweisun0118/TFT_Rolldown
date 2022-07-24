@@ -7,8 +7,7 @@ from sys import argv, exit
 
 
 # Local files
-from constants import CHAMPION_POOL, LEVEL_ODDS, SHOP_SLOTS
-from rolldown import read_database, Unit
+from resources import CHAMPION_POOL, LEVEL_ODDS, SHOP_SLOTS, read_database, Unit
 
 
 def loaded_dice(unit, level):

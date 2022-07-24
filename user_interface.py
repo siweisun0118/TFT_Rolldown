@@ -16,9 +16,8 @@ from PyQt5.QtCore import Qt, QProcess
 
 
 # Local files
-from constants import GEN_ASSETS, LEVEL_EXP
+from resources import GEN_ASSETS, LEVEL_EXP, Game, Unit
 from loaded_dice import loaded_dice
-from rolldown import Game, Unit
 from user_interface_v3 import Ui_MainWindow, pathlib_path
 
 

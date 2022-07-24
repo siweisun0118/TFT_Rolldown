@@ -15,7 +15,7 @@ from pathlib import Path
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-from constants import GEN_ASSETS
+from resources import GEN_ASSETS
 
 
 def pathlib_path(root, ext):

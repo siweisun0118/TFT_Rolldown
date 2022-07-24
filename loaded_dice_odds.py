@@ -5,8 +5,7 @@ from sys import argv, exit
 
 
 # Local files
-from constants import LEVEL_ODDS, SHOP_SLOTS
-from rolldown import read_database, Unit
+from resources import LEVEL_ODDS, SHOP_SLOTS, read_database, Unit
 
 
 def loaded_dice_odds(desired_unit, champions):
