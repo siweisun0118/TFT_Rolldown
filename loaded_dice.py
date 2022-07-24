@@ -3,7 +3,7 @@
 # Standard libaries
 from copy import deepcopy
 import random
-from sys import argv, exit
+import sys
 
 
 # Local files
@@ -34,7 +34,7 @@ def loaded_dice(unit, level):
         candidates = []
         for possible in CHAMPION_POOL[i]:
             # If at least one trait is shared, add as potential candidate
-            if (set(possible.traits) & set(traits)):
+            if set(possible.traits) & set(traits):
                 candidates.append(possible)
 
         # If candidates is empty, reroll rarities until candidate is available
@@ -65,7 +65,7 @@ def loaded_dice(unit, level):
                 # Attempt to find more candidates
                 for possible in CHAMPION_POOL[cost]:
                     # If at least one trait is shared, add as potential candidate
-                    if (set(possible.traits) & set(traits)):
+                    if set(possible.traits) & set(traits):
                         candidates.append(possible)
 
         # Choose a random candidate
@@ -93,7 +93,7 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    if len(argv) != 4:
+    if len(sys.argv) != 4:
         print('Usage: python loaded_dice.py {input_dir} {unit_name} {level}')
-        exit()
-    main(argv)
+        sys.exit()
+    main(sys.argv)
