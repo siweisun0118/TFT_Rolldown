@@ -30,12 +30,19 @@ def init_rolldown_client(port):
         client_socket.send(message.encode())
 
         # Get response
+        response = ''
         while True:
             # Get message in chunks
-            response = client_socket.recv(65536).decode()
-            if not response:
+            chunk = client_socket.recv(1024).decode()
+            response += chunk
+            if not chunk or chunk[-1] == '\0':
                 break
+        # response = client_socket.recv(1024).decode()
         print('Server response:', response)
+
+        # End process after quitting
+        if response == 'Quitting...':
+            break
 
 
 def main(argv):
