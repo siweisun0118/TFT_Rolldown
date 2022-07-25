@@ -42,6 +42,7 @@ def init_rolldown_client(port):
 
         # End process after quitting
         if response == 'Quitting...':
+            print('Thread ended successfully')
             break
 
 

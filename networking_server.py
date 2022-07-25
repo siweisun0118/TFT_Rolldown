@@ -3,7 +3,6 @@
 # Standard libraries
 import json
 import socket
-from sqlite3 import connect
 import sys
 import time
 import threading
@@ -13,53 +12,73 @@ import threading
 from resources import SERVER_PORT, CHAMPION_POOL, read_database, serialize
 
 
-END = False
-
-
-def test_response():
-    """Test the server."""
-    return f'Hi this is {SERVER_PORT}'
+# Lock that protects CHAMPION_POOL
+pool_lock = threading.Lock()
 
 
 def get_champion_pool():
     """Return the current state of the champion pool."""
-    # GRAB LOCK
+    # LOCK SHOULD ALWAYS BE HELD HERE
+    assert pool_lock.locked()
+
+    # Build a copy of the champion pool and return it
     pool = {}
-    for cost in CHAMPION_POOL:
-        for unit in CHAMPION_POOL[cost]:
+    for _, champions in CHAMPION_POOL.items():
+        for unit in champions:
             if unit.name not in pool:
                 pool[unit.name] = 1
             else:
                 pool[unit.name] += 1
-    # RELEASE LOCK
     return json.dumps(pool, default=serialize)
 
 
-# Dictionary of valid messages
-# Map message -> function
-valid_messages = {
-    'test': test_response,
-    'get_champion_pool': get_champion_pool
-}
-
-
-def client_thread(connection, addr):
-    """Start thread that manages a single client."""
+def client_thread(connection, addr, champions):
+    """Start thread that handles a single client."""
     # Establish communication with client(s)
     while True:
         # Wait to receive messages
         message = connection.recv(1024).decode()
         print('Message received:', message, 'from connection', addr)
 
-        # Respond to message
+        # Respond to messages
+        # Quit message
         if message == 'quit':
             connection.send('Quitting...'.encode())
             connection.close()
-            break
-        elif message not in valid_messages:
-            connection.send(f'Unknown message: {message} \0'.encode())
+            return
+
+        # Check pool message (message form: 'get_champion_pool')
+        if message == 'pool':
+            # Grab lock since we are reading from CHAMPION POOL
+            with pool_lock:
+                connection.send(f'{get_champion_pool()}\0'.encode())
+
+        # Buy unit message (message form: 'buy_unit: {unit})
+        elif 'buy' in message:
+            # Get unit data
+            unit = message.split(':')[1].strip()
+            if unit in champions:
+                unit_data = champions[unit]
+
+                # Remove unit from pool if possible
+                try:
+                    # Grab lock since we are writing to CHAMPION_POOL
+                    with pool_lock:
+                        CHAMPION_POOL[unit_data.rarity].remove(unit_data)
+                except ValueError:
+                    connection.send(f'{unit} does not exist in pool!\0'.encode())
+                    continue
+
+                # Send response message
+                connection.send(f'{unit} bought successfully\0'.encode())
+
+            # Unknown unit
+            else:
+                connection.send(f'{unit} not found\0'.encode())
+
+        # Unknown message
         else:
-            connection.send(f'{valid_messages[message]()} \0'.encode())
+            connection.send(f'Unknown message: {message}\0'.encode())
 
         # Allow thread to sleep to save processor time
         time.sleep(0.5)
@@ -69,7 +88,7 @@ def init_rolldown_server(argv):
     """Initialize the server on port 8000 and receive messages.
        Also reads in database from input_dir."""
     # Read in database
-    read_database(argv[1])
+    champions, _ = read_database(argv[1])
 
     # Initialize list to store client threads
     client_threads = []
@@ -91,12 +110,13 @@ def init_rolldown_server(argv):
             print('Got connection from', addr)
 
             # Spin up thread for client
-            new_thread = threading.Thread(target=client_thread, args=(connection, addr))
+            args = (connection, addr, champions)
+            new_thread = threading.Thread(target=client_thread, args=args)
             new_thread.start()
             client_threads.append(new_thread)
-    except:
-        # In case of error or keyboard interrupt, close all connections and join threads
-        END = True
+
+    # In case of error or keyboard interrupt, close all connections and join threads
+    except (KeyboardInterrupt, BrokenPipeError):
         for thread in client_threads:
             assert isinstance(thread, threading.Thread)
             thread.join()

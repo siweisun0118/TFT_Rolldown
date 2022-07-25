@@ -1,24 +1,10 @@
 """Simulate rolls in TFT."""
 
 # Standard libraries
-import json
-import os
 from pathlib import Path
-import random
 import sys
 
-
-# Third party libraries
-# pylint: disable=import-error
-from termcolor import colored
-if os.name == 'nt':
-    from msvcrt import getwch as getch
-else:
-    from getch import getch
-
-
 # Local files
-# pylint: disable=wrong-import-position
 from resources import Game
 
 
