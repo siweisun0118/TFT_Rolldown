@@ -159,6 +159,7 @@ def init_rolldown_server(argv):
         for thread in client_threads:
             assert isinstance(thread, threading.Thread)
             thread.join()
+        main_socket.close()
         print('All threads joined, shutting down...')
 
 
