@@ -116,7 +116,7 @@ def client_thread(connection, addr, champions):
                 connection.send(f'Unknown message: {message}\0'.encode())
 
             # Allow thread to sleep to save processor time
-            time.sleep(0.5)
+            # time.sleep(0.5)
 
     except BrokenPipeError:
         print(addr, 'has closed the connection.')
