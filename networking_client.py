@@ -7,48 +7,24 @@ import sys
 
 
 # Local files
-from resources import SERVER_PORT
-
-
-def init_rolldown_client(port):
-    """Initialize the rolldown client on the given port number."""
-    # Make sure that the client is not trying to use the same port as the server
-    assert port != SERVER_PORT, 'Port 8000 is used by the server!'
-
-    # Initialize the client socket and bind it to the given port
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    host = socket.gethostname()
-    client_socket.bind((host, port))
-
-    # Connect to server
-    client_socket.connect((host, SERVER_PORT))
-
-    # Get client up and running
-    while True:
-        # Send messages
-        message = input('Enter a message: ')
-        client_socket.send(message.encode())
-
-        # Get response
-        response = ''
-        while True:
-            # Get message in chunks
-            chunk = client_socket.recv(1024).decode()
-            response += chunk
-            if not chunk or chunk[-1] == '\0':
-                break
-        # response = client_socket.recv(1024).decode()
-        print('Server response:', response)
-
-        # End process after quitting
-        if response == 'Quitting...':
-            print('Thread ended successfully')
-            break
+from resources import send_message, init_rolldown_client
 
 
 def main(argv):
     """Start the client that sends messages to the server."""
-    init_rolldown_client(int(argv[1]))
+    client_socket = init_rolldown_client(int(argv[1]))
+
+    # Send messages
+    while True:
+        # Send messages
+        message = input('Enter a message: ')
+        response = send_message(client_socket, message)
+        print('Server response:', response)
+
+        # End process after quitting
+        if response == 'Quitting...':
+            print('Client closed successfully')
+            break
 
 
 if __name__ == '__main__':

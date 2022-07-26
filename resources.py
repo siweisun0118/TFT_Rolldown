@@ -6,7 +6,10 @@ import json
 import os
 from pathlib import Path
 import random
+import socket
+import subprocess
 import sys
+import time
 
 
 # Third party libraries
@@ -16,6 +19,11 @@ if os.name == 'nt':
     from msvcrt import getwch as getch
 else:
     from getch import getch
+
+
+####### LOGGING RESOURCES #######
+SERVER_LOG_FILE = Path('server_log')
+####### END LOGGING RESOURCES #######
 
 
 ####### GAME RESOURCES #######
@@ -34,6 +42,9 @@ CHAMPION_AMOUNTS = {
     4: 12,
     5: 10
 }
+
+# Unit amounts by star level
+UNIT_AMOUNT_LEVEL = {1: 1, 2: 3, 3: 9}
 
 # Odds at each level
 LEVEL_ODDS = {
@@ -84,8 +95,12 @@ assert all((sum(odds) == 100 for odds in LEVEL_ODDS.values())), "Error in level 
 
 ####### HELPER FUNCTIONS #######
 # Helper function to read input directory
-def read_database(input_dir):
+def read_database(input_dir, read_only=False):
     """Read in units and traits."""
+    # If not read_only, reset pool
+    for cost in CHAMPION_POOL:
+        CHAMPION_POOL[cost] = []
+
     # Read in units
     with open(Path(input_dir) / 'champions.json', encoding='utf-8') as champions_file:
         champions_list = json.loads(champions_file.read())
@@ -107,7 +122,9 @@ def read_database(input_dir):
             champ['traits'], champ['championId'])
 
         # Add to champion pool
-        CHAMPION_POOL[champ['cost']] += [champions[champ['name']]] * CHAMPION_AMOUNTS[champ['cost']]
+        if not read_only:
+            CHAMPION_POOL[champ['cost']] += [champions[champ['name']]] * \
+                CHAMPION_AMOUNTS[champ['cost']]
 
     # Parse trait data
     traits = {}
@@ -129,6 +146,43 @@ def read_database(input_dir):
 def serialize(obj):
     """Serialize the object by converting its contents to a string."""
     return str(obj)
+
+
+### NETWORKING CLIENT FUNCTIONS ###
+# Send a message over the socket
+def send_message(client_socket, message):
+    """Send a message to the server and get response."""
+    client_socket.send(message.encode())
+
+    # Get response
+    response = ''
+    while True:
+        # Get message in chunks
+        chunk = client_socket.recv(1024).decode()
+        response += chunk
+        if not chunk or chunk[-1] == '\0':
+            break
+
+    return response
+
+
+# Initialize the client socket
+def init_rolldown_client(port):
+    """Initialize the rolldown client on the given port number."""
+    # Make sure that the client is not trying to use the same port as the server
+    assert port != SERVER_PORT, 'Port 8000 is used by the server!'
+
+    # Initialize the client socket and bind it to the given port
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host = socket.gethostname()
+    client_socket.bind((host, port))
+
+    # Connect to server
+    client_socket.connect((host, SERVER_PORT))
+
+    # Return client socket
+    return client_socket
+### END NETWORKING CLIENT FUNCTIONS ###
 ####### END HELPER FUNCTIONS #######
 
 
@@ -349,12 +403,6 @@ class Team:
         # Remove unit from team
         self.team.pop(unit_index)
 
-        # Return it to the champion pool
-        base_unit = Unit(sold_unit.rarity, sold_unit.name, sold_unit.traits, sold_unit.id_name)
-        quantities = [0, 1, 3, CHAMPION_AMOUNTS[sold_unit.rarity]]
-        for _ in range(quantities[sold_unit.level]):
-            CHAMPION_POOL[sold_unit.rarity].append(base_unit)
-
 
     def get_traits(self):
         """Extract the activated traits from a team."""
@@ -387,6 +435,20 @@ class Game:
         self.level = level
         self.exp = 0
 
+        # Check if server is running.
+        try:
+            self.client_socket = init_rolldown_client(0)
+        except ConnectionRefusedError:
+            # Start server and reset log if not running.
+            SERVER_LOG_FILE.unlink(missing_ok=True)
+            with open(str(SERVER_LOG_FILE), 'a') as outfile:
+                subprocess.Popen(['python', 'networking_server.py', input_dir], \
+                    stdout=outfile, stderr=outfile)
+
+            # Wait before trying to connect to server
+            time.sleep(0.5)
+            self.client_socket = init_rolldown_client(0)
+
     def __str__(self):
         """Display the current team"""
         return str(self.team)
@@ -412,18 +474,23 @@ class Game:
             # If there are no more champions of the cost (unlikely but possible),
             # simply choose a random champion
             if not CHAMPION_POOL[cost]:
-                print('Out of', cost, 'costs!')
+                # print('Out of', cost, 'costs!')
 
                 # Build a pool of all champions to choose a replacement
                 total_pool = [unit for ls in CHAMPION_POOL.values() for unit in ls]
                 replacement = random.choice(total_pool)
                 results.append(replacement)
-                print('The replacement unit is', replacement)
+
+                # print('The replacement unit is', replacement)
 
             else:
                 # Add result to list of resulting rolls
                 resulting_champ = random.choice(CHAMPION_POOL[cost])
                 results.append(resulting_champ)
+
+        # Take each rolled champion out of the pool
+        for unit in results:
+            send_message(self.client_socket, f'buy: {unit.name}')
 
         return results
 
@@ -468,11 +535,17 @@ class Game:
 
     def sell_unit(self, index):
         """Sell a unit from the team (0-indexed)."""
+        sold_unit = self.team.team[index]
+
         # Add gold equal to sell cost of unit
-        self.gold += self.team.team[index].sell_cost
+        self.gold += sold_unit.sell_cost
 
         # Remove unit from team
         self.team.remove_unit(index)
+
+        # Send message about selling unit to server
+        message = f'sell: {sold_unit.name}: {UNIT_AMOUNT_LEVEL[sold_unit.level]}'
+        send_message(self.client_socket, message)
 
     def check_team(self):
         """Check team and/or sell unit."""
@@ -561,6 +634,13 @@ class Game:
             # Generate new roll
             # Do not generate a new roll if gold is too low
             if reroll:
+                # Add previously rolled champions back to the pool
+                if not first_roll:
+                    for unit in cur_roll:
+                        if unit.name != 'BLANK':
+                            send_message(self.client_socket, f'sell: {unit.name}: 1')
+
+                # Roll new shop
                 cur_roll = self.roll(first_roll)
 
             # Display shop

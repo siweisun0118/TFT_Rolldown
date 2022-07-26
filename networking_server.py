@@ -32,56 +32,95 @@ def get_champion_pool():
     return json.dumps(pool, default=serialize)
 
 
+def buy_champion(message, connection, champions):
+    """Remove a champion from the pool by buying it."""
+    # Get unit data
+    unit = message.split(':')[1].strip()
+    if unit in champions:
+        unit_obj = champions[unit]
+
+        # Remove unit from pool if possible
+        try:
+            # Grab lock since we are writing to CHAMPION_POOL
+            with pool_lock:
+                CHAMPION_POOL[unit_obj.rarity].remove(unit_obj)
+        except ValueError:
+            connection.send(f'{unit} does not exist in pool!\0'.encode())
+            return
+
+        # Send response message
+        connection.send(f'{unit} bought successfully\0'.encode())
+
+    # Unknown unit
+    else:
+        connection.send(f'{unit} not found\0'.encode())
+
+
+def sell_champion(message, connection, champions):
+    """Add a champion to the pool by selling it."""
+    # Get information about the unit
+    unit, amount = message.split(':')[1:]
+    unit = unit.strip()
+    amount = int(amount)
+
+    # Add unit to pool
+    if unit in champions:
+        unit_obj = champions[unit]
+
+        # Grab pool lock since we are writing to CHAMPION_POOL
+        with pool_lock:
+            # Can sell multiple champions at once (i.e. selling upgraded unit)
+            for _ in range(amount):
+                CHAMPION_POOL[unit_obj.rarity].append(unit_obj)
+
+        # Send response confirming sell
+        connection.send(f'Successfully sold {amount} {unit} units\0'.encode())
+
+    # Unknown unit
+    else:
+        connection.send(f'{unit} not found\0'.encode())
+
+
 def client_thread(connection, addr, champions):
     """Start thread that handles a single client."""
     # Establish communication with client(s)
-    while True:
-        # Wait to receive messages
-        message = connection.recv(1024).decode()
-        print('Message received:', message, 'from connection', addr)
+    try:
+        while True:
+            # Wait to receive messages
+            message = connection.recv(1024).decode()
+            print('Message received:', message, 'from connection', addr)
 
-        # Respond to messages
-        # Quit message
-        if message == 'quit':
-            connection.send('Quitting...'.encode())
-            connection.close()
-            return
+            # Respond to messages
+            # Quit message
+            if message == 'quit':
+                connection.send('Quitting...'.encode())
+                connection.close()
+                return
 
-        # Check pool message (message form: 'get_champion_pool')
-        if message == 'pool':
-            # Grab lock since we are reading from CHAMPION POOL
-            with pool_lock:
-                connection.send(f'{get_champion_pool()}\0'.encode())
+            # Check pool message (message form: 'pool')
+            if message == 'pool':
+                # Grab lock since we are reading from CHAMPION POOL
+                with pool_lock:
+                    connection.send(f'{get_champion_pool()}\0'.encode())
 
-        # Buy unit message (message form: 'buy_unit: {unit})
-        elif 'buy' in message:
-            # Get unit data
-            unit = message.split(':')[1].strip()
-            if unit in champions:
-                unit_data = champions[unit]
+            # Buy unit message (message form: 'buy: {unit}')
+            elif 'buy' in message:
+                buy_champion(message, connection, champions)
 
-                # Remove unit from pool if possible
-                try:
-                    # Grab lock since we are writing to CHAMPION_POOL
-                    with pool_lock:
-                        CHAMPION_POOL[unit_data.rarity].remove(unit_data)
-                except ValueError:
-                    connection.send(f'{unit} does not exist in pool!\0'.encode())
-                    continue
+            # Sell unit message (message form: 'sell: {unit}: {amount})
+            elif 'sell' in message:
+                sell_champion(message, connection, champions)
 
-                # Send response message
-                connection.send(f'{unit} bought successfully\0'.encode())
-
-            # Unknown unit
+            # Unknown message
             else:
-                connection.send(f'{unit} not found\0'.encode())
+                connection.send(f'Unknown message: {message}\0'.encode())
 
-        # Unknown message
-        else:
-            connection.send(f'Unknown message: {message}\0'.encode())
+            # Allow thread to sleep to save processor time
+            time.sleep(0.5)
 
-        # Allow thread to sleep to save processor time
-        time.sleep(0.5)
+    except BrokenPipeError:
+        print(addr, 'has closed the connection.')
+        return
 
 
 def init_rolldown_server(argv):
