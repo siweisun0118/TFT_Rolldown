@@ -107,7 +107,7 @@ def buy_champion(message, connection, champions):
         # Remove unit from pool
         # Grab lock since we are writing to CHAMPION_POOL
         assert unit_obj in CHAMPION_POOL[unit_obj.rarity], \
-            'Error: unit not found in champion pool'
+            f'Error: {unit} not found in champion pool'
         CHAMPION_POOL[unit_obj.rarity].remove(unit_obj)
 
         # Send response message
@@ -206,7 +206,7 @@ def client_thread(connection, addr, champions):
                 connection.send(f'Unknown message: {message}\0'.encode())
                 raise UnknownMessageError(message)
 
-    except (KeyboardInterrupt, BrokenPipeError, ConnectionAbortedError):
+    except (KeyboardInterrupt, BrokenPipeError, ConnectionAbortedError, ConnectionResetError):
         print(addr, 'has closed the connection.')
         return
 
@@ -244,7 +244,7 @@ def init_rolldown_server(argv):
             client_threads.append(new_thread)
 
     # In case of error or keyboard interrupt, close all connections and join threads
-    except (KeyboardInterrupt, BrokenPipeError, ConnectionAbortedError):
+    except (KeyboardInterrupt, BrokenPipeError, ConnectionAbortedError, ConnectionResetError):
         shutdown(main_socket, client_threads)
 
 

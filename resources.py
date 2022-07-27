@@ -537,9 +537,15 @@ class Game:
         """Roll for champions based on level."""
         assert self.level in range(1, 12)
 
-        # Get current champion pool from server
+        # Rebuild current champion pool using message from server
         # Note that the champions are not strings, NOT UNIT OBJECTS
-        cur_pool = json.loads(send_message(self.client_socket, 'full_pool'))
+        full_pool = json.loads(send_message(self.client_socket, 'pool'))
+        cur_pool = {1: [], 2: [], 3: [], 4: [], 5: []}
+        for name, amount in full_pool.items():
+            # Three starred units can no longer be rolled
+            if name not in THREE_STARRED:
+                cur_unit = self.champions_dict[name]
+                cur_pool[cur_unit.rarity] += ([cur_unit] * amount)
 
         # If this roll is a reroll, cost 2 gold
         if not first_roll:
@@ -548,7 +554,7 @@ class Game:
         # 5 Slots
         # For each slot, we roll a random cost
         odds = LEVEL_ODDS[self.level]
-        costs = random.choices(population=['1', '2', '3', '4', '5'], weights=odds, k=5)
+        costs = random.choices(population=[1, 2, 3, 4, 5], weights=odds, k=5)
 
         # For each result, we choose a random champion from cur_pool
         results = []
@@ -558,25 +564,32 @@ class Game:
             # units can no longer be rolled
             can_roll = []
             for unit in cur_pool[cost]:
-                if unit not in THREE_STARRED:
-                    can_roll.append(unit)
+                can_roll.append(unit)
 
             # If no unit can be rolled, add any eligible unit
             if not can_roll:
                 # print('Out of', cost, 'costs!')
 
                 # Build a pool of all champions to choose a replacement
-                # Still keeping in mind that 3 starred units cannot be rolled
-                total_pool = [unit for ls in cur_pool.values() for unit in ls \
-                    if unit not in THREE_STARRED]
-                replacement = self.champions_dict[random.choice(total_pool)]
+                total_pool = [unit for ls in cur_pool.values() for unit in ls]
+                replacement = random.choice(total_pool)
+
+                # Remove chosen champion from pool
+                cur_pool[replacement.rarity].remove(replacement)
+
+                # Add chosen champion to results
                 results.append(replacement)
 
                 # print('The replacement unit is', replacement)
 
             else:
+                # Roll random eligible champion
+                resulting_champ = random.choice(can_roll)
+
+                # Remove chosen champion from pool
+                cur_pool[resulting_champ.rarity].remove(resulting_champ)
+
                 # Add result to list of resulting rolls
-                resulting_champ = self.champions_dict[random.choice(can_roll)]
                 results.append(resulting_champ)
 
         # Take each rolled champion out of the pool
@@ -602,7 +615,7 @@ class Game:
 
         # Convert current roll to string form
         str_roll = ''
-        for idx, champ in enumerate(self.cur_roll):
+        for idx, champ in enumerate(self.cur_shop):
             if champ in self.team:
                 str_roll += colored('[' + str(idx + 1) + '] ' + str(champ), 'green')
             else:
@@ -615,11 +628,11 @@ class Game:
         """Buy a unit for the team (1-indexed)."""
         idx = int(next_in) - 1
         # Remove cost from current gold and add gold to team
-        cur_unit = self.cur_roll[idx]
+        cur_unit = self.cur_shop[idx]
         if cur_unit.name != 'BLANK' and self.gold >= cur_unit.cost:
             self.gold -= cur_unit.cost
             self.team.add_unit(cur_unit.name)
-            self.cur_roll[idx] = Unit(None, 'BLANK', None, None)
+            self.cur_shop[idx] = Unit(None, 'BLANK', None, None)
         else:
             # print("You don't have enough gold!")
             pass
@@ -699,7 +712,7 @@ class Game:
             send_message(self.client_socket, f'sell: {unit.name}: {unit.level}')
 
         # Return units in shop to the pool
-        for unit in self.cur_roll:
+        for unit in self.cur_shop:
             if unit.name != 'BLANK':
                 send_message(self.client_socket, f'sell: {unit.name}: {unit.level}')
 
@@ -736,12 +749,12 @@ class Game:
             if reroll:
                 # Add previously rolled champions back to the pool
                 if not first_roll:
-                    for unit in self.cur_roll:
+                    for unit in self.cur_shop:
                         if unit.name != 'BLANK':
                             send_message(self.client_socket, f'sell: {unit.name}: 1')
 
                 # Roll new shop
-                self.cur_roll = self.roll(first_roll)
+                self.cur_shop = self.roll(first_roll)
 
             # Display shop
             self.display_roll()
