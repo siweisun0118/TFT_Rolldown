@@ -107,49 +107,40 @@ SERVER_PORT = 8000
 # Helper function to read input directory
 def read_database(input_dir):
     """Read in units and traits."""
-    # If not read_only, reset pool
-    with POOL_LOCK:
-        for cost in CHAMPION_POOL:
-            CHAMPION_POOL[cost] = []
+    # Read in units
+    with open(Path(input_dir) / 'champions.json', encoding='utf-8') as champions_file:
+        champions_list = json.loads(champions_file.read())
 
-        # Read in units
-        with open(Path(input_dir) / 'champions.json', encoding='utf-8') as champions_file:
-            champions_list = json.loads(champions_file.read())
+    # Read in traits
+    with open(Path(input_dir) / 'traits.json', encoding='utf-8') as traits_file:
+        traits_list = json.loads(traits_file.read())
 
-        # Read in traits
-        with open(Path(input_dir) / 'traits.json', encoding='utf-8') as traits_file:
-            traits_list = json.loads(traits_file.read())
+    # Parse unit data
+    champions = {}
+    for champ in champions_list:
+        # If champion has fewer than 2 traits, ignore it
+        # Since it is a target dummy, voidspawn, tome, Veigar, etc.
+        if len(champ['traits']) < 2:
+            continue
 
-        # Parse unit data
-        champions = {}
-        for champ in champions_list:
-            # If champion has fewer than 2 traits, ignore it
-            # Since it is a target dummy, voidspawn, tome, Veigar, etc.
-            if len(champ['traits']) < 2:
-                continue
+        # Add to champions list
+        champions[champ['name']] = Unit(champ['cost'], champ['name'], \
+            champ['traits'], champ['championId'])
 
-            # Add to champions list
-            champions[champ['name']] = Unit(champ['cost'], champ['name'], \
-                champ['traits'], champ['championId'])
+    # Parse trait data
+    traits = {}
+    for trait in traits_list:
+        # Extract trait breakpoints and styles from trait data
+        breakpoints = []
+        styles = []
+        for b_p in trait['sets']:
+            breakpoints.append(b_p['min'])
+            styles.append(b_p['style'])
 
-            # Add to champion pool
-            CHAMPION_POOL[champ['cost']] += [champions[champ['name']]] * \
-                CHAMPION_AMOUNTS[champ['cost']]
+        # Add to traits list
+        traits[trait['name']] = Trait(trait['name'], breakpoints, styles)
 
-        # Parse trait data
-        traits = {}
-        for trait in traits_list:
-            # Extract trait breakpoints and styles from trait data
-            breakpoints = []
-            styles = []
-            for b_p in trait['sets']:
-                breakpoints.append(b_p['min'])
-                styles.append(b_p['style'])
-
-            # Add to traits list
-            traits[trait['name']] = Trait(trait['name'], breakpoints, styles)
-
-        return champions, traits
+    return champions, traits
 
 
 # Helper function to serialize custom classes

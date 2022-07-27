@@ -2,37 +2,103 @@
 
 # Standard libraries
 import json
+from pathlib import Path
 import socket
 import sys
 import threading
 
 
 # Local files
-from resources import SERVER_PORT, CHAMPION_POOL, read_database, serialize
-from resources import POOL_LOCK, UNIT_AMOUNT_LEVEL
+from resources import SERVER_PORT, CHAMPION_POOL, serialize
+from resources import POOL_LOCK, UNIT_AMOUNT_LEVEL, CHAMPION_AMOUNTS
+from resources import Unit, Trait
+
+
+class UnknownChampionError(Exception):
+    """Unknown Champion Error."""
+    pass
+
+
+class UnknownMessageError(Exception):
+    """Unknown Message Error."""
+    pass
+
+
+# Helper function to read input directory
+def populate_champ_pool(input_dir):
+    """Read in units and traits."""
+    assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
+
+    for cost in CHAMPION_POOL:
+        CHAMPION_POOL[cost] = []
+
+    # Read in units
+    with open(Path(input_dir) / 'champions.json', encoding='utf-8') as champions_file:
+        champions_list = json.loads(champions_file.read())
+
+    # Read in traits
+    with open(Path(input_dir) / 'traits.json', encoding='utf-8') as traits_file:
+        traits_list = json.loads(traits_file.read())
+
+    # Parse unit data
+    champions = {}
+    for champ in champions_list:
+        # If champion has fewer than 2 traits, ignore it
+        # Since it is a target dummy, voidspawn, tome, Veigar, etc.
+        if len(champ['traits']) < 2:
+            continue
+
+        # Add to champions list
+        champions[champ['name']] = Unit(champ['cost'], champ['name'], \
+            champ['traits'], champ['championId'])
+
+        # Add to champion pool
+        CHAMPION_POOL[champ['cost']] += [champions[champ['name']]] * \
+            CHAMPION_AMOUNTS[champ['cost']]
+
+    # Parse trait data
+    traits = {}
+    for trait in traits_list:
+        # Extract trait breakpoints and styles from trait data
+        breakpoints = []
+        styles = []
+        for b_p in trait['sets']:
+            breakpoints.append(b_p['min'])
+            styles.append(b_p['style'])
+
+        # Add to traits list
+        traits[trait['name']] = Trait(trait['name'], breakpoints, styles)
+
+    return champions, traits
 
 
 def get_champion_pool():
     """Return the current state of the champion pool."""
+    assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
+
     # Build a copy of the champion pool and return it
-    with POOL_LOCK:
-        pool = {}
-        for _, champions in CHAMPION_POOL.items():
-            for unit in champions:
-                if unit.name not in pool:
-                    pool[unit.name] = 1
-                else:
-                    pool[unit.name] += 1
-        return f'{json.dumps(pool, default=serialize)}\0'.encode()
+    pool = {}
+    for _, champions in CHAMPION_POOL.items():
+        for unit in champions:
+            if unit.name not in pool:
+                pool[unit.name] = 1
+            else:
+                pool[unit.name] += 1
+    return f'{json.dumps(pool, default=serialize)}\0'.encode()
+
 
 def get_full_pool():
     """Return the current state of the champion pool.
        Includes champion information."""
+    assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
+
     return f'{json.dumps(CHAMPION_POOL, default=serialize)}\0'.encode()
 
 
 def buy_champion(message, connection, champions):
     """Remove a champion from the pool by buying it."""
+    assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
+
     # Get unit data
     unit = message.split(':')[1].strip()
     if unit in champions:
@@ -40,10 +106,9 @@ def buy_champion(message, connection, champions):
 
         # Remove unit from pool
         # Grab lock since we are writing to CHAMPION_POOL
-        with POOL_LOCK:
-            assert unit_obj in CHAMPION_POOL[unit_obj.rarity], \
-                'Error: unit not found in champion pool'
-            CHAMPION_POOL[unit_obj.rarity].remove(unit_obj)
+        assert unit_obj in CHAMPION_POOL[unit_obj.rarity], \
+            'Error: unit not found in champion pool'
+        CHAMPION_POOL[unit_obj.rarity].remove(unit_obj)
 
         # Send response message
         connection.send(f'{unit} bought successfully\0'.encode())
@@ -51,10 +116,13 @@ def buy_champion(message, connection, champions):
     # Unknown unit
     else:
         connection.send(f'{unit} not found\0'.encode())
+        raise UnknownChampionError(unit)
 
 
 def sell_champion(message, connection, champions):
     """Add a champion to the pool by selling it."""
+    assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
+
     # Get information about the unit
     unit, level = message.split(':')[1:]
     unit = unit.strip()
@@ -64,11 +132,9 @@ def sell_champion(message, connection, champions):
     if unit in champions:
         unit_obj = champions[unit]
 
-        # Grab pool lock since we are writing to CHAMPION_POOL
-        with POOL_LOCK:
-            # Can sell multiple champions at once (i.e. selling upgraded unit)
-            for _ in range(amount):
-                CHAMPION_POOL[unit_obj.rarity].append(unit_obj)
+        # Can sell multiple champions at once (i.e. selling upgraded unit)
+        for _ in range(amount):
+            CHAMPION_POOL[unit_obj.rarity].append(unit_obj)
 
         # Send response confirming sell
         connection.send(f'Successfully sold {amount} {unit} units\0'.encode())
@@ -76,6 +142,15 @@ def sell_champion(message, connection, champions):
     # Unknown unit
     else:
         connection.send(f'{unit} not found\0'.encode())
+        raise UnknownChampionError(unit)
+
+
+def shutdown(main_socket, client_threads):
+    """Shutdown server and close all connections."""
+    main_socket.close()
+    for thread in client_threads:
+        thread.join()
+    print('Server shutting down...')
 
 
 def client_thread(connection, addr, champions):
@@ -96,29 +171,40 @@ def client_thread(connection, addr, champions):
 
             # Check pool message (message form: 'pool')
             if message == 'pool':
-                # Function will grab POOL_LOCK
-                connection.send(get_champion_pool())
+                with POOL_LOCK:
+                    connection.send(get_champion_pool())
 
             elif message == 'full_pool':
                 # Function will grab POOL_LOCK
-                connection.send(get_full_pool())
+                with POOL_LOCK:
+                    connection.send(get_full_pool())
 
             # Buy unit message (message form: 'buy: {unit}')
             elif 'buy' in message:
-                buy_champion(message, connection, champions)
+                with POOL_LOCK:
+                    buy_champion(message, connection, champions)
 
             # Sell unit message (message form: 'sell: {unit}: {amount})
             elif 'sell' in message:
-                sell_champion(message, connection, champions)
+                with POOL_LOCK:
+                    sell_champion(message, connection, champions)
 
             # Reset champion pool
             elif message == 'reset':
-                read_database(sys.argv[1])
-                connection.send('CHAMPION_POOL reset\n'.encode())
+                with POOL_LOCK:
+                    populate_champ_pool(sys.argv[1])
+                    connection.send('CHAMPION_POOL reset\n'.encode())
+
+            # TODO: Shutdown server and close all connections
+            elif message == 'shutdown':
+                connection.send('Quitting...\0'.encode())
+                connection.close()
+                return
 
             # Unknown message
             else:
                 connection.send(f'Unknown message: {message}\0'.encode())
+                raise UnknownMessageError(message)
 
     except (KeyboardInterrupt, BrokenPipeError, ConnectionAbortedError):
         print(addr, 'has closed the connection.')
@@ -129,7 +215,8 @@ def init_rolldown_server(argv):
     """Initialize the server on port 8000 and receive messages.
        Also reads in database from input_dir."""
     # Read in database
-    champions, _ = read_database(argv[1])
+    with POOL_LOCK:
+        champions, _ = populate_champ_pool(argv[1])
 
     # Initialize list to store client threads
     client_threads = []
@@ -158,11 +245,7 @@ def init_rolldown_server(argv):
 
     # In case of error or keyboard interrupt, close all connections and join threads
     except (KeyboardInterrupt, BrokenPipeError, ConnectionAbortedError):
-        for thread in client_threads:
-            assert isinstance(thread, threading.Thread)
-            thread.join()
-        main_socket.close()
-        print('All threads joined, shutting down...')
+        shutdown(main_socket, client_threads)
 
 
 def main(argv):

@@ -19,6 +19,11 @@ Install the necessary apt packages:
 ```
 
 # Usage
+First, start the server that manages the champion pool:
+```
+python networking_server.py {input_directory}
+```
+
 For the terminal-only rolldown simulator, use the following command:
 ```
 python rolldown.py {input_directory}
