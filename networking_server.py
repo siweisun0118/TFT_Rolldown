@@ -99,6 +99,11 @@ def client_thread(connection, addr, champions):
                 with POOL_LOCK:
                     connection.send(f'{get_champion_pool()}\0'.encode())
 
+            elif message == 'full_pool':
+                # Grab lock since we are reading from CHAMPION POOL
+                with POOL_LOCK:
+                    connection.send(f'{json.dumps(CHAMPION_POOL, default=serialize)}\0'.encode())
+
             # Buy unit message (message form: 'buy: {unit}')
             elif 'buy' in message:
                 buy_champion(message, connection, champions)
@@ -110,6 +115,9 @@ def client_thread(connection, addr, champions):
             # Reset champion pool
             elif message == 'reset':
                 read_database(sys.argv[1])
+                connection.send('CHAMPION_POOL reset\n'.encode())
+                with POOL_LOCK:
+                    connection.send(f'{get_champion_pool()}\0'.encode())
 
             # Unknown message
             else:

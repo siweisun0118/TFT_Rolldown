@@ -152,7 +152,7 @@ def read_database(input_dir):
 # Helper function to serialize custom classes
 def serialize(obj):
     """Serialize the object by converting its contents to a string."""
-    return str(obj)
+    return obj.name
 
 
 ### NETWORKING CLIENT FUNCTIONS ###
@@ -170,7 +170,7 @@ def send_message(client_socket, message):
         if not chunk or chunk[-1] == '\0':
             break
 
-    return response
+    return response[:-1]
 
 
 # Initialize the client socket
@@ -254,7 +254,7 @@ class Unit:
 
     def upgrade(self):
         """Return an upgraded version of the unit."""
-        # Newly created 3 star units can no longer be rolled
+        # 3 star units can no longer be rolled
         if self.level == 2:
             # Remove all remaining instances of this champion from the pool
             # TODO: FIX THIS
@@ -325,7 +325,7 @@ class Team:
         return item in self.team
 
     def add_unit(self, unit):
-        """Add unit to a team."""
+        """Add unit to a team. Do not send message to remove champion from pool."""
         assert isinstance(unit, str), "Error attempting to add unknown type to team."
         # BLANKS are units that were already bought
         # Do nothing if user attempts to buy an empty slot
@@ -339,10 +339,6 @@ class Team:
         except KeyError:
             print('KeyError raised, check champion spelling: ' + unit)
             return
-
-        # Remove the unit from the champion pool
-        with POOL_LOCK:
-            send_message(self.client_socket, f'buy: {new_unit.name}')
 
         # If it's a unique unit, add its traits to the team
         if new_unit not in self.team:
@@ -473,6 +469,9 @@ class Game:
         """Roll for champions based on level."""
         assert self.level in range(1, 12)
 
+        # Get current champion pool from server
+        cur_pool = json.loads(send_message(self.client_socket, 'full_pool'))
+
         # If this roll is a reroll, cost 2 gold
         if not first_roll:
             self.gold -= 2
@@ -480,28 +479,27 @@ class Game:
         # 5 Slots
         # For each slot, we roll a random cost
         odds = LEVEL_ODDS[self.level]
-        costs = random.choices(population=[1, 2, 3, 4, 5], weights=odds, k=5)
+        costs = random.choices(population=['1', '2', '3', '4', '5'], weights=odds, k=5)
 
-        # For each result, we choose a random champion from CHAMPION_POOL
-        # We don't need global keyword because CHAMPION_POOL is mutable
+        # For each result, we choose a random champion from cur_pool
         results = []
         with POOL_LOCK:
             for cost in costs:
                 # If there are no more champions of the cost (unlikely but possible),
                 # simply choose a random champion
-                if not CHAMPION_POOL[cost]:
+                if not cur_pool[cost]:
                     # print('Out of', cost, 'costs!')
 
                     # Build a pool of all champions to choose a replacement
-                    total_pool = [unit for ls in CHAMPION_POOL.values() for unit in ls]
-                    replacement = random.choice(total_pool)
+                    total_pool = [unit for ls in cur_pool.values() for unit in ls]
+                    replacement = self.champions_dict[random.choice(total_pool)]
                     results.append(replacement)
 
                     # print('The replacement unit is', replacement)
 
                 else:
                     # Add result to list of resulting rolls
-                    resulting_champ = random.choice(CHAMPION_POOL[cost])
+                    resulting_champ = self.champions_dict[random.choice(cur_pool[cost])]
                     results.append(resulting_champ)
 
         # Take each rolled champion out of the pool
