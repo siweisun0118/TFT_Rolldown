@@ -9,6 +9,7 @@ import random
 import socket
 import subprocess
 import sys
+import threading
 import time
 
 
@@ -24,6 +25,11 @@ else:
 ####### LOGGING RESOURCES #######
 SERVER_LOG_FILE = Path('server_log')
 ####### END LOGGING RESOURCES #######
+
+
+####### LOCKS #######
+POOL_LOCK = threading.Lock()
+####### END LOCKS #######
 
 
 ####### GAME RESOURCES #######
@@ -95,11 +101,12 @@ assert all((sum(odds) == 100 for odds in LEVEL_ODDS.values())), "Error in level 
 
 ####### HELPER FUNCTIONS #######
 # Helper function to read input directory
-def read_database(input_dir, read_only=False):
+def read_database(input_dir):
     """Read in units and traits."""
     # If not read_only, reset pool
-    for cost in CHAMPION_POOL:
-        CHAMPION_POOL[cost] = []
+    with POOL_LOCK:
+        for cost in CHAMPION_POOL:
+            CHAMPION_POOL[cost] = []
 
     # Read in units
     with open(Path(input_dir) / 'champions.json', encoding='utf-8') as champions_file:
@@ -122,7 +129,7 @@ def read_database(input_dir, read_only=False):
             champ['traits'], champ['championId'])
 
         # Add to champion pool
-        if not read_only:
+        with POOL_LOCK:
             CHAMPION_POOL[champ['cost']] += [champions[champ['name']]] * \
                 CHAMPION_AMOUNTS[champ['cost']]
 
@@ -250,6 +257,7 @@ class Unit:
         # Newly created 3 star units can no longer be rolled
         if self.level == 2:
             # Remove all remaining instances of this champion from the pool
+            # TODO: FIX THIS
             CHAMPION_POOL[self.rarity] = [unit for unit in CHAMPION_POOL[self.rarity] \
                 if unit != self]
 
@@ -278,12 +286,17 @@ class Trait:
 
 class Team:
     """Class that represents a team of units."""
-    def __init__(self, champions_dict, traits_dict):
+    def __init__(self, champions_dict, traits_dict, client_socket):
+        # Current team and traits
         self.team = []
         self.traits = {}
 
+        # Dictionary of all champions and traits
         self.champions_dict = champions_dict
         self.traits_dict = traits_dict
+
+        # Socket to send messages
+        self.client_socket = client_socket
 
     def __str__(self):
         """Return the String representation of a team."""
@@ -328,10 +341,8 @@ class Team:
             return
 
         # Remove the unit from the champion pool
-        try:
-            CHAMPION_POOL[new_unit.rarity].remove(new_unit)
-        except ValueError:
-            pass
+        with POOL_LOCK:
+            send_message(self.client_socket, f'buy: {new_unit.name}')
 
         # If it's a unique unit, add its traits to the team
         if new_unit not in self.team:
@@ -403,6 +414,10 @@ class Team:
         # Remove unit from team
         self.team.pop(unit_index)
 
+        # Send message about selling unit to server
+        message = f'sell: {sold_unit.name}: {UNIT_AMOUNT_LEVEL[sold_unit.level]}'
+        send_message(self.client_socket, message)
+
 
     def get_traits(self):
         """Extract the activated traits from a team."""
@@ -426,9 +441,6 @@ class Game:
         self.champions_dict = champions_dict
         self.traits_dict = traits_dict
 
-        # Create new team
-        self.team = Team(self.champions_dict, self.traits_dict)
-
         # Gold and level member variables
         # This is set by user input in self.rolldown()
         self.gold = gold
@@ -441,13 +453,16 @@ class Game:
         except ConnectionRefusedError:
             # Start server and reset log if not running.
             SERVER_LOG_FILE.unlink(missing_ok=True)
-            with open(str(SERVER_LOG_FILE), 'a') as outfile:
+            with open(str(SERVER_LOG_FILE), mode='a', encoding='utf-8') as outfile:
                 subprocess.Popen(['python', 'networking_server.py', input_dir], \
                     stdout=outfile, stderr=outfile)
 
             # Wait before trying to connect to server
             time.sleep(0.5)
             self.client_socket = init_rolldown_client(0)
+
+        # Create new team
+        self.team = Team(self.champions_dict, self.traits_dict, self.client_socket)
 
     def __str__(self):
         """Display the current team"""
@@ -470,23 +485,24 @@ class Game:
         # For each result, we choose a random champion from CHAMPION_POOL
         # We don't need global keyword because CHAMPION_POOL is mutable
         results = []
-        for cost in costs:
-            # If there are no more champions of the cost (unlikely but possible),
-            # simply choose a random champion
-            if not CHAMPION_POOL[cost]:
-                # print('Out of', cost, 'costs!')
+        with POOL_LOCK:
+            for cost in costs:
+                # If there are no more champions of the cost (unlikely but possible),
+                # simply choose a random champion
+                if not CHAMPION_POOL[cost]:
+                    # print('Out of', cost, 'costs!')
 
-                # Build a pool of all champions to choose a replacement
-                total_pool = [unit for ls in CHAMPION_POOL.values() for unit in ls]
-                replacement = random.choice(total_pool)
-                results.append(replacement)
+                    # Build a pool of all champions to choose a replacement
+                    total_pool = [unit for ls in CHAMPION_POOL.values() for unit in ls]
+                    replacement = random.choice(total_pool)
+                    results.append(replacement)
 
-                # print('The replacement unit is', replacement)
+                    # print('The replacement unit is', replacement)
 
-            else:
-                # Add result to list of resulting rolls
-                resulting_champ = random.choice(CHAMPION_POOL[cost])
-                results.append(resulting_champ)
+                else:
+                    # Add result to list of resulting rolls
+                    resulting_champ = random.choice(CHAMPION_POOL[cost])
+                    results.append(resulting_champ)
 
         # Take each rolled champion out of the pool
         for unit in results:
@@ -535,17 +551,11 @@ class Game:
 
     def sell_unit(self, index):
         """Sell a unit from the team (0-indexed)."""
-        sold_unit = self.team.team[index]
-
         # Add gold equal to sell cost of unit
-        self.gold += sold_unit.sell_cost
+        self.gold += self.team.team[index].sell_cost
 
         # Remove unit from team
         self.team.remove_unit(index)
-
-        # Send message about selling unit to server
-        message = f'sell: {sold_unit.name}: {UNIT_AMOUNT_LEVEL[sold_unit.level]}'
-        send_message(self.client_socket, message)
 
     def check_team(self):
         """Check team and/or sell unit."""

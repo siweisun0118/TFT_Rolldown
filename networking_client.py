@@ -2,7 +2,6 @@
 
 
 # Standard libraries
-import socket
 import sys
 
 

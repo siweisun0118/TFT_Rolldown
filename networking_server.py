@@ -4,22 +4,18 @@
 import json
 import socket
 import sys
-import time
 import threading
 
 
 # Local files
 from resources import SERVER_PORT, CHAMPION_POOL, read_database, serialize
-
-
-# Lock that protects CHAMPION_POOL
-pool_lock = threading.Lock()
+from resources import POOL_LOCK
 
 
 def get_champion_pool():
     """Return the current state of the champion pool."""
     # LOCK SHOULD ALWAYS BE HELD HERE
-    assert pool_lock.locked()
+    assert POOL_LOCK.locked(), 'POOL_LOCK required to access CHAMPION_POOL!'
 
     # Build a copy of the champion pool and return it
     pool = {}
@@ -42,7 +38,7 @@ def buy_champion(message, connection, champions):
         # Remove unit from pool if possible
         try:
             # Grab lock since we are writing to CHAMPION_POOL
-            with pool_lock:
+            with POOL_LOCK:
                 CHAMPION_POOL[unit_obj.rarity].remove(unit_obj)
         except ValueError:
             connection.send(f'{unit} does not exist in pool!\0'.encode())
@@ -68,7 +64,7 @@ def sell_champion(message, connection, champions):
         unit_obj = champions[unit]
 
         # Grab pool lock since we are writing to CHAMPION_POOL
-        with pool_lock:
+        with POOL_LOCK:
             # Can sell multiple champions at once (i.e. selling upgraded unit)
             for _ in range(amount):
                 CHAMPION_POOL[unit_obj.rarity].append(unit_obj)
@@ -100,7 +96,7 @@ def client_thread(connection, addr, champions):
             # Check pool message (message form: 'pool')
             if message == 'pool':
                 # Grab lock since we are reading from CHAMPION POOL
-                with pool_lock:
+                with POOL_LOCK:
                     connection.send(f'{get_champion_pool()}\0'.encode())
 
             # Buy unit message (message form: 'buy: {unit}')
@@ -111,14 +107,15 @@ def client_thread(connection, addr, champions):
             elif 'sell' in message:
                 sell_champion(message, connection, champions)
 
+            # Reset champion pool
+            elif message == 'reset':
+                read_database(sys.argv[1])
+
             # Unknown message
             else:
                 connection.send(f'Unknown message: {message}\0'.encode())
 
-            # Allow thread to sleep to save processor time
-            # time.sleep(0.5)
-
-    except BrokenPipeError:
+    except (KeyboardInterrupt, BrokenPipeError, ConnectionAbortedError):
         print(addr, 'has closed the connection.')
         return
 
@@ -155,7 +152,7 @@ def init_rolldown_server(argv):
             client_threads.append(new_thread)
 
     # In case of error or keyboard interrupt, close all connections and join threads
-    except (KeyboardInterrupt, BrokenPipeError):
+    except (KeyboardInterrupt, BrokenPipeError, ConnectionAbortedError):
         for thread in client_threads:
             assert isinstance(thread, threading.Thread)
             thread.join()

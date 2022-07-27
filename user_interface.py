@@ -16,7 +16,7 @@ from PyQt5.QtCore import Qt, QProcess
 
 
 # Local files
-from resources import GEN_ASSETS, LEVEL_EXP, Game, Unit
+from resources import GEN_ASSETS, LEVEL_EXP, Game, Unit, send_message
 from loaded_dice import loaded_dice
 from user_interface_v3 import Ui_MainWindow, pathlib_path
 
@@ -166,6 +166,12 @@ class MainWindow(QMainWindow):
         """Display the current shop."""
         # Assert that player has enough gold to roll
         assert first_roll or self.game.gold >= 2, 'ASSERTION ERROR: NOT ENOUGH GOLD TO ROLL'
+
+        # Add previously rolled units back to the shop
+        if not first_roll:
+            for unit in self.cur_shop:
+                if unit.name != 'BLANK':
+                    send_message(self.game.client_socket, f'sell: {unit.name}: 1')
 
         # Roll for units
         if not loaded_shop:
