@@ -517,6 +517,9 @@ class Game:
         self.level = level
         self.exp = 0
 
+        # Keep track of the current shop
+        self.cur_shop = None
+
         # Check if server is running.
         try:
             self.client_socket = init_rolldown_client(0)
@@ -591,7 +594,7 @@ class Game:
 
         return results
 
-    def display_roll(self, current_roll):
+    def display_roll(self):
         """Display the champions in the current shop."""
         # Clear console
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -608,7 +611,7 @@ class Game:
 
         # Convert current roll to string form
         str_roll = ''
-        for idx, champ in enumerate(current_roll):
+        for idx, champ in enumerate(self.cur_roll):
             if champ in self.team:
                 str_roll += colored('[' + str(idx + 1) + '] ' + str(champ), 'green')
             else:
@@ -617,15 +620,15 @@ class Game:
         # Display current roll
         print(str_roll, end='')
 
-    def buy_unit(self, cur_roll, next_in):
+    def buy_unit(self, next_in):
         """Buy a unit for the team (1-indexed)."""
         idx = int(next_in) - 1
         # Remove cost from current gold and add gold to team
-        cur_unit = cur_roll[idx]
+        cur_unit = self.cur_roll[idx]
         if cur_unit.name != 'BLANK' and self.gold >= cur_unit.cost:
             self.gold -= cur_unit.cost
             self.team.add_unit(cur_unit.name)
-            cur_roll[idx] = Unit(None, 'BLANK', None, None)
+            self.cur_roll[idx] = Unit(None, 'BLANK', None, None)
         else:
             # print("You don't have enough gold!")
             pass
@@ -700,9 +703,14 @@ class Game:
         print('Final results:')
         print(self.team)
 
-        # Return units to shop
+        # Return units on the team to the pool
         for unit in self.team.team:
             send_message(self.client_socket, f'sell: {unit.name}: {unit.level}')
+
+        # Return units in shop to the pool
+        for unit in self.cur_roll:
+            if unit.name != 'BLANK':
+                send_message(self.client_socket, f'sell: {unit.name}: {unit.level}')
 
     def rolldown(self):
         """Simulate the rolldown."""
@@ -737,15 +745,15 @@ class Game:
             if reroll:
                 # Add previously rolled champions back to the pool
                 if not first_roll:
-                    for unit in cur_roll:
+                    for unit in self.cur_roll:
                         if unit.name != 'BLANK':
                             send_message(self.client_socket, f'sell: {unit.name}: 1')
 
                 # Roll new shop
-                cur_roll = self.roll(first_roll)
+                self.cur_roll = self.roll(first_roll)
 
             # Display shop
-            self.display_roll(cur_roll)
+            self.display_roll()
             first_roll = False
 
             # Read in input
@@ -761,7 +769,7 @@ class Game:
 
                 # Buy a unit using numbers
                 elif next_in in ['1', '2', '3', '4', '5']:
-                    self.buy_unit(cur_roll, next_in)
+                    self.buy_unit(next_in)
 
                 # Display current team using 's' (also allows selling)
                 elif next_in == 's':
@@ -778,7 +786,7 @@ class Game:
                     sys.exit()
 
                 # Display current shop
-                self.display_roll(cur_roll)
+                self.display_roll()
 
                 # Read in next input
                 next_in = getch()
