@@ -2,3 +2,7 @@
     1a. Make this apply to loaded dice also
 2. Minimize number of sent messages
 3. Figure out how to run program without server already being up
+
+
+TESTS:
+1. See what happens when you buy every champion of a certain cost

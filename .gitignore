@@ -10,3 +10,4 @@ user_interface_v3.ui
 extract.py
 background.py
 check_server.py
+server_log
