@@ -9,23 +9,26 @@ import threading
 
 # Local files
 from resources import SERVER_PORT, CHAMPION_POOL, read_database, serialize
-from resources import POOL_LOCK
+from resources import POOL_LOCK, UNIT_AMOUNT_LEVEL
 
 
 def get_champion_pool():
     """Return the current state of the champion pool."""
-    # LOCK SHOULD ALWAYS BE HELD HERE
-    assert POOL_LOCK.locked(), 'POOL_LOCK required to access CHAMPION_POOL!'
-
     # Build a copy of the champion pool and return it
-    pool = {}
-    for _, champions in CHAMPION_POOL.items():
-        for unit in champions:
-            if unit.name not in pool:
-                pool[unit.name] = 1
-            else:
-                pool[unit.name] += 1
-    return json.dumps(pool, default=serialize)
+    with POOL_LOCK:
+        pool = {}
+        for _, champions in CHAMPION_POOL.items():
+            for unit in champions:
+                if unit.name not in pool:
+                    pool[unit.name] = 1
+                else:
+                    pool[unit.name] += 1
+        return f'{json.dumps(pool, default=serialize)}\0'.encode()
+
+def get_full_pool():
+    """Return the current state of the champion pool.
+       Includes champion information."""
+    return f'{json.dumps(CHAMPION_POOL, default=serialize)}\0'.encode()
 
 
 def buy_champion(message, connection, champions):
@@ -35,14 +38,12 @@ def buy_champion(message, connection, champions):
     if unit in champions:
         unit_obj = champions[unit]
 
-        # Remove unit from pool if possible
-        try:
-            # Grab lock since we are writing to CHAMPION_POOL
-            with POOL_LOCK:
-                CHAMPION_POOL[unit_obj.rarity].remove(unit_obj)
-        except ValueError:
-            connection.send(f'{unit} does not exist in pool!\0'.encode())
-            return
+        # Remove unit from pool
+        # Grab lock since we are writing to CHAMPION_POOL
+        with POOL_LOCK:
+            assert unit_obj in CHAMPION_POOL[unit_obj.rarity], \
+                'Error: unit not found in champion pool'
+            CHAMPION_POOL[unit_obj.rarity].remove(unit_obj)
 
         # Send response message
         connection.send(f'{unit} bought successfully\0'.encode())
@@ -55,9 +56,9 @@ def buy_champion(message, connection, champions):
 def sell_champion(message, connection, champions):
     """Add a champion to the pool by selling it."""
     # Get information about the unit
-    unit, amount = message.split(':')[1:]
+    unit, level = message.split(':')[1:]
     unit = unit.strip()
-    amount = int(amount)
+    amount = UNIT_AMOUNT_LEVEL[int(level)]
 
     # Add unit to pool
     if unit in champions:
@@ -89,20 +90,18 @@ def client_thread(connection, addr, champions):
             # Respond to messages
             # Quit message
             if message == 'quit':
-                connection.send('Quitting...'.encode())
+                connection.send('Quitting...\0'.encode())
                 connection.close()
                 return
 
             # Check pool message (message form: 'pool')
             if message == 'pool':
-                # Grab lock since we are reading from CHAMPION POOL
-                with POOL_LOCK:
-                    connection.send(f'{get_champion_pool()}\0'.encode())
+                # Function will grab POOL_LOCK
+                connection.send(get_champion_pool())
 
             elif message == 'full_pool':
-                # Grab lock since we are reading from CHAMPION POOL
-                with POOL_LOCK:
-                    connection.send(f'{json.dumps(CHAMPION_POOL, default=serialize)}\0'.encode())
+                # Function will grab POOL_LOCK
+                connection.send(get_full_pool())
 
             # Buy unit message (message form: 'buy: {unit}')
             elif 'buy' in message:
@@ -116,8 +115,6 @@ def client_thread(connection, addr, champions):
             elif message == 'reset':
                 read_database(sys.argv[1])
                 connection.send('CHAMPION_POOL reset\n'.encode())
-                with POOL_LOCK:
-                    connection.send(f'{get_champion_pool()}\0'.encode())
 
             # Unknown message
             else:

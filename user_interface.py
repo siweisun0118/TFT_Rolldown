@@ -137,7 +137,7 @@ class MainWindow(QMainWindow):
 
         # Quit
         if event.key() == Qt.Key_M:
-            print(self.game)
+            self.game.quit()
             QApplication.quit()
 
         # Reroll

@@ -61,33 +61,6 @@ def loaded_dice_odds(desired_unit, champions):
     return at_least_one_results, expected_number_results
 
 
-def main(argv):
-    """Calculate the loaded dice odds."""
-    # Read in database
-    champions, _ = read_database(argv[1])
-
-    # Read in desired unit (check that unit exists)
-    assert argv[2] in champions, 'Error: Invalid unit'
-    desired_unit = champions[argv[2]]
-
-    # Calculate odds of rolling desired champion
-    at_least_one, expected_number = loaded_dice_odds(desired_unit, champions)
-
-    # Print results
-    # At least one copy of desired champion
-    print(f'Probability of hitting at least one {desired_unit.name}')
-    print_column_names()
-    for item in sorted(at_least_one.items(), key=lambda x: x[1][-1], reverse=True):
-        print(f'{(item[0] + ":"): <13} {" ".join(item[1])}')
-
-    # Expected number of desired champions
-    print()
-    print(f'Expected number of {desired_unit.name}s')
-    print_column_names()
-    for item in sorted(expected_number.items(), key=lambda x: x[1][-1], reverse=True):
-        print(f'{(item[0] + ":"): <13} {" ".join(item[1])}')
-
-
 def print_column_names():
     """Print the levels as column names."""
     print(f'{"Level:" :<13}', end='')
@@ -119,6 +92,33 @@ def reweight_odds(odds, possible_champions):
 
     # Return reweighted odds
     return adjusted_odds
+
+
+def main(argv):
+    """Calculate the loaded dice odds."""
+    # Read in database
+    champions, _ = read_database(argv[1])
+
+    # Read in desired unit (check that unit exists)
+    assert argv[2] in champions, 'Error: Invalid unit'
+    desired_unit = champions[argv[2]]
+
+    # Calculate odds of rolling desired champion
+    at_least_one, expected_number = loaded_dice_odds(desired_unit, champions)
+
+    # Print results
+    # At least one copy of desired champion
+    print(f'Probability of hitting at least one {desired_unit.name}')
+    print_column_names()
+    for item in sorted(at_least_one.items(), key=lambda x: x[1][-1], reverse=True):
+        print(f'{(item[0] + ":"): <13} {" ".join(item[1])}')
+
+    # Expected number of desired champions
+    print()
+    print(f'Expected number of {desired_unit.name}s')
+    print_column_names()
+    for item in sorted(expected_number.items(), key=lambda x: x[1][-1], reverse=True):
+        print(f'{(item[0] + ":"): <13} {" ".join(item[1])}')
 
 
 if __name__ == '__main__':

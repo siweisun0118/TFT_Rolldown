@@ -2,6 +2,7 @@
 
 
 # Standard libraries
+from copy import deepcopy
 import json
 import os
 from pathlib import Path
@@ -111,45 +112,44 @@ def read_database(input_dir):
         for cost in CHAMPION_POOL:
             CHAMPION_POOL[cost] = []
 
-    # Read in units
-    with open(Path(input_dir) / 'champions.json', encoding='utf-8') as champions_file:
-        champions_list = json.loads(champions_file.read())
+        # Read in units
+        with open(Path(input_dir) / 'champions.json', encoding='utf-8') as champions_file:
+            champions_list = json.loads(champions_file.read())
 
-    # Read in traits
-    with open(Path(input_dir) / 'traits.json', encoding='utf-8') as traits_file:
-        traits_list = json.loads(traits_file.read())
+        # Read in traits
+        with open(Path(input_dir) / 'traits.json', encoding='utf-8') as traits_file:
+            traits_list = json.loads(traits_file.read())
 
-    # Parse unit data
-    champions = {}
-    for champ in champions_list:
-        # If champion has fewer than 2 traits, ignore it
-        # Since it is a target dummy, voidspawn, tome, Veigar, etc.
-        if len(champ['traits']) < 2:
-            continue
+        # Parse unit data
+        champions = {}
+        for champ in champions_list:
+            # If champion has fewer than 2 traits, ignore it
+            # Since it is a target dummy, voidspawn, tome, Veigar, etc.
+            if len(champ['traits']) < 2:
+                continue
 
-        # Add to champions list
-        champions[champ['name']] = Unit(champ['cost'], champ['name'], \
-            champ['traits'], champ['championId'])
+            # Add to champions list
+            champions[champ['name']] = Unit(champ['cost'], champ['name'], \
+                champ['traits'], champ['championId'])
 
-        # Add to champion pool
-        with POOL_LOCK:
+            # Add to champion pool
             CHAMPION_POOL[champ['cost']] += [champions[champ['name']]] * \
                 CHAMPION_AMOUNTS[champ['cost']]
 
-    # Parse trait data
-    traits = {}
-    for trait in traits_list:
-        # Extract trait breakpoints and styles from trait data
-        breakpoints = []
-        styles = []
-        for b_p in trait['sets']:
-            breakpoints.append(b_p['min'])
-            styles.append(b_p['style'])
+        # Parse trait data
+        traits = {}
+        for trait in traits_list:
+            # Extract trait breakpoints and styles from trait data
+            breakpoints = []
+            styles = []
+            for b_p in trait['sets']:
+                breakpoints.append(b_p['min'])
+                styles.append(b_p['style'])
 
-        # Add to traits list
-        traits[trait['name']] = Trait(trait['name'], breakpoints, styles)
+            # Add to traits list
+            traits[trait['name']] = Trait(trait['name'], breakpoints, styles)
 
-    return champions, traits
+        return champions, traits
 
 
 # Helper function to serialize custom classes
@@ -158,20 +158,86 @@ def serialize(obj):
     return obj.name
 
 
+# Helper function that rolls a loaded dice shop
+def loaded_dice(unit, level):
+    """Roll the loaded dice."""
+    assert isinstance(unit, Unit), 'Error: invalid input for unit type'
+    assert isinstance(level, int), 'Error: invalid input for level'
+
+    # Get odds at current level
+    odds = LEVEL_ODDS[level]
+
+    # Get unit's traits
+    traits = unit.traits
+
+    # For each slot in the shop, roll a rarity depending on current level
+    costs = random.choices(population=[1, 2, 3, 4, 5], weights=odds, k=SHOP_SLOTS)
+
+    # Rolled units
+    results = []
+
+    # For each rarity that was rolled
+    for i in costs:
+        # Find a valid champion
+        candidates = []
+        for possible in CHAMPION_POOL[i]:
+            # If at least one trait is shared, add as potential candidate
+            if set(possible.traits) & set(traits):
+                candidates.append(possible)
+
+        # If candidates is empty, reroll rarities until candidate is available
+        # Remove already rolled rarity from contention
+        remaining_odds = deepcopy(LEVEL_ODDS[level])
+        remaining_odds[i - 1] = 0
+        while not candidates:
+            # If we run out of rarities, just choose a random unit with the same rarity
+            if sum(remaining_odds) == 0:
+                # Choose random rarity
+                cost = random.choices(population=[1, 2, 3, 4, 5], weights=LEVEL_ODDS[level], k=1)[0]
+
+                # If all units of that rarity are unavailable, just pick a random unit
+                if not CHAMPION_POOL[cost]:
+                    total_pool = [unit for ls in CHAMPION_POOL.values() for unit in ls]
+                    replacement = random.choice(total_pool)
+                    candidates.append(replacement)
+                # Otherwise, pick a unit of the same cost
+                else:
+                    replacement = random.choice(CHAMPION_POOL[cost])
+                    candidates.append(replacement)
+
+            else:
+                # Get new rarity and remove that rarity from contention
+                cost = random.choices(population=[1, 2, 3, 4, 5], weights=remaining_odds, k=1)[0]
+                remaining_odds[cost - 1] = 0
+
+                # Attempt to find more candidates
+                for possible in CHAMPION_POOL[cost]:
+                    # If at least one trait is shared, add as potential candidate
+                    if set(possible.traits) & set(traits):
+                        candidates.append(possible)
+
+        # Choose a random candidate
+        results.append(random.choice(candidates))
+
+    # Return rolled shop
+    return results
+
+
 ### NETWORKING CLIENT FUNCTIONS ###
 # Send a message over the socket
 def send_message(client_socket, message):
     """Send a message to the server and get response."""
-    client_socket.send(message.encode())
+    with POOL_LOCK:
+        client_socket.send(message.encode())
 
-    # Get response
-    response = ''
-    while True:
-        # Get message in chunks
-        chunk = client_socket.recv(1024).decode()
-        response += chunk
-        if not chunk or chunk[-1] == '\0':
-            break
+        # Get response
+        response = ''
+        while True:
+            # Get message in chunks
+            chunk = client_socket.recv(1024).decode()
+            response += chunk
+            if not chunk or chunk[-1] == '\0':
+                break
 
     return response[:-1]
 
@@ -419,7 +485,7 @@ class Team:
         self.team.pop(unit_index)
 
         # Send message about selling unit to server
-        message = f'sell: {sold_unit.name}: {UNIT_AMOUNT_LEVEL[sold_unit.level]}'
+        message = f'sell: {sold_unit.name}: {sold_unit.level}'
         send_message(self.client_socket, message)
 
 
@@ -492,33 +558,32 @@ class Game:
 
         # For each result, we choose a random champion from cur_pool
         results = []
-        with POOL_LOCK:
-            for cost in costs:
-                # If there are no more champions of the cost (unlikely but possible),
-                # simply choose a random champion. Also keep in mind that 3 starred
-                # units can no longer be rolled
-                can_roll = []
-                for unit in cur_pool[cost]:
-                    if unit not in THREE_STARRED:
-                        can_roll.append(unit)
+        for cost in costs:
+            # If there are no more champions of the cost (unlikely but possible),
+            # simply choose a random champion. Also keep in mind that 3 starred
+            # units can no longer be rolled
+            can_roll = []
+            for unit in cur_pool[cost]:
+                if unit not in THREE_STARRED:
+                    can_roll.append(unit)
 
-                # If no unit can be rolled, add any eligible unit
-                if not can_roll:
-                    # print('Out of', cost, 'costs!')
+            # If no unit can be rolled, add any eligible unit
+            if not can_roll:
+                # print('Out of', cost, 'costs!')
 
-                    # Build a pool of all champions to choose a replacement
-                    # Still keeping in mind that 3 starred units cannot be rolled
-                    total_pool = [unit for ls in cur_pool.values() for unit in ls \
-                        if unit not in THREE_STARRED]
-                    replacement = self.champions_dict[random.choice(total_pool)]
-                    results.append(replacement)
+                # Build a pool of all champions to choose a replacement
+                # Still keeping in mind that 3 starred units cannot be rolled
+                total_pool = [unit for ls in cur_pool.values() for unit in ls \
+                    if unit not in THREE_STARRED]
+                replacement = self.champions_dict[random.choice(total_pool)]
+                results.append(replacement)
 
-                    # print('The replacement unit is', replacement)
+                # print('The replacement unit is', replacement)
 
-                else:
-                    # Add result to list of resulting rolls
-                    resulting_champ = self.champions_dict[random.choice(can_roll)]
-                    results.append(resulting_champ)
+            else:
+                # Add result to list of resulting rolls
+                resulting_champ = self.champions_dict[random.choice(can_roll)]
+                results.append(resulting_champ)
 
         # Take each rolled champion out of the pool
         for unit in results:
@@ -629,6 +694,16 @@ class Game:
             self.exp -= LEVEL_EXP[self.level]
             self.level += 1
 
+    def quit(self):
+        """Quit the game and print results."""
+        print('Quitting...')
+        print('Final results:')
+        print(self.team)
+
+        # Return units to shop
+        for unit in self.team.team:
+            send_message(self.client_socket, f'sell: {unit.name}: {unit.level}')
+
     def rolldown(self):
         """Simulate the rolldown."""
         # First, read in a level between 1 and 11 inclusive
@@ -699,9 +774,7 @@ class Game:
 
                 # Use 'm' to quit
                 elif next_in == 'm':
-                    print('Quitting...')
-                    print('Final results:')
-                    print(self.team)
+                    self.quit()
                     sys.exit()
 
                 # Display current shop

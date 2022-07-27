@@ -21,7 +21,7 @@ def main(argv):
         print('Server response:', response)
 
         # End process after quitting
-        if 'Quitting' in response:
+        if response == 'Quitting...':
             print('Client closed successfully')
             break
 
