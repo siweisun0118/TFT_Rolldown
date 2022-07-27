@@ -81,6 +81,12 @@ LEVEL_EXP = {
     10: 0,
     11: 0
 }
+
+# 3 starred units cannot be rolled anymore
+THREE_STARRED = set()
+
+# Make sure odds make sense
+assert all((sum(odds) == 100 for odds in LEVEL_ODDS.values())), "Error in level odds."
 ####### END GAME RESOURCES #######
 
 
@@ -93,9 +99,6 @@ GEN_ASSETS = Path('General Assets')
 
 # Port number for rolldown server
 SERVER_PORT = 8000
-
-# Make sure odds make sense
-assert all((sum(odds) == 100 for odds in LEVEL_ODDS.values())), "Error in level odds."
 ####### END UI ELEMENTS #######
 
 
@@ -257,9 +260,7 @@ class Unit:
         # 3 star units can no longer be rolled
         if self.level == 2:
             # Remove all remaining instances of this champion from the pool
-            # TODO: FIX THIS
-            CHAMPION_POOL[self.rarity] = [unit for unit in CHAMPION_POOL[self.rarity] \
-                if unit != self]
+            THREE_STARRED.add(self.name)
 
         # Sell cost changes when unit is upgraded
         return Unit(self.rarity, self.name, self.traits, self.id_name, self.level + 1)
@@ -386,10 +387,13 @@ class Team:
 
     def remove_unit(self, unit_index):
         """Sell a unit from your board."""
+        # Error checking
         assert isinstance(unit_index, int), "Error in trying to sell unit"
+        sold_unit = self.team[unit_index]
+        assert isinstance(sold_unit, Unit)
+
         # Check if unit was unique
         count = 0
-        sold_unit = self.team[unit_index]
         for cur_unit in self.team:
             if cur_unit == sold_unit:
                 count += 1
@@ -406,6 +410,10 @@ class Team:
                 # If that brings the trait count to 0, remove that trait from the team's traits
                 if not self.traits[trait]:
                     self.traits.pop(trait, None)
+
+        # If unit was 3 starred, allow it to be rolled again
+        if sold_unit.name in THREE_STARRED and sold_unit.level == 3:
+            THREE_STARRED.remove(sold_unit.name)
 
         # Remove unit from team
         self.team.pop(unit_index)
@@ -470,6 +478,7 @@ class Game:
         assert self.level in range(1, 12)
 
         # Get current champion pool from server
+        # Note that the champions are not strings, NOT UNIT OBJECTS
         cur_pool = json.loads(send_message(self.client_socket, 'full_pool'))
 
         # If this roll is a reroll, cost 2 gold
@@ -486,12 +495,21 @@ class Game:
         with POOL_LOCK:
             for cost in costs:
                 # If there are no more champions of the cost (unlikely but possible),
-                # simply choose a random champion
-                if not cur_pool[cost]:
+                # simply choose a random champion. Also keep in mind that 3 starred
+                # units can no longer be rolled
+                can_roll = []
+                for unit in cur_pool[cost]:
+                    if unit not in THREE_STARRED:
+                        can_roll.append(unit)
+
+                # If no unit can be rolled, add any eligible unit
+                if not can_roll:
                     # print('Out of', cost, 'costs!')
 
                     # Build a pool of all champions to choose a replacement
-                    total_pool = [unit for ls in cur_pool.values() for unit in ls]
+                    # Still keeping in mind that 3 starred units cannot be rolled
+                    total_pool = [unit for ls in cur_pool.values() for unit in ls \
+                        if unit not in THREE_STARRED]
                     replacement = self.champions_dict[random.choice(total_pool)]
                     results.append(replacement)
 
@@ -499,7 +517,7 @@ class Game:
 
                 else:
                     # Add result to list of resulting rolls
-                    resulting_champ = self.champions_dict[random.choice(cur_pool[cost])]
+                    resulting_champ = self.champions_dict[random.choice(can_roll)]
                     results.append(resulting_champ)
 
         # Take each rolled champion out of the pool
