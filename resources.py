@@ -43,7 +43,7 @@ CHAMPION_POOL = {1: [], 2: [], 3: [], 4: [], 5: []}
 
 # Amount of each unit in pool for each cost
 CHAMPION_AMOUNTS = {
-    1: 29,
+    1: 1,
     2: 22,
     3: 18,
     4: 12,
@@ -149,86 +149,20 @@ def serialize(obj):
     return obj.name
 
 
-# Helper function that rolls a loaded dice shop
-def loaded_dice(unit, level):
-    """Roll the loaded dice."""
-    assert isinstance(unit, Unit), 'Error: invalid input for unit type'
-    assert isinstance(level, int), 'Error: invalid input for level'
-
-    # Get odds at current level
-    odds = LEVEL_ODDS[level]
-
-    # Get unit's traits
-    traits = unit.traits
-
-    # For each slot in the shop, roll a rarity depending on current level
-    costs = random.choices(population=[1, 2, 3, 4, 5], weights=odds, k=SHOP_SLOTS)
-
-    # Rolled units
-    results = []
-
-    # For each rarity that was rolled
-    for i in costs:
-        # Find a valid champion
-        candidates = []
-        for possible in CHAMPION_POOL[i]:
-            # If at least one trait is shared, add as potential candidate
-            if set(possible.traits) & set(traits):
-                candidates.append(possible)
-
-        # If candidates is empty, reroll rarities until candidate is available
-        # Remove already rolled rarity from contention
-        remaining_odds = deepcopy(LEVEL_ODDS[level])
-        remaining_odds[i - 1] = 0
-        while not candidates:
-            # If we run out of rarities, just choose a random unit with the same rarity
-            if sum(remaining_odds) == 0:
-                # Choose random rarity
-                cost = random.choices(population=[1, 2, 3, 4, 5], weights=LEVEL_ODDS[level], k=1)[0]
-
-                # If all units of that rarity are unavailable, just pick a random unit
-                if not CHAMPION_POOL[cost]:
-                    total_pool = [unit for ls in CHAMPION_POOL.values() for unit in ls]
-                    replacement = random.choice(total_pool)
-                    candidates.append(replacement)
-                # Otherwise, pick a unit of the same cost
-                else:
-                    replacement = random.choice(CHAMPION_POOL[cost])
-                    candidates.append(replacement)
-
-            else:
-                # Get new rarity and remove that rarity from contention
-                cost = random.choices(population=[1, 2, 3, 4, 5], weights=remaining_odds, k=1)[0]
-                remaining_odds[cost - 1] = 0
-
-                # Attempt to find more candidates
-                for possible in CHAMPION_POOL[cost]:
-                    # If at least one trait is shared, add as potential candidate
-                    if set(possible.traits) & set(traits):
-                        candidates.append(possible)
-
-        # Choose a random candidate
-        results.append(random.choice(candidates))
-
-    # Return rolled shop
-    return results
-
-
 ### NETWORKING CLIENT FUNCTIONS ###
 # Send a message over the socket
 def send_message(client_socket, message):
     """Send a message to the server and get response."""
-    with POOL_LOCK:
-        client_socket.send(message.encode())
+    client_socket.send(message.encode())
 
-        # Get response
-        response = ''
-        while True:
-            # Get message in chunks
-            chunk = client_socket.recv(1024).decode()
-            response += chunk
-            if not chunk or chunk[-1] == '\0':
-                break
+    # Get response
+    response = ''
+    while True:
+        # Get message in chunks
+        chunk = client_socket.recv(1024).decode()
+        response += chunk
+        if not chunk or chunk[-1] == '\0':
+            break
 
     return response[:-1]
 
@@ -532,13 +466,8 @@ class Game:
         """Display the current team"""
         return str(self.team)
 
-    # Helper function that simulates a single roll based on level
-    def roll(self, first_roll=False):
-        """Roll for champions based on level."""
-        assert self.level in range(1, 12)
-
-        # Rebuild current champion pool using message from server
-        # Note that the champions are not strings, NOT UNIT OBJECTS
+    def build_champion_pool(self):
+        """Rebuild the champion pool using message from the server."""
         full_pool = json.loads(send_message(self.client_socket, 'pool'))
         cur_pool = {1: [], 2: [], 3: [], 4: [], 5: []}
         for name, amount in full_pool.items():
@@ -546,6 +475,90 @@ class Game:
             if name not in THREE_STARRED:
                 cur_unit = self.champions_dict[name]
                 cur_pool[cur_unit.rarity] += ([cur_unit] * amount)
+
+        return cur_pool
+
+    # Helper function that rolls a loaded dice shop
+    def loaded_dice(self, unit):
+        """Roll the loaded dice."""
+        level = self.level
+        assert isinstance(unit, Unit), 'Error: invalid input for unit type'
+        assert isinstance(level, int), 'Error: invalid input for level'
+
+        # Get odds at current level
+        odds = LEVEL_ODDS[level]
+
+        # Get unit's traits
+        traits = unit.traits
+
+        # Get current champion pool
+        cur_pool = self.build_champion_pool()
+        print(cur_pool)
+
+        # For each slot in the shop, roll a rarity depending on current level
+        costs = random.choices(population=[1, 2, 3, 4, 5], weights=odds, k=SHOP_SLOTS)
+
+        # Rolled units
+        results = []
+
+        # For each rarity that was rolled
+        for i in costs:
+            # Find a valid champion
+            candidates = []
+            for possible in cur_pool[i]:
+                # If at least one trait is shared, add as potential candidate
+                if set(possible.traits) & set(traits):
+                    candidates.append(possible)
+
+            # If candidates is empty, reroll rarities until candidate is available
+            # Remove already rolled rarity from contention
+            remaining_odds = deepcopy(LEVEL_ODDS[level])
+            remaining_odds[i - 1] = 0
+            while not candidates:
+                # If we run out of rarities, just choose a random unit with the same rarity
+                if sum(remaining_odds) == 0:
+                    # Choose random rarity
+                    cost = random.choices(population=[1, 2, 3, 4, 5], weights=LEVEL_ODDS[level], k=1)[0]
+
+                    # If all units of that rarity are unavailable, just pick a random unit
+                    if not cur_pool[cost]:
+                        total_pool = [unit for ls in cur_pool.values() for unit in ls]
+                        replacement = random.choice(total_pool)
+                        candidates.append(replacement)
+
+                    # Otherwise, pick a unit of the same cost
+                    else:
+                        replacement = random.choice(cur_pool[cost])
+                        candidates.append(replacement)
+
+                else:
+                    # Get new rarity and remove that rarity from contention
+                    cost = random.choices(population=[1, 2, 3, 4, 5], weights=remaining_odds, k=1)[0]
+                    remaining_odds[cost - 1] = 0
+
+                    # Attempt to find more candidates
+                    for possible in CHAMPION_POOL[cost]:
+                        # If at least one trait is shared, add as potential candidate
+                        if set(possible.traits) & set(traits):
+                            candidates.append(possible)
+
+            # Choose a random candidate
+            chosen = random.choice(candidates)
+            results.append(chosen)
+
+            # Remove chosen champion from pool
+            cur_pool[chosen.rarity].remove(chosen)
+
+        # Return rolled shop
+        return results
+
+    # Helper function that simulates a single roll based on level
+    def roll(self, first_roll=False):
+        """Roll for champions based on level."""
+        assert self.level in range(1, 12)
+
+        # Rebuild current champion pool
+        cur_pool = self.build_champion_pool()
 
         # If this roll is a reroll, cost 2 gold
         if not first_roll:

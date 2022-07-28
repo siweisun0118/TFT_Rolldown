@@ -17,7 +17,6 @@ from PyQt5.QtCore import Qt, QProcess
 
 # Local files
 from resources import GEN_ASSETS, LEVEL_EXP, Game, Unit, send_message
-from loaded_dice import loaded_dice
 from user_interface_v3 import Ui_MainWindow, pathlib_path
 
 
@@ -314,25 +313,25 @@ class MainWindow(QMainWindow):
             stats_widget = self.traits[slot].findChild(QLabel, f'Trait_Amount_{slot + 1}')
             stats_widget.setText('   ')
 
+    def display_loaded_dice(self, unit):
+        """Replace shop with loaded dice rolls (idx is 0-indexed)."""
+        assert isinstance(unit, Unit)
+        result = self.game.loaded_dice(unit)
+        self.display_new_shop(first_roll=True, loaded_shop=result)
+
     def shop_clicked(self, event, idx):
         """Determine whether to buy unit or use loaded dice."""
         if event.button() == Qt.LeftButton:
             self.buy_unit(event, idx)
         elif event.button() == Qt.RightButton:
-            self.loaded_dice(self.game.cur_shop[idx])
+            self.display_loaded_dice(self.game.cur_shop[idx])
 
     def unit_clicked(self, event, idx):
         """Determine whether to sell unit or use loaded dice."""
         if event.button() == Qt.LeftButton:
             self.sell_unit(event, idx)
         elif event.button() == Qt.RightButton:
-            self.loaded_dice(self.game.team.team[idx])
-
-    def loaded_dice(self, unit):
-        """Replace shop with loaded dice rolls (idx is 0-indexed)."""
-        assert isinstance(unit, Unit)
-        result = loaded_dice(unit, self.game.level)
-        self.display_new_shop(first_roll=True, loaded_shop=result)
+            self.display_loaded_dice(self.game.team.team[idx])
 
     def buy_unit(self, event, idx):
         """Buy a unit from the shop (idx is 0-indexed)."""

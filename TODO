@@ -1,8 +1,11 @@
 1. Make it so that 3-star units aren't removed completely from the pool DONE
-    1a. Make this apply to loaded dice also
+    1a. Make this apply to loaded dice also (might be a harder fix than expected) DONE
 2. Minimize number of sent messages
 3. Figure out how to run program without server already being up
+4. Optimize champion pool rebuilding/rerolling step
+    4a. Use dict.keys() and dict.values to avoid having to rebuild the entire pool
 
 
 TESTS:
-1. See what happens when you buy every champion of a certain cost
+1. See what happens when you buy every champion of a certain cost DONE
+
