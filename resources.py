@@ -43,7 +43,7 @@ CHAMPION_POOL = {1: [], 2: [], 3: [], 4: [], 5: []}
 
 # Amount of each unit in pool for each cost
 CHAMPION_AMOUNTS = {
-    1: 1,
+    1: 29,
     2: 22,
     3: 18,
     4: 12,
@@ -518,7 +518,8 @@ class Game:
                 # If we run out of rarities, just choose a random unit with the same rarity
                 if sum(remaining_odds) == 0:
                     # Choose random rarity
-                    cost = random.choices(population=[1, 2, 3, 4, 5], weights=LEVEL_ODDS[level], k=1)[0]
+                    odds = LEVEL_ODDS[level]
+                    cost = random.choices(population=[1, 2, 3, 4, 5], weights=odds, k=1)[0]
 
                     # If all units of that rarity are unavailable, just pick a random unit
                     if not cur_pool[cost]:
@@ -533,7 +534,8 @@ class Game:
 
                 else:
                     # Get new rarity and remove that rarity from contention
-                    cost = random.choices(population=[1, 2, 3, 4, 5], weights=remaining_odds, k=1)[0]
+                    cost = random.choices(population=[1, 2, 3, 4, 5], weights=remaining_odds, k=1)
+                    cost = cost[0]
                     remaining_odds[cost - 1] = 0
 
                     # Attempt to find more candidates

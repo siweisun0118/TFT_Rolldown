@@ -16,12 +16,10 @@ from resources import Unit, Trait
 
 class UnknownChampionError(Exception):
     """Unknown Champion Error."""
-    pass
 
 
 class UnknownMessageError(Exception):
     """Unknown Message Error."""
-    pass
 
 
 # Helper function to read input directory
