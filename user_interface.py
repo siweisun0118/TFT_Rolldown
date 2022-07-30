@@ -16,9 +16,7 @@ from PyQt5.QtCore import Qt, QProcess
 
 
 # Local files
-from constants import GEN_ASSETS, LEVEL_EXP
-from loaded_dice import loaded_dice
-from rolldown import Game, Unit
+from resources import GEN_ASSETS, LEVEL_EXP, Game, Unit, send_message
 from user_interface_v3 import Ui_MainWindow, pathlib_path
 
 
@@ -43,9 +41,6 @@ class MainWindow(QMainWindow):
         self.reroll_label = gold_level[1]
         self.level_label = gold_level[2]
         self.level_up = gold_level[3]
-
-        # Current shop
-        self.cur_shop = None
 
         # Attach trait labels to shop_widgets
         for idx, widget in enumerate(self.shop_widgets):
@@ -138,7 +133,7 @@ class MainWindow(QMainWindow):
 
         # Quit
         if event.key() == Qt.Key_M:
-            print(self.game)
+            self.game.quit()
             QApplication.quit()
 
         # Reroll
@@ -166,19 +161,25 @@ class MainWindow(QMainWindow):
     def display_new_shop(self, first_roll=False, loaded_shop=None):
         """Display the current shop."""
         # Assert that player has enough gold to roll
-        assert first_roll or self.game.gold >= 2, 'ASSERTION ERROR: NOT ENOUGH GOLD TO ROLL'
+        assert first_roll or self.game.gold >= 2, 'ERROR: NOT ENOUGH GOLD TO ROLL'
+
+        # Add previously rolled units back to the shop
+        if not first_roll:
+            for unit in self.game.cur_shop:
+                if unit.name != 'BLANK':
+                    send_message(self.game.client_socket, f'sell: {unit.name}: 1')
 
         # Roll for units
         if not loaded_shop:
-            self.cur_shop = self.game.roll(first_roll)
+            self.game.cur_shop = self.game.roll(first_roll)
         else:
-            self.cur_shop = loaded_shop
+            self.game.cur_shop = loaded_shop
 
         # Update gold
         self.display_gold()
 
         # Display rolled units
-        for idx, unit in enumerate(self.cur_shop):
+        for idx, unit in enumerate(self.game.cur_shop):
             # Display unit splash
             splash_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Icon_{idx + 1}')
             # Get name of file
@@ -312,44 +313,44 @@ class MainWindow(QMainWindow):
             stats_widget = self.traits[slot].findChild(QLabel, f'Trait_Amount_{slot + 1}')
             stats_widget.setText('   ')
 
+    def display_loaded_dice(self, unit):
+        """Replace shop with loaded dice rolls (idx is 0-indexed)."""
+        assert isinstance(unit, Unit)
+        result = self.game.loaded_dice(unit)
+        self.display_new_shop(first_roll=True, loaded_shop=result)
+
     def shop_clicked(self, event, idx):
         """Determine whether to buy unit or use loaded dice."""
         if event.button() == Qt.LeftButton:
             self.buy_unit(event, idx)
         elif event.button() == Qt.RightButton:
-            self.loaded_dice(self.cur_shop[idx])
+            self.display_loaded_dice(self.game.cur_shop[idx])
 
     def unit_clicked(self, event, idx):
         """Determine whether to sell unit or use loaded dice."""
         if event.button() == Qt.LeftButton:
             self.sell_unit(event, idx)
         elif event.button() == Qt.RightButton:
-            self.loaded_dice(self.game.team.team[idx])
-
-    def loaded_dice(self, unit):
-        """Replace shop with loaded dice rolls (idx is 0-indexed)."""
-        assert isinstance(unit, Unit)
-        result = loaded_dice(unit, self.game.level)
-        self.display_new_shop(first_roll=True, loaded_shop=result)
+            self.display_loaded_dice(self.game.team.team[idx])
 
     def buy_unit(self, event, idx):
         """Buy a unit from the shop (idx is 0-indexed)."""
         assert isinstance(idx, int)
         # Add unit to team
         # Cannot purchase empty slots
-        if self.cur_shop[idx].name == 'BLANK':
+        if self.game.cur_shop[idx].name == 'BLANK':
             return
 
         # Check if enough gold is available to purchase the unit
-        if self.game.gold < self.cur_shop[idx].cost:
+        if self.game.gold < self.game.cur_shop[idx].cost:
             return
 
         # Add unit to team (shop needs to be 1-indexed)
-        bought_unit = self.cur_shop[idx].copy()
-        self.game.buy_unit(self.cur_shop, idx + 1)
+        bought_unit = self.game.cur_shop[idx].copy()
+        self.game.buy_unit(idx + 1)
 
         # Add glowing effect to other copies of the unit in shop
-        for i, unit in enumerate(self.cur_shop):
+        for i, unit in enumerate(self.game.cur_shop):
             if unit == bought_unit:
                 # Glow effect
                 glow1 = get_glow_effect()
@@ -389,7 +390,7 @@ class MainWindow(QMainWindow):
         """Sell a unit from the team."""
         # Remove glow effect from shop, if applicable
         sold_unit = self.game.team.team[idx]
-        for i, unit in enumerate(self.cur_shop):
+        for i, unit in enumerate(self.game.cur_shop):
             if unit == sold_unit:
                 # Glow effect
                 glow1 = get_no_glow_effect()

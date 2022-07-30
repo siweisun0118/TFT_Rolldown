@@ -2,6 +2,8 @@
 Simulate the rolldown in a game of TFT.
 
 # Setup
+This code was written in python3.9. Please use python3.8 or greater to ensure functionality.
+
 Install the necessary python libraries:
 ```
 python -m pip install -r requirements.txt
@@ -17,6 +19,11 @@ Install the necessary apt packages:
 ```
 
 # Usage
+First, start the server that manages the champion pool:
+```
+python networking_server.py {input_directory}
+```
+
 For the terminal-only rolldown simulator, use the following command:
 ```
 python rolldown.py {input_directory}

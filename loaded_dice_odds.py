@@ -1,12 +1,11 @@
 """FInd the best unit to loaded dice at each level."""
 
 # Standard libaries
-from sys import argv, exit
+import sys
 
 
 # Local files
-from constants import LEVEL_ODDS, SHOP_SLOTS
-from rolldown import read_database, Unit
+from resources import LEVEL_ODDS, SHOP_SLOTS, read_database, Unit
 
 
 def loaded_dice_odds(desired_unit, champions):
@@ -46,13 +45,14 @@ def loaded_dice_odds(desired_unit, champions):
             for level in range(1, 12):
                 current_odds = reweight_odds(LEVEL_ODDS[level], possible_champions)
 
-                probability = current_odds[desired_unit.rarity - 1] / len(possible_champions[desired_unit.rarity])
+                probability = current_odds[desired_unit.rarity - 1] \
+                    / len(possible_champions[desired_unit.rarity])
 
                 # Calculate probabilities for:
                 # At least 1 copy of the desired champion
                 # Expected number of the desired champion
-                current_champion_odds.append('%0.4f' % (1 - ((1 - probability / 100) ** SHOP_SLOTS)))
-                expected_champion_amount.append('%0.4f' % (probability * SHOP_SLOTS / 100))
+                current_champion_odds.append(f'{(1 - ((1 - probability / 100) ** SHOP_SLOTS)):.4f}')
+                expected_champion_amount.append(f'{(probability * SHOP_SLOTS / 100):.4f}')
 
             # Add final probablity to results
             at_least_one_results[champion.name] = current_champion_odds
@@ -61,36 +61,9 @@ def loaded_dice_odds(desired_unit, champions):
     return at_least_one_results, expected_number_results
 
 
-def main(argv):
-    """Calculate the loaded dice odds."""
-    # Read in database
-    champions, _ = read_database(argv[1])
-
-    # Read in desired unit (check that unit exists)
-    assert argv[2] in champions, 'Error: Invalid unit'
-    desired_unit = champions[argv[2]]
-
-    # Calculate odds of rolling desired champion
-    at_least_one, expected_number = loaded_dice_odds(desired_unit, champions)
-
-    # Print results
-    # At least one copy of desired champion
-    print(f'Probability of hitting at least one {desired_unit.name}')
-    print_column_names()
-    for item in sorted(at_least_one.items(), key=lambda x: x[1][-1], reverse=True):
-        print(f'{item[0]: <12} {" ".join(item[1])}')
-
-    # Expected number of desired champions
-    print()
-    print(f'Expected number of {desired_unit.name}s')
-    print_column_names()
-    for item in sorted(expected_number.items(), key=lambda x: x[1][-1], reverse=True):
-        print(f'{item[0]: <12} {" ".join(item[1])}')
-
-
 def print_column_names():
     """Print the levels as column names."""
-    print(f'{"Level:" :<12}', end='')
+    print(f'{"Level:" :<13}', end='')
     for i in range(1, 12):
         print(f' {i: <6}', end='')
     print()
@@ -121,8 +94,35 @@ def reweight_odds(odds, possible_champions):
     return adjusted_odds
 
 
+def main(argv):
+    """Calculate the loaded dice odds."""
+    # Read in database
+    champions, _ = read_database(argv[1])
+
+    # Read in desired unit (check that unit exists)
+    assert argv[2] in champions, 'Error: Invalid unit'
+    desired_unit = champions[argv[2]]
+
+    # Calculate odds of rolling desired champion
+    at_least_one, expected_number = loaded_dice_odds(desired_unit, champions)
+
+    # Print results
+    # At least one copy of desired champion
+    print(f'Probability of hitting at least one {desired_unit.name}')
+    print_column_names()
+    for item in sorted(at_least_one.items(), key=lambda x: x[1][-1], reverse=True):
+        print(f'{(item[0] + ":"): <13} {" ".join(item[1])}')
+
+    # Expected number of desired champions
+    print()
+    print(f'Expected number of {desired_unit.name}s')
+    print_column_names()
+    for item in sorted(expected_number.items(), key=lambda x: x[1][-1], reverse=True):
+        print(f'{(item[0] + ":"): <13} {" ".join(item[1])}')
+
+
 if __name__ == '__main__':
-    if len(argv) != 3:
+    if len(sys.argv) != 3:
         print('Usage: python loaded_dice_odds.py {input_dir} {desired_unit_name}')
-        exit()
-    main(argv)
+        sys.exit()
+    main(sys.argv)
