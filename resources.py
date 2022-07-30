@@ -455,6 +455,9 @@ class Game:
                 subprocess.Popen(['python', 'networking_server.py', input_dir], \
                     stdout=outfile, stderr=outfile)
 
+            # Indicate that a new server is being started
+            print('No active server found, starting new server...')
+
             # Wait before trying to connect to server
             time.sleep(0.5)
             self.client_socket = init_rolldown_client(0)
