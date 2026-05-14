@@ -8,10 +8,10 @@ import sys
 import threading
 
 
-# Local files
-from shared.resources import SERVER_PORT, CHAMPION_POOL, serialize
-from shared.resources import POOL_LOCK, UNIT_AMOUNT_LEVEL, CHAMPION_AMOUNTS
-from shared.resources import Unit, Trait
+# Local imports
+from shared.rolldown_enums import SERVER_PORT, CHAMPION_POOL
+from shared.rolldown_enums import POOL_LOCK, UNIT_AMOUNT_LEVEL, CHAMPION_AMOUNTS
+from shared.resources import Unit, Trait, serialize
 
 
 class UnknownChampionError(Exception):
