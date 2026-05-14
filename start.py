@@ -2,7 +2,7 @@
 
 
 # Set currently available
-sets = ['4.5', '5.5', '6', '7']
+sets = ['4.5', '5.5', '6', '7', '17']
 
 
 if __name__ == '__main__':
@@ -27,10 +27,10 @@ if __name__ == '__main__':
         A = input('Type 1 for terminal or 2 for graphical.\n')
 
         if A == '1':
-            from rolldown import main
+            from rolldown.rolldown import main
             main(cur_set)
         elif A == '2':
-            from user_interface import main
+            from gui.user_interface import main
             main(cur_set)
         else:
             continue

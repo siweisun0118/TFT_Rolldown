@@ -9,9 +9,9 @@ import threading
 
 
 # Local files
-from resources import SERVER_PORT, CHAMPION_POOL, serialize
-from resources import POOL_LOCK, UNIT_AMOUNT_LEVEL, CHAMPION_AMOUNTS
-from resources import Unit, Trait
+from shared.resources import SERVER_PORT, CHAMPION_POOL, serialize
+from shared.resources import POOL_LOCK, UNIT_AMOUNT_LEVEL, CHAMPION_AMOUNTS
+from shared.resources import Unit, Trait
 
 
 class UnknownChampionError(Exception):
@@ -41,9 +41,9 @@ def populate_champ_pool(input_dir):
     # Parse unit data
     champions = {}
     for champ in champions_list:
-        # If champion has fewer than 2 traits, ignore it
-        # Since it is a target dummy, voidspawn, tome, Veigar, etc.
-        if len(champ['traits']) < 2:
+        # If champion has no traits, ignore it
+        # Since it is a target dummy, voidspawn, tome, etc.
+        if len(champ['traits']) < 1:
             continue
 
         # Add to champions list
@@ -202,6 +202,7 @@ def client_thread(connection, addr, champions):
             # Unknown message
             else:
                 connection.send(f'Unknown message: {message}\0'.encode())
+                print(f'Unknown message: {message}\0'.encode())
                 raise UnknownMessageError(message)
 
     except (KeyboardInterrupt, BrokenPipeError, ConnectionAbortedError, ConnectionResetError):
@@ -221,6 +222,7 @@ def init_rolldown_server(argv):
 
     # Initialize socket and bind to port SERVER_PORT
     main_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    main_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     host = socket.gethostname()
     main_socket.bind((host, SERVER_PORT))
 

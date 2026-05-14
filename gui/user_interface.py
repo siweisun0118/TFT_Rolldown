@@ -16,8 +16,8 @@ from PyQt5.QtCore import Qt, QProcess
 
 
 # Local files
-from resources import GEN_ASSETS, LEVEL_EXP, Game, Unit, send_message
-from user_interface_v3 import Ui_MainWindow, pathlib_path
+from shared.resources import GEN_ASSETS, LEVEL_EXP, Game, Unit, send_message
+from gui.user_interface_v3 import Ui_MainWindow, pathlib_path
 
 
 class MainWindow(QMainWindow):

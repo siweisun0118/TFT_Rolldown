@@ -1,0 +1,582 @@
+[
+    {
+        "name": "Anima",
+        "sets": [
+            {
+                "min": 3,
+                "max": 5,
+                "style": 1
+            },
+            {
+                "min": 6,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Arbiter",
+        "sets": [
+            {
+                "min": 2,
+                "max": 2,
+                "style": 1
+            },
+            {
+                "min": 3,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Bastion",
+        "sets": [
+            {
+                "min": 2,
+                "max": 3,
+                "style": 1
+            },
+            {
+                "min": 4,
+                "max": 5,
+                "style": 2
+            },
+            {
+                "min": 6,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Brawler",
+        "sets": [
+            {
+                "min": 2,
+                "max": 3,
+                "style": 1
+            },
+            {
+                "min": 4,
+                "max": 5,
+                "style": 2
+            },
+            {
+                "min": 6,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Bulwark",
+        "sets": [
+            {
+                "min": 1,
+                "max": 25000,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Challenger",
+        "sets": [
+            {
+                "min": 2,
+                "max": 2,
+                "style": 1
+            },
+            {
+                "min": 3,
+                "max": 3,
+                "style": 2
+            },
+            {
+                "min": 4,
+                "max": 4,
+                "style": 2
+            },
+            {
+                "min": 5,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Commander",
+        "sets": [
+            {
+                "min": 1,
+                "max": 25000,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Conduit",
+        "sets": [
+            {
+                "min": 2,
+                "max": 2,
+                "style": 1
+            },
+            {
+                "min": 3,
+                "max": 3,
+                "style": 2
+            },
+            {
+                "min": 4,
+                "max": 4,
+                "style": 2
+            },
+            {
+                "min": 5,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Dark Lady",
+        "sets": [
+            {
+                "min": 1,
+                "max": 25000,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Dark Star",
+        "sets": [
+            {
+                "min": 2,
+                "max": 3,
+                "style": 1
+            },
+            {
+                "min": 4,
+                "max": 5,
+                "style": 2
+            },
+            {
+                "min": 6,
+                "max": 8,
+                "style": 3
+            },
+            {
+                "min": 9,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Divine Duelist",
+        "sets": [
+            {
+                "min": 1,
+                "max": 25000,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Doomer",
+        "sets": [
+            {
+                "min": 1,
+                "max": 25000,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Eradicator",
+        "sets": [
+            {
+                "min": 1,
+                "max": 25000,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Factory New",
+        "sets": [
+            {
+                "min": 1,
+                "max": 25000,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Fateweaver",
+        "sets": [
+            {
+                "min": 2,
+                "max": 3,
+                "style": 1
+            },
+            {
+                "min": 4,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Galaxy Hunter",
+        "sets": [
+            {
+                "min": 1,
+                "max": 25000,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Gun Goddess",
+        "sets": [
+            {
+                "min": 1,
+                "max": 25000,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Marauder",
+        "sets": [
+            {
+                "min": 2,
+                "max": 3,
+                "style": 1
+            },
+            {
+                "min": 4,
+                "max": 5,
+                "style": 2
+            },
+            {
+                "min": 6,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Mecha",
+        "sets": [
+            {
+                "min": 3,
+                "max": 3,
+                "style": 1
+            },
+            {
+                "min": 4,
+                "max": 5,
+                "style": 2
+            },
+            {
+                "min": 6,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Meeple",
+        "sets": [
+            {
+                "min": 3,
+                "max": 4,
+                "style": 1
+            },
+            {
+                "min": 5,
+                "max": 6,
+                "style": 2
+            },
+            {
+                "min": 7,
+                "max": 9,
+                "style": 3
+            },
+            {
+                "min": 10,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "N.O.V.A.",
+        "sets": [
+            {
+                "min": 2,
+                "max": 4,
+                "style": 1
+            },
+            {
+                "min": 5,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Oracle",
+        "sets": [
+            {
+                "min": 1,
+                "max": 25000,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Party Animal",
+        "sets": [
+            {
+                "min": 1,
+                "max": 25000,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Primordian",
+        "sets": [
+            {
+                "min": 2,
+                "max": 2,
+                "style": 1
+            },
+            {
+                "min": 3,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Psionic",
+        "sets": [
+            {
+                "min": 2,
+                "max": 3,
+                "style": 1
+            },
+            {
+                "min": 4,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Redeemer",
+        "sets": [
+            {
+                "min": 1,
+                "max": 25000,
+                "style": 4
+            }
+        ]
+    },
+    {
+        "name": "Replicator",
+        "sets": [
+            {
+                "min": 2,
+                "max": 3,
+                "style": 1
+            },
+            {
+                "min": 4,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Rogue",
+        "sets": [
+            {
+                "min": 2,
+                "max": 2,
+                "style": 1
+            },
+            {
+                "min": 3,
+                "max": 3,
+                "style": 2
+            },
+            {
+                "min": 4,
+                "max": 4,
+                "style": 2
+            },
+            {
+                "min": 5,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Shepherd",
+        "sets": [
+            {
+                "min": 3,
+                "max": 4,
+                "style": 1
+            },
+            {
+                "min": 5,
+                "max": 6,
+                "style": 2
+            },
+            {
+                "min": 7,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Sniper",
+        "sets": [
+            {
+                "min": 2,
+                "max": 2,
+                "style": 1
+            },
+            {
+                "min": 3,
+                "max": 3,
+                "style": 2
+            },
+            {
+                "min": 4,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Space Groove",
+        "sets": [
+            {
+                "min": 1,
+                "max": 2,
+                "style": 1
+            },
+            {
+                "min": 3,
+                "max": 4,
+                "style": 2
+            },
+            {
+                "min": 5,
+                "max": 6,
+                "style": 2
+            },
+            {
+                "min": 7,
+                "max": 9,
+                "style": 3
+            },
+            {
+                "min": 10,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Stargazer",
+        "sets": [
+            {
+                "min": 3,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Timebreaker",
+        "sets": [
+            {
+                "min": 2,
+                "max": 2,
+                "style": 1
+            },
+            {
+                "min": 3,
+                "max": 3,
+                "style": 2
+            },
+            {
+                "min": 4,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Vanguard",
+        "sets": [
+            {
+                "min": 2,
+                "max": 3,
+                "style": 1
+            },
+            {
+                "min": 4,
+                "max": 5,
+                "style": 2
+            },
+            {
+                "min": 6,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    },
+    {
+        "name": "Voyager",
+        "sets": [
+            {
+                "min": 2,
+                "max": 2,
+                "style": 1
+            },
+            {
+                "min": 3,
+                "max": 3,
+                "style": 2
+            },
+            {
+                "min": 4,
+                "max": 4,
+                "style": 2
+            },
+            {
+                "min": 5,
+                "max": 5,
+                "style": 2
+            },
+            {
+                "min": 6,
+                "max": 25000,
+                "style": 3
+            }
+        ]
+    }
+]

@@ -6,7 +6,7 @@ import sys
 
 
 # Local files
-from resources import send_message, init_rolldown_client
+from shared.resources import send_message, init_rolldown_client
 
 
 def main(argv):

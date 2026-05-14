@@ -11,3 +11,5 @@ extract.py
 background.py
 check_server.py
 server_log
+da*
+*opencode*
