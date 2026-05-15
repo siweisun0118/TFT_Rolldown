@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 # Local imports
-from rolldown_enums import LEVEL_ODDS
+from shared.rolldown_enums import LEVEL_ODDS
 from shared.rolldown_classes import Trait, Unit
 
 

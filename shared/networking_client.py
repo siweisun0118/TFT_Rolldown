@@ -9,7 +9,6 @@ import sys
 from shared.rolldown_enums import SERVER_PORT
 
 
-### NETWORKING CLIENT FUNCTIONS ###
 # Send a message over the socket
 def send_message(client_socket, message):
     """Send a message to the server and get response."""
@@ -25,7 +24,6 @@ def send_message(client_socket, message):
             break
 
     return response[:-1]
-
 
 # Initialize the client socket
 def init_rolldown_client(port):
@@ -43,7 +41,6 @@ def init_rolldown_client(port):
 
     # Return client socket
     return client_socket
-### END NETWORKING CLIENT FUNCTIONS ###
 
 def main(argv):
     """Start the client that sends messages to the server."""

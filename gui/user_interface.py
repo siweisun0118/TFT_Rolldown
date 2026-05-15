@@ -16,7 +16,9 @@ from PyQt5.QtCore import Qt, QProcess
 
 
 # Local files
-from shared.resources import GEN_ASSETS, LEVEL_EXP, Game, Unit, send_message
+from shared.rolldown_classes import Unit, send_message
+from shared.rolldown_enums import GEN_ASSETS, LEVEL_EXP
+from shared.game import Game
 from gui.user_interface_v3 import Ui_MainWindow, pathlib_path
 
 

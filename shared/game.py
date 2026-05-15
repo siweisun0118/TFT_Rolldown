@@ -22,8 +22,8 @@ else:
 from shared.networking_client import init_rolldown_client, send_message
 from shared.resources import read_database
 from shared.rolldown_classes import Team, Unit
-from shared.rolldown_enums import CHAMPION_POOL, LEVEL_EXP, LEVEL_ODDS, SERVER_LOG_FILE,\
-    SHOP_SLOTS, THREE_STARRED
+from shared.rolldown_enums import CHAMPION_POOL, LEVEL_EXP, LEVEL_ODDS, \
+    SERVER_LOG_FILE, SHOP_SLOTS, THREE_STARRED
 
 
 class Game:
@@ -45,13 +45,12 @@ class Game:
 
         # Check if server is running.
         try:
-            # self.client_socket = init_rolldown_client(0)
-            raise ConnectionRefusedError
+            self.client_socket = init_rolldown_client(0)
         except ConnectionRefusedError:
             # Start server and reset log if not running.
             SERVER_LOG_FILE.unlink(missing_ok=True)
             with open(str(SERVER_LOG_FILE), mode='a', encoding='utf-8') as outfile:
-                subprocess.Popen(['python', 'networking_server.py', input_dir], \
+                subprocess.Popen(['python', '-m', 'shared.networking_server', input_dir], \
                     stdout=outfile, stderr=outfile)
 
             # Indicate that a new server is being started
