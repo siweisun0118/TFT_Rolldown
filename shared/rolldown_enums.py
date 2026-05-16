@@ -17,6 +17,10 @@ POOL_LOCK = threading.Lock()
 SHOP_SLOTS = 5
 BENCH_SLOTS = 9
 
+# Board geometry: 4 rows (A-D) of 7 interlocking hexes (columns 1-7)
+BOARD_ROWS = 4
+BOARD_COLS = 7
+
 # List of all champions in pool by cost
 CHAMPION_POOL = {1: [], 2: [], 3: [], 4: [], 5: []}
 
@@ -75,6 +79,12 @@ SPLASH_SIZE = (1006, 596)
 GEN_ASSETS = Path('General Assets')
 # endregion
 
-# region Port number for rolldown server
+# region Rolldown server address
+# Bind/connect on loopback only - robust across WSL/containers/CI and avoids
+# the fragile socket.gethostname() resolution (PERFORMANCE_AND_SERVER.md 2.2).
+SERVER_HOST = '127.0.0.1'
 SERVER_PORT = 8000
+
+# Sentinel the server prints once it is accepting connections (2.1).
+SERVER_READY_MESSAGE = 'ROLLDOWN_SERVER_READY'
 # endregion

@@ -1,13 +1,11 @@
 """Definition of Game class used by rolldown."""
 
 # Standard libraries
-from copy import deepcopy
 import json
 import os
 import random
 import subprocess
 import sys
-import time
 
 
 # Third party libraries
@@ -19,16 +17,17 @@ else:
 
 
 # Local imports
-from shared.networking_client import init_rolldown_client, send_message
+from shared.networking_client import init_rolldown_client, send_bulk, \
+    send_message, wait_for_server
 from shared.resources import read_database
 from shared.rolldown_classes import Team, Unit
-from shared.rolldown_enums import CHAMPION_POOL, LEVEL_EXP, LEVEL_ODDS, \
-    SERVER_LOG_FILE, SHOP_SLOTS, THREE_STARRED
+from shared.rolldown_enums import LEVEL_EXP, LEVEL_ODDS, \
+    SERVER_LOG_FILE, THREE_STARRED
 
 
 class Game:
     """Class that runs and manages the rolldown."""
-    def __init__(self, input_dir, gold=None, level=None):
+    def __init__(self, input_dir, gold=None, level=None, client_socket=None):
         # Read in database
         champions_dict, traits_dict = read_database(input_dir)
         self.champions_dict = champions_dict
@@ -43,25 +42,32 @@ class Game:
         # Keep track of the current shop
         self.cur_shop = None
 
-        # Check if server is running.
-        try:
-            self.client_socket = init_rolldown_client(0)
-        except ConnectionRefusedError:
-            # Start server and reset log if not running.
-            SERVER_LOG_FILE.unlink(missing_ok=True)
-            with open(str(SERVER_LOG_FILE), mode='a', encoding='utf-8') as outfile:
-                subprocess.Popen(['python', '-m', 'shared.networking_server', input_dir], \
-                    stdout=outfile, stderr=outfile)
+        if client_socket is not None:
+            # An explicit client (e.g. an in-process fake pool for tests) was
+            # provided; skip the server auto-start entirely.
+            self.client_socket = client_socket
+        else:
+            # Check if server is running.
+            try:
+                self.client_socket = init_rolldown_client()
+            except (ConnectionRefusedError, OSError):
+                # Start server and reset log if not running.
+                SERVER_LOG_FILE.unlink(missing_ok=True)
+                with open(str(SERVER_LOG_FILE), mode='a', encoding='utf-8') as outfile:
+                    subprocess.Popen(
+                        [sys.executable, '-m', 'shared.networking_server',
+                         str(input_dir)],
+                        stdout=outfile, stderr=outfile)
 
-            # Indicate that a new server is being started
-            print('No active server found, starting new server...')
+                # Indicate that a new server is being started
+                print('No active server found, starting new server...')
 
-            # Wait before trying to connect to server
-            time.sleep(0.5)
-            self.client_socket = init_rolldown_client(0)
+                # Poll-connect until the server is ready (no fixed sleep).
+                self.client_socket = wait_for_server(timeout=15.0)
 
-        # Create new team
-        self.team = Team(self.champions_dict, self.traits_dict, self.client_socket)
+        # Create new team (board capacity tracks the player's level).
+        self.team = Team(self.champions_dict, self.traits_dict, self.client_socket,
+                          player_level=level if isinstance(level, int) else 1)
 
     def __str__(self):
         """Display the current team"""
@@ -79,81 +85,6 @@ class Game:
 
         return cur_pool
 
-    # Helper function that rolls a loaded dice shop
-    def loaded_dice(self, unit):
-        """Roll the loaded dice."""
-        level = self.level
-        assert isinstance(unit, Unit), 'Error: invalid input for unit type'
-        assert isinstance(level, int), 'Error: invalid input for level'
-
-        # Get odds at current level
-        odds = LEVEL_ODDS[level]
-
-        # Get unit's traits
-        traits = unit.traits
-
-        # Get current champion pool
-        cur_pool = self.build_champion_pool()
-        print(cur_pool)
-
-        # For each slot in the shop, roll a rarity depending on current level
-        costs = random.choices(population=[1, 2, 3, 4, 5], weights=odds, k=SHOP_SLOTS)
-
-        # Rolled units
-        results = []
-
-        # For each rarity that was rolled
-        for i in costs:
-            # Find a valid champion
-            candidates = []
-            for possible in cur_pool[i]:
-                # If at least one trait is shared, add as potential candidate
-                if set(possible.traits) & set(traits):
-                    candidates.append(possible)
-
-            # If candidates is empty, reroll rarities until candidate is available
-            # Remove already rolled rarity from contention
-            remaining_odds = deepcopy(LEVEL_ODDS[level])
-            remaining_odds[i - 1] = 0
-            while not candidates:
-                # If we run out of rarities, just choose a random unit with the same rarity
-                if sum(remaining_odds) == 0:
-                    # Choose random rarity
-                    odds = LEVEL_ODDS[level]
-                    cost = random.choices(population=[1, 2, 3, 4, 5], weights=odds, k=1)[0]
-
-                    # If all units of that rarity are unavailable, just pick a random unit
-                    if not cur_pool[cost]:
-                        total_pool = [unit for ls in cur_pool.values() for unit in ls]
-                        replacement = random.choice(total_pool)
-                        candidates.append(replacement)
-
-                    # Otherwise, pick a unit of the same cost
-                    else:
-                        replacement = random.choice(cur_pool[cost])
-                        candidates.append(replacement)
-
-                else:
-                    # Get new rarity and remove that rarity from contention
-                    cost = random.choices(population=[1, 2, 3, 4, 5], weights=remaining_odds, k=1)
-                    cost = cost[0]
-                    remaining_odds[cost - 1] = 0
-
-                    # Attempt to find more candidates
-                    for possible in CHAMPION_POOL[cost]:
-                        # If at least one trait is shared, add as potential candidate
-                        if set(possible.traits) & set(traits):
-                            candidates.append(possible)
-
-            # Choose a random candidate
-            chosen = random.choice(candidates)
-            results.append(chosen)
-
-            # Remove chosen champion from pool
-            cur_pool[chosen.rarity].remove(chosen)
-
-        # Return rolled shop
-        return results
 
     # Helper function that simulates a single roll based on level
     def roll(self, first_roll=False):
@@ -208,9 +139,10 @@ class Game:
                 # Add result to list of resulting rolls
                 results.append(resulting_champ)
 
-        # Take each rolled champion out of the pool
-        for unit in results:
-            send_message(self.client_socket, f'buy: {unit.name}')
+        # Take each rolled champion out of the pool in one batched round-trip.
+        if results:
+            send_bulk(self.client_socket,
+                      [{'op': 'buy', 'name': unit.name} for unit in results])
 
         return results
 
@@ -240,26 +172,85 @@ class Game:
         # Display current roll
         print(str_roll, end='')
 
+    def sync_player_level(self):
+        """Keep the team's board capacity in sync with the player's level."""
+        if isinstance(self.level, int):
+            self.team.player_level = self.level
+
     def buy_unit(self, next_in):
-        """Buy a unit for the team (1-indexed)."""
+        """Buy a unit for the team (1-indexed).
+
+        Returns one of ``'ok'``, ``'blank'``, ``'no_gold'`` or
+        ``'bench_full'``.  On a failed purchase no gold is spent and the team
+        is unchanged.
+        """
         idx = int(next_in) - 1
-        # Remove cost from current gold and add gold to team
         cur_unit = self.cur_shop[idx]
-        if cur_unit.name != 'BLANK' and self.gold >= cur_unit.cost:
-            self.gold -= cur_unit.cost
-            self.team.add_unit(cur_unit.name)
-            self.cur_shop[idx] = Unit(None, 'BLANK', None, None)
-        else:
-            # print("You don't have enough gold!")
-            pass
+
+        if cur_unit.name == 'BLANK':
+            return 'blank'
+
+        if self.gold < cur_unit.cost:
+            return 'no_gold'
+
+        if not self.team.bench_is_full():
+            if self.team.add_unit(cur_unit.name):
+                self.gold -= cur_unit.cost
+                self.cur_shop[idx] = Unit(None, 'BLANK', None, None)
+                return 'ok'
+            return 'bench_full'
+
+        # Bench is full: the purchase is only allowed if it immediately
+        # upgrades. If the player is short copies, auto-buy the other matching
+        # copies still in the shop to complete the 3-combine.
+        name = cur_unit.name
+        owned_ones = sum(1 for u in self.team.all_units()
+                         if u.name == name and u.level == 1)
+        need = 3 - owned_ones
+        if need < 1 or need > 3:
+            return 'bench_full'
+
+        shop_idxs = [i for i, su in enumerate(self.cur_shop)
+                     if su.name == name and getattr(su, 'level', 1) == 1]
+        shop_idxs = [idx] + [i for i in shop_idxs if i != idx]
+        if len(shop_idxs) < need:
+            return 'bench_full'
+        if self.gold < need * cur_unit.cost:
+            return 'no_gold'
+
+        if not self.team.add_units(name, need):
+            return 'bench_full'
+
+        self.gold -= need * cur_unit.cost
+        for i in shop_idxs[:need]:
+            self.cur_shop[i] = Unit(None, 'BLANK', None, None)
+        return 'ok'
 
     def sell_unit(self, index):
-        """Sell a unit from the team (0-indexed)."""
+        """Sell a unit from the team by flat index (0-indexed)."""
         # Add gold equal to sell cost of unit
         self.gold += self.team.team[index].sell_cost
 
         # Remove unit from team
         self.team.remove_unit(index)
+
+    def sell_bench(self, idx):
+        """Sell the unit in bench slot ``idx`` and refund its sell cost."""
+        unit = self.team.bench[idx]
+        if unit is None:
+            return False
+        self.gold += unit.sell_cost
+        self.team.sell_from_bench(idx)
+        return True
+
+    def sell_board(self, pos):
+        """Sell the unit at board position ``pos`` and refund its sell cost."""
+        unit = self.team.board.get(pos)
+        if unit is None:
+            return False
+        self.gold += unit.sell_cost
+        self.team.sell_from_board(pos)
+        return True
 
     def check_team(self):
         """Check team and/or sell unit."""
@@ -317,20 +308,22 @@ class Game:
             self.exp -= LEVEL_EXP[self.level]
             self.level += 1
 
+        # Board capacity grows with the player's level.
+        self.sync_player_level()
+
     def quit(self):
         """Quit the game and print results."""
         print('Quitting...')
         print('Final results:')
         print(self.team)
 
-        # Return units on the team to the pool
-        for unit in self.team.team:
-            send_message(self.client_socket, f'sell: {unit.name}: {unit.level}')
-
-        # Return units in shop to the pool
-        for unit in self.cur_shop:
-            if unit.name != 'BLANK':
-                send_message(self.client_socket, f'sell: {unit.name}: {unit.level}')
+        # Return every owned unit and every shop unit to the pool in one batch.
+        ops = [{'op': 'sell', 'name': u.name, 'level': u.level}
+               for u in self.team.team]
+        ops += [{'op': 'sell', 'name': u.name, 'level': u.level}
+                for u in (self.cur_shop or []) if u.name != 'BLANK']
+        if ops:
+            send_bulk(self.client_socket, ops)
 
     def rolldown(self):
         """Simulate the rolldown."""
@@ -355,6 +348,7 @@ class Game:
         # Update member variables
         self.gold = start_gold
         self.level = start_level
+        self.sync_player_level()
 
         # Now we can start generating rolls
         first_roll = True
@@ -363,11 +357,12 @@ class Game:
             # Generate new roll
             # Do not generate a new roll if gold is too low
             if reroll:
-                # Add previously rolled champions back to the pool
+                # Add previously rolled champions back to the pool (batched).
                 if not first_roll:
-                    for unit in self.cur_shop:
-                        if unit.name != 'BLANK':
-                            send_message(self.client_socket, f'sell: {unit.name}: 1')
+                    back = [{'op': 'sell', 'name': u.name, 'level': 1}
+                            for u in self.cur_shop if u.name != 'BLANK']
+                    if back:
+                        send_bulk(self.client_socket, back)
 
                 # Roll new shop
                 self.cur_shop = self.roll(first_roll)
