@@ -23,8 +23,8 @@ else:
 from shared.networking_client import init_rolldown_client, send_message
 from shared.resources import read_database
 from shared.rolldown_classes import Team, Unit
-from shared.rolldown_enums import BOARD_LAYOUT, CHAMPION_AMOUNTS, CHAMPION_POOL, \
-    LEVEL_EXP, LEVEL_ODDS, SERVER_LOG_FILE, SHOP_SLOTS, THREE_STARRED
+from shared.rolldown_enums import CHAMPION_POOL, LEVEL_EXP, LEVEL_ODDS, \
+    SERVER_LOG_FILE, SHOP_SLOTS, THREE_STARRED
 
 
 class Game:

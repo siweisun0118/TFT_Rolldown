@@ -1,24 +1,10 @@
-"""Layout-driven UI for the TFT-Rolldown simulator.
-
-This file owns :class:`Ui_MainWindow`, the builder that creates the actual
-widgets and lays them out using Qt layouts.  The minimum window size is
-1366×973 (the previous hardcoded size); the window can grow above that
-freely.
-
-Layout summary:
-
-* Left column: traits panel.
-* Centre column (top→bottom): gold/level top bar, hex board, bench row,
-  and the shop with reroll + buy-XP buttons on its left.
-* Buttons are stacked vertically (Buy XP on top, Reroll below) just left
-  of the shop slots.
-"""
-
-# pylint: disable=no-name-in-module
+"""Generate the UI for rolldown."""
+# pylint: disable=all
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from gui.widgets import BenchSlot, HexBoard, ShopSlot, TraitBadge, Toast
 
+from shared.rolldown_enums import GEN_ASSETS
 
 # Minimum window size – matches the previous hardcoded geometry.
 MIN_WINDOW_SIZE = (1366, 973)
