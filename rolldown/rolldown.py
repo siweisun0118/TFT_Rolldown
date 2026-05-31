@@ -5,7 +5,7 @@ from pathlib import Path
 import sys
 
 # Local files
-from shared.resources import Game
+from shared.game import Game
 
 
 # random.seed(112358)

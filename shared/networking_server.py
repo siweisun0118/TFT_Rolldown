@@ -1,17 +1,45 @@
-"""Receive messages and manage the rolldown."""
+"""Rolldown game server.
+
+This rewrite implements the following server improvements from
+``PERFORMANCE_NOTES.md``:
+
+* §2.1 / §2.10 (client-side counterparts): client connect now polls with
+  exponential backoff against the server we spawn here.
+* §2.2: length-prefixed framing on every message (client + server).
+* §2.5: unknown / malformed messages no longer kill the worker thread;
+  every failure produces a structured ``ERROR`` response.
+* §2.9: every successful pool mutation returns a structured ``OK`` ack so
+  the client can apply the change transactionally.
+* §2.12: every applied transition is appended to ``server_transitions.jsonl``
+  on disk so the pool state can be reconstructed after a crash.
+"""
 
 # Standard libraries
+import datetime as _dt
 import json
-from pathlib import Path
 import socket
+import struct
 import sys
 import threading
-
+from pathlib import Path
 
 # Local imports
-from shared.rolldown_enums import SERVER_PORT, CHAMPION_POOL
-from shared.rolldown_enums import POOL_LOCK, UNIT_AMOUNT_LEVEL, CHAMPION_AMOUNTS
-from shared.resources import Unit, Trait, serialize
+from shared.rolldown_enums import (
+    CHAMPION_AMOUNTS,
+    CHAMPION_POOL,
+    POOL_LOCK,
+    SERVER_PORT,
+    SERVER_TRANSITIONS_LOG,
+    UNIT_AMOUNT_LEVEL,
+)
+from shared.resources import Trait, Unit, serialize
+
+
+# ----------------------------------------------------------------------------
+# Framing helpers (mirror image of networking_client._{send,recv}_framed).
+
+_HEADER = '!I'
+_HEADER_SIZE = struct.calcsize(_HEADER)
 
 
 class UnknownChampionError(Exception):
@@ -22,7 +50,35 @@ class UnknownMessageError(Exception):
     """Unknown Message Error."""
 
 
-# Helper function to read input directory
+def _recv_exact(conn, num_bytes):
+    chunks = []
+    remaining = num_bytes
+    while remaining > 0:
+        chunk = conn.recv(remaining)
+        if not chunk:
+            raise ConnectionError('client closed the connection mid-message')
+        chunks.append(chunk)
+        remaining -= len(chunk)
+    return b''.join(chunks)
+
+
+def send_framed(conn, payload):
+    """Send a length-prefixed message to *conn*."""
+    if isinstance(payload, str):
+        payload = payload.encode('utf-8')
+    conn.sendall(struct.pack(_HEADER, len(payload)) + payload)
+
+
+def recv_framed(conn):
+    """Receive one full length-prefixed message and return its decoded string."""
+    header = _recv_exact(conn, _HEADER_SIZE)
+    (length,) = struct.unpack(_HEADER, header)
+    body = _recv_exact(conn, length)
+    return body.decode('utf-8')
+
+
+# ----------------------------------------------------------------------------
+# Pool helpers
 def populate_champ_pool(input_dir):
     """Read in units and traits."""
     assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
@@ -30,221 +86,248 @@ def populate_champ_pool(input_dir):
     for cost in CHAMPION_POOL:
         CHAMPION_POOL[cost] = []
 
-    # Read in units
     with open(Path(input_dir) / 'champions.json', encoding='utf-8') as champions_file:
         champions_list = json.loads(champions_file.read())
 
-    # Read in traits
     with open(Path(input_dir) / 'traits.json', encoding='utf-8') as traits_file:
         traits_list = json.loads(traits_file.read())
 
-    # Parse unit data
     champions = {}
     for champ in champions_list:
-        # If champion has no traits, ignore it
-        # Since it is a target dummy, voidspawn, tome, etc.
         if len(champ['traits']) < 1:
             continue
-
-        # Add to champions list
-        champions[champ['name']] = Unit(champ['cost'], champ['name'], \
+        champions[champ['name']] = Unit(champ['cost'], champ['name'],
             champ['traits'], champ['championId'])
-
-        # Add to champion pool
         CHAMPION_POOL[champ['cost']] += [champions[champ['name']]] * \
             CHAMPION_AMOUNTS[champ['cost']]
 
-    # Parse trait data
     traits = {}
     for trait in traits_list:
-        # Extract trait breakpoints and styles from trait data
         breakpoints = []
         styles = []
         for b_p in trait['sets']:
             breakpoints.append(b_p['min'])
             styles.append(b_p['style'])
-
-        # Add to traits list
         traits[trait['name']] = Trait(trait['name'], breakpoints, styles)
 
     return champions, traits
 
 
 def get_champion_pool():
-    """Return the current state of the champion pool."""
+    """Return the current state of the champion pool as a framed payload."""
     assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
 
-    # Build a copy of the champion pool and return it
     pool = {}
     for _, champions in CHAMPION_POOL.items():
         for unit in champions:
-            if unit.name not in pool:
-                pool[unit.name] = 1
-            else:
-                pool[unit.name] += 1
-    return f'{json.dumps(pool, default=serialize)}\0'.encode()
+            pool[unit.name] = pool.get(unit.name, 0) + 1
+    return json.dumps(pool, default=serialize)
 
 
 def get_full_pool():
-    """Return the current state of the champion pool.
-       Includes champion information."""
+    """Return the rich CHAMPION_POOL representation."""
+    assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
+    return json.dumps(CHAMPION_POOL, default=serialize)
+
+
+# ----------------------------------------------------------------------------
+# Transition log helpers (server improvement §2.12)
+_LOG_LOCK = threading.Lock()
+
+
+def _append_transition(record):
+    """Append a JSON-line transition record to ``SERVER_TRANSITIONS_LOG``.
+
+    Thread-safe and crash-resilient: writes are atomic per ``write()`` call
+    because the OS buffers them on a single descriptor.  On startup the log
+    is replayed by :func:`_replay_transitions`.
+    """
+    record = {'ts': _dt.datetime.utcnow().isoformat() + 'Z', **record}
+    payload = json.dumps(record, default=serialize)
+    with _LOG_LOCK:
+        with open(SERVER_TRANSITIONS_LOG, mode='a', encoding='utf-8') as log_file:
+            log_file.write(payload + '\n')
+            log_file.flush()
+
+
+def _replay_transitions(champions):
+    """Re-apply every record from the transition log to ``CHAMPION_POOL``.
+
+    The state recovered from the log is approximate: we only persist
+    buy/sell records, which the server can reapply at startup so a hard
+    crash doesn't lose game progress.
+    """
+    if not SERVER_TRANSITIONS_LOG.is_file():
+        return
+    with open(SERVER_TRANSITIONS_LOG, mode='r', encoding='utf-8') as log_file:
+        for line in log_file:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            op = record.get('op')
+            unit = record.get('unit')
+            if op == 'buy' and unit in champions:
+                unit_obj = champions[unit]
+                if unit_obj in CHAMPION_POOL.get(unit_obj.rarity, []):
+                    CHAMPION_POOL[unit_obj.rarity].remove(unit_obj)
+            elif op == 'sell' and unit in champions:
+                level = int(record.get('level', 1))
+                unit_obj = champions[unit]
+                for _ in range(UNIT_AMOUNT_LEVEL.get(level, 1)):
+                    CHAMPION_POOL[unit_obj.rarity].append(unit_obj)
+
+
+# ----------------------------------------------------------------------------
+# Command dispatch.  Each helper returns the payload to send back to the
+# client.  Errors are surfaced as strings beginning with "ERROR:" so the
+# client can distinguish ack from failure without a sentinel byte.
+def buy_champion(message, champions):
     assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
 
-    return f'{json.dumps(CHAMPION_POOL, default=serialize)}\0'.encode()
-
-
-def buy_champion(message, connection, champions):
-    """Remove a champion from the pool by buying it."""
-    assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
-
-    # Get unit data
-    unit = message.split(':')[1].strip()
-    if unit in champions:
-        unit_obj = champions[unit]
-
-        # Remove unit from pool
-        # Grab lock since we are writing to CHAMPION_POOL
-        assert unit_obj in CHAMPION_POOL[unit_obj.rarity], \
-            f'Error: {unit} not found in champion pool'
-        CHAMPION_POOL[unit_obj.rarity].remove(unit_obj)
-
-        # Send response message
-        connection.send(f'{unit} bought successfully\0'.encode())
-
-    # Unknown unit
-    else:
-        connection.send(f'{unit} not found\0'.encode())
+    parts = message.split(':', 1)
+    if len(parts) != 2:
+        raise UnknownMessageError(message)
+    unit = parts[1].strip()
+    if unit not in champions:
         raise UnknownChampionError(unit)
 
+    unit_obj = champions[unit]
+    if unit_obj not in CHAMPION_POOL[unit_obj.rarity]:
+        raise UnknownChampionError(f'{unit} (no copies left in pool)')
 
-def sell_champion(message, connection, champions):
-    """Add a champion to the pool by selling it."""
+    CHAMPION_POOL[unit_obj.rarity].remove(unit_obj)
+    _append_transition({'op': 'buy', 'unit': unit})
+    return f'OK: bought {unit}'
+
+
+def sell_champion(message, champions):
     assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
 
-    # Get information about the unit
-    unit, level = message.split(':')[1:]
-    unit = unit.strip()
-    amount = UNIT_AMOUNT_LEVEL[int(level)]
-
-    # Add unit to pool
-    if unit in champions:
-        unit_obj = champions[unit]
-
-        # Can sell multiple champions at once (i.e. selling upgraded unit)
-        for _ in range(amount):
-            CHAMPION_POOL[unit_obj.rarity].append(unit_obj)
-
-        # Send response confirming sell
-        connection.send(f'Successfully sold {amount} {unit} units\0'.encode())
-
-    # Unknown unit
-    else:
-        connection.send(f'{unit} not found\0'.encode())
+    parts = message.split(':')
+    if len(parts) < 3:
+        raise UnknownMessageError(message)
+    unit = parts[1].strip()
+    try:
+        level = int(parts[2].strip())
+    except ValueError:
+        raise UnknownMessageError(message)
+    if unit not in champions:
         raise UnknownChampionError(unit)
+
+    amount = UNIT_AMOUNT_LEVEL[level]
+    unit_obj = champions[unit]
+    for _ in range(amount):
+        CHAMPION_POOL[unit_obj.rarity].append(unit_obj)
+    _append_transition({'op': 'sell', 'unit': unit, 'level': level})
+    return f'OK: sold {amount} {unit}'
 
 
 def shutdown(main_socket, client_threads):
     """Shutdown server and close all connections."""
-    main_socket.close()
+    try:
+        main_socket.close()
+    except OSError:
+        pass
     for thread in client_threads:
-        thread.join()
+        thread.join(timeout=1.0)
     print('Server shutting down...')
 
 
+# ----------------------------------------------------------------------------
 def client_thread(connection, addr, champions):
-    """Start thread that handles a single client."""
-    # Establish communication with client(s)
+    """Handle a single client connection.
+
+    Server improvement §2.5: every command is wrapped in a try/except so
+    bad input only returns an error – it never tears the thread down.
+    """
     try:
         while True:
-            # Wait to receive messages
-            message = connection.recv(1024).decode()
-            print('Message received:', message, 'from connection', addr)
+            try:
+                message = recv_framed(connection)
+            except ConnectionError:
+                break
+            print('Message received:', message, 'from', addr)
 
-            # Respond to messages
-            # Quit message
-            if message == 'quit':
-                connection.send('Quitting...\0'.encode())
-                connection.close()
-                return
+            response = None
+            try:
+                if message == 'quit':
+                    send_framed(connection, 'Quitting...')
+                    break
+                if message == 'pool':
+                    with POOL_LOCK:
+                        response = get_champion_pool()
+                elif message == 'full_pool':
+                    with POOL_LOCK:
+                        response = get_full_pool()
+                elif message.startswith('buy'):
+                    with POOL_LOCK:
+                        response = buy_champion(message, champions)
+                elif message.startswith('sell'):
+                    with POOL_LOCK:
+                        response = sell_champion(message, champions)
+                elif message == 'reset':
+                    with POOL_LOCK:
+                        populate_champ_pool(sys.argv[1])
+                        response = 'OK: CHAMPION_POOL reset'
+                elif message == 'shutdown':
+                    send_framed(connection, 'Quitting...')
+                    break
+                else:
+                    raise UnknownMessageError(message)
+            except UnknownChampionError as err:
+                response = f'ERROR: unknown champion: {err}'
+                print(response)
+            except UnknownMessageError as err:
+                response = f'ERROR: unknown message: {err}'
+                print(response)
+            except Exception as err:  # pylint: disable=broad-except
+                response = f'ERROR: {type(err).__name__}: {err}'
+                print(response)
 
-            # Check pool message (message form: 'pool')
-            if message == 'pool':
-                with POOL_LOCK:
-                    connection.send(get_champion_pool())
-
-            elif message == 'full_pool':
-                # Function will grab POOL_LOCK
-                with POOL_LOCK:
-                    connection.send(get_full_pool())
-
-            # Buy unit message (message form: 'buy: {unit}')
-            elif 'buy' in message:
-                with POOL_LOCK:
-                    buy_champion(message, connection, champions)
-
-            # Sell unit message (message form: 'sell: {unit}: {amount})
-            elif 'sell' in message:
-                with POOL_LOCK:
-                    sell_champion(message, connection, champions)
-
-            # Reset champion pool
-            elif message == 'reset':
-                with POOL_LOCK:
-                    populate_champ_pool(sys.argv[1])
-                    connection.send('CHAMPION_POOL reset\n'.encode())
-
-            # TODO: Shutdown server and close all connections
-            elif message == 'shutdown':
-                connection.send('Quitting...\0'.encode())
-                connection.close()
-                return
-
-            # Unknown message
-            else:
-                connection.send(f'Unknown message: {message}\0'.encode())
-                print(f'Unknown message: {message}\0'.encode())
-                raise UnknownMessageError(message)
-
-    except (KeyboardInterrupt, BrokenPipeError, ConnectionAbortedError, ConnectionResetError):
+            if response is not None:
+                try:
+                    send_framed(connection, response)
+                except (BrokenPipeError, ConnectionError):
+                    break
+    finally:
+        try:
+            connection.close()
+        except OSError:
+            pass
         print(addr, 'has closed the connection.')
-        return
 
 
 def init_rolldown_server(argv):
-    """Initialize the server on port 8000 and receive messages.
-       Also reads in database from input_dir."""
-    # Read in database
+    """Initialize the server and dispatch client threads."""
     with POOL_LOCK:
         champions, _ = populate_champ_pool(argv[1])
+        # Replay the persisted transitions so a restart restores game state.
+        _replay_transitions(champions)
 
-    # Initialize list to store client threads
     client_threads = []
-
-    # Initialize socket and bind to port SERVER_PORT
     main_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     main_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     host = socket.gethostname()
     main_socket.bind((host, SERVER_PORT))
-
-    # Start listening for connections
     main_socket.listen()
     print('Server on port', SERVER_PORT, 'listening for connections.')
 
-    # Make connections and spin up client threads
     try:
         while True:
-            # Accept connection from client
             connection, addr = main_socket.accept()
             print('Got connection from', addr)
-
-            # Spin up thread for client
-            args = (connection, addr, champions)
-            new_thread = threading.Thread(target=client_thread, args=args)
+            new_thread = threading.Thread(
+                target=client_thread, args=(connection, addr, champions),
+                daemon=True,
+            )
             new_thread.start()
             client_threads.append(new_thread)
-
-    # In case of error or keyboard interrupt, close all connections and join threads
-    except (KeyboardInterrupt, BrokenPipeError, ConnectionAbortedError, ConnectionResetError):
+    except (KeyboardInterrupt, BrokenPipeError, ConnectionAbortedError,
+            ConnectionResetError):
         shutdown(main_socket, client_threads)
 
 

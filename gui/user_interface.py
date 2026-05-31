@@ -1,453 +1,354 @@
-"""Simulate a Rolldown"""
-
+"""Main controller for the TFT-Rolldown PyQt GUI."""
 
 # Standard libraries
 from functools import partial
 from pathlib import Path
 import sys
 
-
 # pylint: disable=no-name-in-module
-# Third party libraries
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QInputDialog
-from PyQt5.QtWidgets import QGraphicsDropShadowEffect
-from PyQt5.QtGui import QPixmap, QColor
-from PyQt5.QtCore import Qt, QProcess
-
+from PyQt5.QtWidgets import QApplication, QMainWindow, QInputDialog
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt, QProcess, QTimer
 
 # Local files
-from shared.resources import GEN_ASSETS, LEVEL_EXP, Game, Unit, send_message
-from gui.user_interface_v3 import Ui_MainWindow, pathlib_path
+from shared.game import Game
+from shared.image_utils import ensure_inverted_traits
+from shared.rolldown_enums import LEVEL_EXP
+from gui.user_interface_v3 import Ui_MainWindow
 
 
 class MainWindow(QMainWindow):
     """Main UI Window."""
-    def __init__(self, input_dir):
-        super().__init__()
-        self.game = None
 
-        # Input directory
+    def __init__(self, input_dir, gold=None, level=None, offline=False):
+        super().__init__()
         self.input_dir = Path(input_dir)
 
-        # Take in inputs
-        self.take_inputs()
+        # Make sure trait icons are dark-on-transparent so they contrast
+        # with the light board background.  Sentinel-guarded; no-op on
+        # subsequent launches.
+        ensure_inverted_traits(self.input_dir / 'traits')
 
-        # Start main UI window
+        # Game state (may be None if the user cancels the prompt).
+        self.game = None
+        if gold is not None and level is not None:
+            self.game = Game(str(self.input_dir), int(gold), int(level), offline=offline)
+        else:
+            self.take_inputs()
+
+        # Build the UI.
         self.u_i = Ui_MainWindow()
+        (
+            self.shop_widgets,
+            self.trait_widgets,
+            self.board_tiles,
+            self.bench_slots,
+            self.controls,
+        ) = self.u_i.setupUi(self)
+        self.gold_label = self.controls['gold_label']
+        self.level_label = self.controls['level_label']
+        self.reroll_button = self.controls['reroll']
+        self.level_up_button = self.controls['level_up']
 
-        # Access to UI widgets
-        self.shop_widgets, self.traits, self.units, gold_level = self.u_i.setupUi(self)
-        self.gold_label = gold_level[0]
-        self.reroll_label = gold_level[1]
-        self.level_label = gold_level[2]
-        self.level_up = gold_level[3]
+        # Perf §1.4: cache trait pixmaps so we don't hit disk per redraw.
+        self._trait_pix_cache = {}
 
-        # Attach trait labels to shop_widgets
-        for idx, widget in enumerate(self.shop_widgets):
-            # Unit can have up to 3 traits
-            for i in range(3):
-                splash_label = widget.findChild(QLabel, f'Shop_Icon_{idx + 1}')
-
-                # Display trait icon
-                trait_icon = QLabel(splash_label)
-                trait_icon.setObjectName(f'Shop_Trait_Icon_{idx}_{i}')
-                trait_icon.setFixedSize(20, 20)
-                trait_icon.move(8, 25 + i * 40)
-                trait_icon.setScaledContents(True)
-
-                # Display trait name
-                trait_label = QLabel(splash_label)
-                trait_label.setStyleSheet('color: rgb(0, 255, 0); font-weight: bold')
-                trait_label.setText('')
-                trait_label.setObjectName(f'Shop_Trait_{idx}_{i}')
-                trait_label.setFixedSize(80, 30)
-                trait_label.move(30, 20 + i * 40)
-
-        # Start the rolldown
+        # Wire everything up.
         self.start_game()
 
+    # ----------------------------------------------------------------- inputs
     def take_inputs(self):
-        """Take in inputs from user."""
-        user_in = QInputDialog()
-        user_in.setWindowState(Qt.WindowActive)
-        gold, done1 = user_in.getText(self, 'input dialog', 'Enter starting gold:')
-        level, done2 = user_in.getText(self, 'input dialog',
-            'Enter starting level (1-11 inclusive):')
-        if done1 and done2:
-            # Start new game using inputs from user
-            while int(level) not in range(1, 12):
-                level, _ = user_in.getText(self, 'input dialog',
-                                                'Enter starting level (1-11 inclusive):')
-            self.game = Game(self.input_dir, int(gold), int(level))
+        """Prompt the user for starting gold/level via QInputDialog."""
+        gold, ok_gold = QInputDialog.getInt(self, 'Starting Gold', 'Enter starting gold:', 0, 0)
+        level, ok_level = QInputDialog.getInt(
+            self, 'Starting Level', 'Enter starting level (1-11 inclusive):', 1, 1, 11
+        )
+        if ok_gold and ok_level:
+            self.game = Game(str(self.input_dir), int(gold), int(level))
         else:
             QApplication.quit()
 
     def start_game(self):
-        """Start the rolldown."""
-        # Attach functionality to units in shop
-        for idx, slot in enumerate(self.shop_widgets):
-            # Buying and loaded dice functionality
-            source = partial(self.shop_clicked, idx=idx)
-            slot.mouseReleaseEvent = source
+        """Bind UI signals to game actions and display the initial state."""
+        for slot in self.shop_widgets:
+            slot.leftClicked.connect(self.buy_from_shop)
+            slot.rightClicked.connect(self.use_loaded_dice)
 
-        # Attach reroll function to reroll button
-        self.reroll_label.mouseReleaseEvent = self.reroll
+        self.reroll_button.clicked.connect(self.do_reroll)
+        self.level_up_button.clicked.connect(self.do_buy_exp)
 
-        # Attach buying exp function to level-up button
-        self.level_up.mouseReleaseEvent = self.buy_exp
+        # Click-to-sell wiring: clicking a chip with the right mouse button
+        # sells the unit, mirroring the legacy behaviour.
+        for tiles_row in self.board_tiles:
+            for tile in tiles_row:
+                chip = tile.chip
+                chip.mouseReleaseEvent = partial(self._chip_clicked, chip)
+        for slot in self.bench_slots:
+            chip = slot.chip
+            chip.mouseReleaseEvent = partial(self._chip_clicked, chip)
 
-        # Display first shop
+        # Display first shop and team.
+        self.display_gold()
         self.display_exp()
         self.display_new_shop(first_roll=True)
+        self.refresh_board_and_bench()
+        self.refresh_traits()
 
-    # pylint: disable=unused-argument
-    def reroll(self, event):
-        """Reroll the shop."""
-        # Check if roll is allowed
-        if self.game.gold < 2:
-            return
+        # The board's hex layout depends on the parent widget's size.  Qt
+        # finalises layout after :meth:`show()`, so schedule a deferred
+        # refresh once the window is fully laid out so the initial paint
+        # uses the correct hex sizes.  Without this the very first frame
+        # shows the board at its sizeHint() instead of the real geometry.
+        QTimer.singleShot(0, self._post_show_layout)
 
-        # Display new shop
-        self.display_new_shop()
+    def _post_show_layout(self):
+        """Re-run layout after the window has been shown so the board sizes
+        the way it would after a reroll.
+        """
+        if hasattr(self.u_i, 'board') and self.u_i.board is not None:
+            self.u_i.board.updateGeometry()
+            self.u_i.board.adjustSize()
+        # Trigger one more refresh in case the board chips needed real sizes
+        # to render their splashes correctly.
+        self.refresh_board_and_bench()
 
-    # pylint: disable=unused-argument
-    def buy_exp(self, event):
-        """Buy exp."""
-        # Check if enough gold
-        if self.game.gold < 4:
-            return
+    # ---------------------------------------------------------------- helpers
+    def _flash(self, message):
+        """Display a transient non-blocking notification."""
+        if hasattr(self.u_i, 'toast') and self.u_i.toast is not None:
+            self.u_i.toast.show_message(message)
+        else:
+            self.statusBar().showMessage(message, 2000)
 
-        # Buy exp
-        self.game.buy_exp()
-        self.display_exp()
-        self.display_gold()
+    def _pixmap_for_unit(self, unit):
+        if unit is None or getattr(unit, 'name', '') == 'BLANK':
+            return QPixmap()
+        path = self.game.splash_path(unit) if self.game is not None else None
+        if path is not None:
+            return QPixmap(str(path))
+        # Fallback: search the data directory directly.
+        candidate = self.input_dir / 'champions' / f'{unit.name}.png'
+        if not candidate.is_file():
+            candidate = self.input_dir / 'champions' / f'{getattr(unit, "id_name", "") or ""}.png'
+        if candidate.is_file():
+            return QPixmap(str(candidate))
+        return QPixmap()
 
-    # pylint: disable=unused-argument, invalid-name
-    def keyReleaseEvent(self, event):
-        """Capture user input."""
-        super().keyReleaseEvent(event)
+    def _pixmap_for_trait(self, trait_name, size=32):
+        """Return a cached scaled trait pixmap (perf §1.4)."""
+        cached = self._trait_pix_cache.get((trait_name, size))
+        if cached is not None:
+            return cached
+        candidate = self.input_dir / 'traits' / f'{trait_name}.png'
+        if not candidate.is_file():
+            pix = QPixmap()
+        else:
+            pix = QPixmap(str(candidate))
+            if not pix.isNull():
+                pix = pix.scaled(
+                    size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation
+                )
+        self._trait_pix_cache[(trait_name, size)] = pix
+        return pix
 
-        # Ensure that key is only registered once
-        if event.isAutoRepeat():
-            return
-
-        # Quit
-        if event.key() == Qt.Key_M:
-            self.game.quit()
-            QApplication.quit()
-
-        # Reroll
-        if event.key() == Qt.Key_D:
-            self.reroll(event)
-
-        # Level
-        if event.key() == Qt.Key_F:
-            self.buy_exp(event)
-
-        # Restart
-        if event.key() == Qt.Key_P:
-            QApplication.quit()
-            QProcess.startDetached(sys.executable, sys.argv)
-
+    # ------------------------------------------------------------- gold / exp
     def display_gold(self):
-        """Display the current gold/exp the player has."""
         self.gold_label.setText(f'Gold: {self.game.gold}')
 
     def display_exp(self):
-        """Display the current level and exp the player has."""
-        exp = f'Level: {self.game.level}  {self.game.exp} / {LEVEL_EXP[self.game.level]}'
-        self.level_label.setText(exp)
+        exp_max = LEVEL_EXP[self.game.level] if self.game.level in LEVEL_EXP else 0
+        self.level_label.setText(
+            f'Level: {self.game.level}   {self.game.exp} / {exp_max}'
+        )
+
+    # ----------------------------------------------------------------- shop
+    def _shop_trait_pixmaps(self, unit):
+        """Return a dict of small (18px) trait pixmaps for the shop overlay."""
+        result = {}
+        for trait in getattr(unit, 'traits', []):
+            result[trait] = self._pixmap_for_trait(trait, size=18)
+        return result
 
     def display_new_shop(self, first_roll=False, loaded_shop=None):
-        """Display the current shop."""
-        # Assert that player has enough gold to roll
-        assert first_roll or self.game.gold >= 2, 'ERROR: NOT ENOUGH GOLD TO ROLL'
-
-        # Add previously rolled units back to the shop
         if not first_roll:
-            for unit in self.game.cur_shop:
+            for unit in self.game.cur_shop or []:
                 if unit.name != 'BLANK':
-                    send_message(self.game.client_socket, f'sell: {unit.name}: 1')
+                    try:
+                        self.game._send_sell_message(unit)
+                    except Exception:  # noqa: BLE001 -- non-fatal during reroll
+                        pass
 
-        # Roll for units
-        if not loaded_shop:
+        if loaded_shop is None:
             self.game.cur_shop = self.game.roll(first_roll)
         else:
             self.game.cur_shop = loaded_shop
 
-        # Update gold
-        self.display_gold()
-
-        # Display rolled units
         for idx, unit in enumerate(self.game.cur_shop):
-            # Display unit splash
-            splash_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Icon_{idx + 1}')
-            # Get name of file
-            name = self.input_dir / 'champions' / f'{unit.name}.png'
-            if not name.is_file():
-                name = self.input_dir / 'champions' / f'{unit.id_name}.png'
-            splash_label.setPixmap(QPixmap(str(name)))
+            slot = self.shop_widgets[idx]
+            slot.display(
+                unit,
+                self._pixmap_for_unit(unit),
+                self._shop_trait_pixmaps(unit),
+            )
+        self._refresh_shop_glow()
+        self.display_gold()
 
-            # Display unit rarity
-            rarity_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Rarity_{idx + 1}')
-            rarity = QPixmap(str(GEN_ASSETS / 'rarities' / f'{unit.rarity}.png'))
-            rarity_label.setPixmap(rarity)
+    def _refresh_shop_glow(self):
+        """Re-add the "already owned" glow to shop slots for units already on the team."""
+        owned_names = {u.name for u in self.game.team.all_units()}
+        for slot in self.shop_widgets:
+            unit = slot.unit
+            slot.set_owned(unit is not None and unit.name in owned_names)
 
-            # Display unit name
-            name_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Name_{idx + 1}')
-            name_label.setText(unit.name)
+    def buy_from_shop(self, idx):
+        success = self.game.buy_unit(idx + 1)
+        if success:
+            self.shop_widgets[idx].display(None)
+            self.display_gold()
+            self.refresh_board_and_bench()
+            self.refresh_traits()
+            self._refresh_shop_glow()
+        elif self.game.last_notification:
+            self._flash(self.game.last_notification)
 
-            # Display unit cost
-            cost_label = self.shop_widgets[idx].findChild(QLabel, f'Shop_Cost_{idx + 1}')
-            cost_label.setText(f'{unit.cost}G')
+    def use_loaded_dice(self, idx):
+        unit = self.game.cur_shop[idx]
+        if getattr(unit, 'name', 'BLANK') == 'BLANK':
+            return
+        loaded = self.game.loaded_dice(unit)
+        self.display_new_shop(first_roll=True, loaded_shop=loaded)
 
-            # Display unit traits
-            for i, trait in enumerate(unit.traits):
-                # Display trait icon
-                trait_icon = splash_label.findChild(QLabel, f'Shop_Trait_Icon_{idx}_{i}')
-                icon = QPixmap(str(self.input_dir / 'traits' / f'{trait}.png'))
-                trait_icon.setPixmap(icon)
+    # ---------------------------------------------------------------- reroll
+    def do_reroll(self):
+        if self.game.gold < 2:
+            return
+        self.display_new_shop()
 
-                # Display trait name
-                trait_label = splash_label.findChild(QLabel, f'Shop_Trait_{idx}_{i}')
-                trait_label.setText(trait)
+    def do_buy_exp(self):
+        if self.game.gold < 4:
+            return
+        self.game.buy_exp()
+        self.display_exp()
+        self.display_gold()
 
-            # Only display as many traits as needed
-            for i in range(len(unit.traits), 3):
-                # Clear trait icon
-                trait_icon = splash_label.findChild(QLabel, f'Shop_Trait_Icon_{idx}_{i}')
-                trait_icon.setPixmap(QPixmap())
+    # ------------------------------------------------------------- board / bench display
+    def refresh_board_and_bench(self):
+        """Repaint every board hex and bench slot from ``self.game.team``."""
+        positions = self.game.team.board_positions
+        # Each board tile shows the unit at its (row, col) – may be None.
+        for (row, col), tile in self.u_i.board_tiles_by_position.items():
+            unit = positions.get((row, col))
+            splash = self.game.splash_path(unit) if unit is not None else None
+            tile.chip.set_unit(unit, splash_path=splash)
 
-                # Clear trait name
-                trait_label = splash_label.findChild(QLabel, f'Shop_Trait_{idx}_{i}')
-                trait_label.setText('')
+        for idx, slot in enumerate(self.bench_slots):
+            unit = self.game.team.bench[idx] if idx < len(self.game.team.bench) else None
+            splash = self.game.splash_path(unit) if unit is not None else None
+            slot.chip.set_unit(unit, splash_path=splash)
 
-            # Add glow effect if a copy of the unit is already owned
-            if unit in self.game.team:
-                glow1 = get_glow_effect()
-                glow2 = get_glow_effect()
-                splash_label.setGraphicsEffect(glow1)
-                rarity_label.setGraphicsEffect(glow2)
+    # --------------------------------------------------------------------- traits
+    def refresh_traits(self):
+        active = self.game.team.active_traits()
+        for idx, badge in enumerate(self.trait_widgets):
+            if idx < len(active):
+                name, amount, target, tier = active[idx]
+                pix = self._pixmap_for_trait(name, size=32)
+                badge.set_state(pix if not pix.isNull() else None, name, amount, target, tier)
+                badge.setVisible(True)
             else:
-                no_glow1 = get_no_glow_effect()
-                no_glow2 = get_no_glow_effect()
-                splash_label.setGraphicsEffect(no_glow1)
-                rarity_label.setGraphicsEffect(no_glow2)
+                badge.clear_state()
+                badge.setVisible(False)
 
-    def display_team(self):
-        """Displays all the units currently bought."""
-        # For every unit on the team
-        for idx, unit in enumerate(self.game.team.team):
-            # Can't display more than 18 units at once
-            if idx > 17:
+    # ------------------------------------------------------------------ DnD
+    def handle_drop(self, payload, destination_kind, destination_idx):
+        """Move a unit in response to a drop emitted by a chip.
+
+        Source coordinates come from the payload set in
+        :meth:`UnitChip.mouseMoveEvent`.  Destination coordinates come
+        directly from the drop target (``destination_idx`` for the bench
+        is an int; for the board it's the ``(row, col)`` tuple).
+        """
+        parts = payload.split('|')
+        if not parts:
+            return
+        src_kind = parts[0]
+
+        if src_kind == 'bench' and len(parts) == 2:
+            try:
+                src_index = int(parts[1])
+            except ValueError:
                 return
-
-            # Find the icon widget
-            icon_widget = self.units[idx].findChild(QLabel, f'Unit_Icon_{idx + 1}')
-
-            # Get the splash
-            name = self.input_dir / 'champions' / f'{unit.name}.png'
-            if not name.is_file():
-                name = self.input_dir / 'champions' / f'{unit.id_name}.png'
-            splash = QPixmap(str(name))
-
-            # Set label to splash
-            icon_widget.setPixmap(splash)
-
-            # Find the star level text widget
-            stats_widget = self.units[idx].findChild(QLabel, f'Unit_Stats_{idx + 1}')
-
-            # Display correct information
-            stats_widget.setText(f'{unit.level} Star')
-
-            # Attach selling functionality
-            source = partial(self.unit_clicked, idx=idx)
-            self.units[idx].mouseReleaseEvent = source
-
-        # White out remaining slots
-        for slot in range(len(self.game.team), 18):
-            # White out icon
-            icon_widget = self.units[slot].findChild(QLabel, f'Unit_Icon_{slot + 1}')
-            icon_widget.setPixmap(QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-
-            # White out star level
-            stats_widget = self.units[slot].findChild(QLabel, f'Unit_Stats_{slot + 1}')
-            stats_widget.setText('')
-
-            # Remove selling functionality
-            self.units[slot].mouseReleaseEvent = None
-
-    def display_traits(self):
-        """Display the current traits on the team."""
-        # For every trait on the team
-        traits = self.game.team.get_traits()
-        for idx, trait in enumerate(traits):
-            # Can't display more than 18 traits at once
-            if idx > 17:
+        elif src_kind == 'board' and len(parts) == 3:
+            row, col = parts[1], parts[2]
+            try:
+                col_int = int(col)
+            except ValueError:
                 return
-
-            # Find the icon widget
-            icon_widget = self.traits[idx].findChild(QLabel, f'Trait_Icon_{idx + 1}')
-
-            # Get the icon
-            trait_name, trait_breakpoints = trait.split(' ', 1)
-            name = self.input_dir / 'traits' / f'{trait_name}.png'
-            splash = QPixmap(str(name))
-
-            # Set label to splash
-            icon_widget.setPixmap(splash)
-
-            # Find the star level text widget
-            stats_widget = self.traits[idx].findChild(QLabel, f'Trait_Amount_{idx + 1}')
-
-            # Display correct information
-            stats_widget.setText(f'{trait_name[:7]} {trait_breakpoints}')
-
-        # White out remaining slots
-        for slot in range(len(traits), 18):
-            # White out icon
-            icon_widget = self.traits[slot].findChild(QLabel, f'Trait_Icon_{slot + 1}')
-            icon_widget.setPixmap(QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-
-            # White out star level
-            stats_widget = self.traits[slot].findChild(QLabel, f'Trait_Amount_{slot + 1}')
-            stats_widget.setText('   ')
-
-    def display_loaded_dice(self, unit):
-        """Replace shop with loaded dice rolls (idx is 0-indexed)."""
-        assert isinstance(unit, Unit)
-        result = self.game.loaded_dice(unit)
-        self.display_new_shop(first_roll=True, loaded_shop=result)
-
-    def shop_clicked(self, event, idx):
-        """Determine whether to buy unit or use loaded dice."""
-        if event.button() == Qt.LeftButton:
-            self.buy_unit(event, idx)
-        elif event.button() == Qt.RightButton:
-            self.display_loaded_dice(self.game.cur_shop[idx])
-
-    def unit_clicked(self, event, idx):
-        """Determine whether to sell unit or use loaded dice."""
-        if event.button() == Qt.LeftButton:
-            self.sell_unit(event, idx)
-        elif event.button() == Qt.RightButton:
-            self.display_loaded_dice(self.game.team.team[idx])
-
-    def buy_unit(self, event, idx):
-        """Buy a unit from the shop (idx is 0-indexed)."""
-        assert isinstance(idx, int)
-        # Add unit to team
-        # Cannot purchase empty slots
-        if self.game.cur_shop[idx].name == 'BLANK':
+            src_index = (row, col_int)
+            if src_index not in self.game.team.board_positions:
+                return
+        else:
             return
 
-        # Check if enough gold is available to purchase the unit
-        if self.game.gold < self.game.cur_shop[idx].cost:
+        result = False
+        if src_kind == 'bench' and destination_kind == 'bench':
+            result = self.game.team.move_within_bench(src_index, destination_idx)
+        elif src_kind == 'bench' and destination_kind == 'board':
+            result = self.game.move_bench_to_board(src_index, target_position=destination_idx)
+        elif src_kind == 'board' and destination_kind == 'bench':
+            result = self.game.move_board_to_bench(src_index, destination_idx)
+        elif src_kind == 'board' and destination_kind == 'board':
+            result = self.game.move_board_to_board(src_index, destination_idx)
+
+        if not result and self.game.last_notification:
+            self._flash(self.game.last_notification)
+
+        self.refresh_board_and_bench()
+        self.refresh_traits()
+        self._refresh_shop_glow()
+
+    # ------------------------------------------------------------------ clicks
+    def _chip_clicked(self, chip, event):
+        """Right-click chips to sell the underlying unit."""
+        if chip.unit is None:
             return
+        if event.button() == Qt.RightButton:
+            if chip.slot_kind == 'board':
+                self.game.sell_board_unit(chip.slot_index)
+            else:
+                self.game.sell_bench_unit(chip.slot_index)
+            self.display_gold()
+            self.refresh_board_and_bench()
+            self.refresh_traits()
+            self._refresh_shop_glow()
 
-        # Add unit to team (shop needs to be 1-indexed)
-        bought_unit = self.game.cur_shop[idx].copy()
-        self.game.buy_unit(idx + 1)
-
-        # Add glowing effect to other copies of the unit in shop
-        for i, unit in enumerate(self.game.cur_shop):
-            if unit == bought_unit:
-                # Glow effect
-                glow1 = get_glow_effect()
-                glow2 = get_glow_effect()
-
-                # Add glow effect to slot
-                splash = self.shop_widgets[i].findChild(QLabel, f'Shop_Icon_{i + 1}')
-                rarity = self.shop_widgets[i].findChild(QLabel, f'Shop_Rarity_{i + 1}')
-                splash.setGraphicsEffect(glow1)
-                rarity.setGraphicsEffect(glow2)
-
-        # Replace labels
-        for widget in self.shop_widgets[idx].children():
-            if isinstance(widget, QLabel):
-                # Clear out 'glow' effect from splash art
-                if widget.pixmap():
-                    no_glow = get_no_glow_effect()
-                    widget.setGraphicsEffect(no_glow)
-
-                # Replace slot with blank
-                widget.setPixmap(QPixmap(pathlib_path(GEN_ASSETS, 'blank.png')))
-
-                # Clear out trait information
-                for child in widget.children():
-                    child.setPixmap(QPixmap())
-
-        # Update gold count
-        self.display_gold()
-
-        # Update units
-        self.display_team()
-
-        # Update traits
-        self.display_traits()
-
-    def sell_unit(self, event, idx):
-        """Sell a unit from the team."""
-        # Remove glow effect from shop, if applicable
-        sold_unit = self.game.team.team[idx]
-        for i, unit in enumerate(self.game.cur_shop):
-            if unit == sold_unit:
-                # Glow effect
-                glow1 = get_no_glow_effect()
-                glow2 = get_no_glow_effect()
-
-                # Add glow effect to slot
-                splash = self.shop_widgets[i].findChild(QLabel, f'Shop_Icon_{i + 1}')
-                rarity = self.shop_widgets[i].findChild(QLabel, f'Shop_Rarity_{i + 1}')
-                splash.setGraphicsEffect(glow1)
-                rarity.setGraphicsEffect(glow2)
-
-        # Sell unit
-        self.game.sell_unit(idx)
-
-        # Update gold count
-        self.display_gold()
-
-        # Update units
-        self.display_team()
-
-        # Update traits
-        self.display_traits()
-
-
-def get_glow_effect():
-    """Generate an instance of the 'glow' effect."""
-    glow = QGraphicsDropShadowEffect()
-    glow.setOffset(15, 10)
-    glow.setBlurRadius(60)
-    glow.setColor(QColor(230, 230, 230, 255))
-
-    return glow
-
-
-def get_no_glow_effect():
-    """Generate an instance of the 'no glow' effect."""
-    no_glow = QGraphicsDropShadowEffect()
-    no_glow.setColor(QColor(0, 0, 0, 255))
-
-    return no_glow
+    # ----------------------------------------------------- keyboard shortcuts
+    def keyReleaseEvent(self, event):  # noqa: N802 -- match Qt naming
+        super().keyReleaseEvent(event)
+        if event.isAutoRepeat():
+            return
+        if event.key() == Qt.Key_M:
+            self.game.quit()
+            QApplication.quit()
+        elif event.key() == Qt.Key_D:
+            self.do_reroll()
+        elif event.key() == Qt.Key_F:
+            self.do_buy_exp()
+        elif event.key() == Qt.Key_P:
+            QApplication.quit()
+            QProcess.startDetached(sys.executable, sys.argv)
 
 
 def main(input_dir):
     """Start the rolldown."""
     app = QApplication([input_dir])
-
     window = MainWindow(input_dir)
-    window.setFixedSize(window.size())
-    window.move(0, 0)
     window.show()
-
     sys.exit(app.exec())
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print('Usage: python user_interface_test.py {input_dir}')
+        print('Usage: python -m gui.user_interface {input_dir}')
         sys.exit()
-
     main(sys.argv[1])

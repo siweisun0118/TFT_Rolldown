@@ -1,31 +1,65 @@
-"""Send messages to the main rolldown server."""
+"""Send messages to the main rolldown server.
 
+Server improvement §2.2: every message is now sent with a 4-byte
+network-order length prefix.  The wire format is::
+
+    [4 bytes: payload length, network order] [payload (utf-8)]
+
+This makes ``recv`` re-entrant – no more relying on a trailing null byte to
+delimit messages – and lets us send arbitrarily large pool dumps without
+worrying about TCP segmentation.
+"""
 
 # Standard libraries
 import socket
+import struct
 import sys
 
 # Local imports
 from shared.rolldown_enums import SERVER_PORT
 
 
-### NETWORKING CLIENT FUNCTIONS ###
+# Header size (always 4 bytes, network-order length).
+_HEADER = '!I'
+_HEADER_SIZE = struct.calcsize(_HEADER)
+
+
+def _recv_exact(client_socket, num_bytes):
+    """Read exactly *num_bytes* bytes from *client_socket* or raise."""
+    chunks = []
+    remaining = num_bytes
+    while remaining > 0:
+        chunk = client_socket.recv(remaining)
+        if not chunk:
+            raise ConnectionError(
+                f'Server closed connection while reading; '
+                f'expected {num_bytes} bytes, got {num_bytes - remaining}.'
+            )
+        chunks.append(chunk)
+        remaining -= len(chunk)
+    return b''.join(chunks)
+
+
+def send_framed(client_socket, payload):
+    """Send a length-prefixed message to the server."""
+    if isinstance(payload, str):
+        payload = payload.encode('utf-8')
+    client_socket.sendall(struct.pack(_HEADER, len(payload)) + payload)
+
+
+def recv_framed(client_socket):
+    """Receive one full length-prefixed message and return its decoded string."""
+    header = _recv_exact(client_socket, _HEADER_SIZE)
+    (length,) = struct.unpack(_HEADER, header)
+    body = _recv_exact(client_socket, length)
+    return body.decode('utf-8')
+
+
 # Send a message over the socket
 def send_message(client_socket, message):
-    """Send a message to the server and get response."""
-    client_socket.send(message.encode())
-
-    # Get response
-    response = ''
-    while True:
-        # Get message in chunks
-        chunk = client_socket.recv(1024).decode()
-        response += chunk
-        if not chunk or chunk[-1] == '\0':
-            break
-
-    return response[:-1]
-
+    """Send a message to the server and return the decoded response."""
+    send_framed(client_socket, message)
+    return recv_framed(client_socket)
 
 # Initialize the client socket
 def init_rolldown_client(port):
@@ -43,7 +77,6 @@ def init_rolldown_client(port):
 
     # Return client socket
     return client_socket
-### END NETWORKING CLIENT FUNCTIONS ###
 
 def main(argv):
     """Start the client that sends messages to the server."""
