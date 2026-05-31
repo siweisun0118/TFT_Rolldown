@@ -11,5 +11,4 @@ extract.py
 background.py
 check_server.py
 server_log
-da*
-*opencode*
+server_transitions.jsonl

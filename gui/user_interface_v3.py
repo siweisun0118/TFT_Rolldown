@@ -2,1095 +2,200 @@
 # pylint: disable=all
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from gui.widgets import BenchSlot, HexBoard, ShopSlot, TraitBadge, Toast
 
 from shared.rolldown_enums import GEN_ASSETS
 
+# Minimum window size – matches the previous hardcoded geometry.
+MIN_WINDOW_SIZE = (1366, 973)
+
+# Board geometry
+BOARD_ROWS = ('A', 'B', 'C', 'D')
+BOARD_COLS = (1, 2, 3, 4, 5, 6, 7)
+BENCH_SIZE = 9
+SHOP_SIZE = 5
+
+# Number of trait badges visible before scrolling.
+MAX_VISIBLE_TRAITS = 14
+
 
 def pathlib_path(root, ext):
-    """Extend a Path and convert to string."""
+    """Extend a Path and convert to string (kept for backwards compatibility)."""
     return str(root / ext)
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        # Main Window
-        MainWindow.raise_()
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1366, 973)
-        palette = QtGui.QPalette()
-        MainWindow.setPalette(palette)
-        MainWindow.setStyleSheet("#centralwidget {\n"
-                "border-image: url(\"General Assets/Boards/Pink_TFT.jpg\") 0 0 0 0 stretch stretch;\n"
-                "background-position: center;\n"
-                "background-repeat: no-repeat;\n"
-        "}")
-
-        # Central widget
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
-        self.gridLayout.setObjectName("gridLayout")
-
-        # Main UI Box
-        self.UI_Box = QtWidgets.QGroupBox(self.centralwidget)
-        palette = QtGui.QPalette()
-        self.UI_Box.setPalette(palette)
-        self.UI_Box.setObjectName("UI_Box")
-        self.gridLayout_2 = QtWidgets.QGridLayout(self.UI_Box)
-        self.gridLayout_2.setObjectName("gridLayout_2")
-
-        # Display Units
-        self.Units_List = QtWidgets.QGroupBox(self.UI_Box)
-        self.Units_List.setMinimumSize(QtCore.QSize(650, 0))
-        self.Units_List.setStyleSheet("QGroupBox{\n"
-                "background: white;\n"
-        "}")
-        self.Units_List.setTitle("CURRENT UNITS")
-        self.Units_List.setObjectName("Units_List")
-        self.gridLayout_4 = QtWidgets.QGridLayout(self.Units_List)
-        self.gridLayout_4.setObjectName("gridLayout_4")
-
-        units = []
-
-        # Unit 1
-        self.Unit_1 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_1.setTitle("")
-        self.Unit_1.setObjectName("Unit_1")
-        self.Unit_Icon_1 = QtWidgets.QLabel(self.Unit_1)
-        self.Unit_Icon_1.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_1.setText("")
-        self.Unit_Icon_1.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_1.setScaledContents(True)
-        self.Unit_Icon_1.setObjectName("Unit_Icon_1")
-        self.Unit_Stats_1 = QtWidgets.QLabel(self.Unit_1)
-        self.Unit_Stats_1.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_1.setObjectName("Unit_Stats_1")
-        self.gridLayout_4.addWidget(self.Unit_1, 0, 0, 1, 1)
-
-        units.append(self.Unit_1)
-
-        # Unit 2
-        self.Unit_2 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_2.setTitle("")
-        self.Unit_2.setObjectName("Unit_2")
-        self.Unit_Icon_2 = QtWidgets.QLabel(self.Unit_2)
-        self.Unit_Icon_2.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_2.setText("")
-        self.Unit_Icon_2.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_2.setScaledContents(True)
-        self.Unit_Icon_2.setObjectName("Unit_Icon_2")
-        self.Unit_Stats_2 = QtWidgets.QLabel(self.Unit_2)
-        self.Unit_Stats_2.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_2.setObjectName("Unit_Stats_2")
-        self.gridLayout_4.addWidget(self.Unit_2, 1, 0, 1, 1)
-
-        units.append(self.Unit_2)
-
-        # Unit 3
-        self.Unit_3 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_3.setTitle("")
-        self.Unit_3.setObjectName("Unit_3")
-        self.Unit_Icon_3 = QtWidgets.QLabel(self.Unit_3)
-        self.Unit_Icon_3.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_3.setText("")
-        self.Unit_Icon_3.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_3.setScaledContents(True)
-        self.Unit_Icon_3.setObjectName("Unit_Icon_3")
-        self.Unit_Stats_3 = QtWidgets.QLabel(self.Unit_3)
-        self.Unit_Stats_3.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_3.setObjectName("Unit_Stats_3")
-        self.gridLayout_4.addWidget(self.Unit_3, 2, 0, 1, 1)
-
-        units.append(self.Unit_3)
-
-        # Unit 4
-        self.Unit_4 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_4.setTitle("")
-        self.Unit_4.setObjectName("Unit_4")
-        self.Unit_Icon_4 = QtWidgets.QLabel(self.Unit_4)
-        self.Unit_Icon_4.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_4.setText("")
-        self.Unit_Icon_4.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_4.setScaledContents(True)
-        self.Unit_Icon_4.setObjectName("Unit_Icon_4")
-        self.Unit_Stats_4 = QtWidgets.QLabel(self.Unit_4)
-        self.Unit_Stats_4.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_4.setObjectName("Unit_Stats_4")
-        self.gridLayout_4.addWidget(self.Unit_4, 3, 0, 1, 1)
-
-        units.append(self.Unit_4)
-
-        # Unit 5
-        self.Unit_5 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_5.setTitle("")
-        self.Unit_5.setObjectName("Unit_5")
-        self.Unit_Icon_5 = QtWidgets.QLabel(self.Unit_5)
-        self.Unit_Icon_5.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_5.setText("")
-        self.Unit_Icon_5.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_5.setScaledContents(True)
-        self.Unit_Icon_5.setObjectName("Unit_Icon_5")
-        self.Unit_Stats_5 = QtWidgets.QLabel(self.Unit_5)
-        self.Unit_Stats_5.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_5.setObjectName("Unit_Stats_5")
-        self.gridLayout_4.addWidget(self.Unit_5, 4, 0, 1, 1)
-
-        units.append(self.Unit_5)
-
-        # Unit 6
-        self.Unit_6 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_6.setTitle("")
-        self.Unit_6.setObjectName("Unit_6")
-        self.Unit_Icon_6 = QtWidgets.QLabel(self.Unit_6)
-        self.Unit_Icon_6.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_6.setText("")
-        self.Unit_Icon_6.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_6.setScaledContents(True)
-        self.Unit_Icon_6.setObjectName("Unit_Icon_6")
-        self.Unit_Stats_6 = QtWidgets.QLabel(self.Unit_6)
-        self.Unit_Stats_6.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_6.setObjectName("Unit_Stats_6")
-        self.gridLayout_4.addWidget(self.Unit_6, 5, 0, 1, 1)
-
-        units.append(self.Unit_6)
-
-        # Unit 7
-        self.Unit_7 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_7.setTitle("")
-        self.Unit_7.setObjectName("Unit_7")
-        self.Unit_Icon_7 = QtWidgets.QLabel(self.Unit_7)
-        self.Unit_Icon_7.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_7.setText("")
-        self.Unit_Icon_7.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_7.setScaledContents(True)
-        self.Unit_Icon_7.setObjectName("Unit_Icon_7")
-        self.Unit_Stats_7 = QtWidgets.QLabel(self.Unit_7)
-        self.Unit_Stats_7.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_7.setObjectName("Unit_Stats_7")
-        self.gridLayout_4.addWidget(self.Unit_7, 0, 1, 1, 1)
-
-        units.append(self.Unit_7)
-
-        # Unit 8
-        self.Unit_8 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_8.setTitle("")
-        self.Unit_8.setObjectName("Unit_8")
-        self.Unit_Icon_8 = QtWidgets.QLabel(self.Unit_8)
-        self.Unit_Icon_8.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_8.setText("")
-        self.Unit_Icon_8.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_8.setScaledContents(True)
-        self.Unit_Icon_8.setObjectName("Unit_Icon_8")
-        self.Unit_Stats_8 = QtWidgets.QLabel(self.Unit_8)
-        self.Unit_Stats_8.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_8.setObjectName("Unit_Stats_8")
-        self.gridLayout_4.addWidget(self.Unit_8, 1, 1, 1, 1)
-
-        units.append(self.Unit_8)
-
-        # Unit 9
-        self.Unit_9 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_9.setTitle("")
-        self.Unit_9.setObjectName("Unit_9")
-        self.Unit_Icon_9 = QtWidgets.QLabel(self.Unit_9)
-        self.Unit_Icon_9.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_9.setText("")
-        self.Unit_Icon_9.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_9.setScaledContents(True)
-        self.Unit_Icon_9.setObjectName("Unit_Icon_9")
-        self.Unit_Stats_9 = QtWidgets.QLabel(self.Unit_9)
-        self.Unit_Stats_9.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_9.setObjectName("Unit_Stats_9")
-        self.gridLayout_4.addWidget(self.Unit_9, 2, 1, 1, 1)
-
-        units.append(self.Unit_9)
-
-        # Unit 10
-        self.Unit_10 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_10.setTitle("")
-        self.Unit_10.setObjectName("Unit_10")
-        self.Unit_Icon_10 = QtWidgets.QLabel(self.Unit_10)
-        self.Unit_Icon_10.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_10.setText("")
-        self.Unit_Icon_10.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_10.setScaledContents(True)
-        self.Unit_Icon_10.setObjectName("Unit_Icon_10")
-        self.Unit_Stats_10 = QtWidgets.QLabel(self.Unit_10)
-        self.Unit_Stats_10.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_10.setObjectName("Unit_Stats_10")
-        self.gridLayout_4.addWidget(self.Unit_10, 3, 1, 1, 1)
-
-        units.append(self.Unit_10)
-
-        # Unit 11
-        self.Unit_11 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_11.setTitle("")
-        self.Unit_11.setObjectName("Unit_11")
-        self.Unit_Icon_11 = QtWidgets.QLabel(self.Unit_11)
-        self.Unit_Icon_11.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_11.setText("")
-        self.Unit_Icon_11.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_11.setScaledContents(True)
-        self.Unit_Icon_11.setObjectName("Unit_Icon_11")
-        self.Unit_Stats_11 = QtWidgets.QLabel(self.Unit_11)
-        self.Unit_Stats_11.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_11.setObjectName("Unit_Stats_11")
-        self.gridLayout_4.addWidget(self.Unit_11, 4, 1, 1, 1)
-
-        units.append(self.Unit_11)
-
-        # Unit 12
-        self.Unit_12 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_12.setTitle("")
-        self.Unit_12.setObjectName("Unit_12")
-        self.Unit_Icon_12 = QtWidgets.QLabel(self.Unit_12)
-        self.Unit_Icon_12.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_12.setText("")
-        self.Unit_Icon_12.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_12.setScaledContents(True)
-        self.Unit_Icon_12.setObjectName("Unit_Icon_12")
-        self.Unit_Stats_12 = QtWidgets.QLabel(self.Unit_12)
-        self.Unit_Stats_12.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_12.setObjectName("Unit_Stats_12")
-        self.gridLayout_4.addWidget(self.Unit_12, 5, 1, 1, 1)
-
-        units.append(self.Unit_12)
-
-        # Unit 13
-        self.Unit_13 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_13.setTitle("")
-        self.Unit_13.setObjectName("Unit_13")
-        self.Unit_Icon_13 = QtWidgets.QLabel(self.Unit_13)
-        self.Unit_Icon_13.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_13.setText("")
-        self.Unit_Icon_13.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_13.setScaledContents(True)
-        self.Unit_Icon_13.setObjectName("Unit_Icon_13")
-        self.Unit_Stats_13 = QtWidgets.QLabel(self.Unit_13)
-        self.Unit_Stats_13.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_13.setObjectName("Unit_Stats_13")
-        self.gridLayout_4.addWidget(self.Unit_13, 0, 2, 1, 1)
-
-        units.append(self.Unit_13)
-
-        # Unit 14
-        self.Unit_14 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_14.setTitle("")
-        self.Unit_14.setObjectName("Unit_14")
-        self.Unit_Icon_14 = QtWidgets.QLabel(self.Unit_14)
-        self.Unit_Icon_14.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_14.setText("")
-        self.Unit_Icon_14.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_14.setScaledContents(True)
-        self.Unit_Icon_14.setObjectName("Unit_Icon_14")
-        self.Unit_Stats_14 = QtWidgets.QLabel(self.Unit_14)
-        self.Unit_Stats_14.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_14.setObjectName("Unit_Stats_14")
-        self.gridLayout_4.addWidget(self.Unit_14, 1, 2, 1, 1)
-
-        units.append(self.Unit_14)
-
-        # Unit 15
-        self.Unit_15 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_15.setTitle("")
-        self.Unit_15.setObjectName("Unit_15")
-        self.Unit_Icon_15 = QtWidgets.QLabel(self.Unit_15)
-        self.Unit_Icon_15.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_15.setText("")
-        self.Unit_Icon_15.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_15.setScaledContents(True)
-        self.Unit_Icon_15.setObjectName("Unit_Icon_15")
-        self.Unit_Stats_15 = QtWidgets.QLabel(self.Unit_15)
-        self.Unit_Stats_15.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_15.setObjectName("Unit_Stats_15")
-        self.gridLayout_4.addWidget(self.Unit_15, 2, 2, 1, 1)
-
-        units.append(self.Unit_15)
-
-        # Unit 16
-        self.Unit_16 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_16.setTitle("")
-        self.Unit_16.setObjectName("Unit_16")
-        self.Unit_Icon_16 = QtWidgets.QLabel(self.Unit_16)
-        self.Unit_Icon_16.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_16.setText("")
-        self.Unit_Icon_16.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_16.setScaledContents(True)
-        self.Unit_Icon_16.setObjectName("Unit_Icon_16")
-        self.Unit_Stats_16 = QtWidgets.QLabel(self.Unit_16)
-        self.Unit_Stats_16.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_16.setObjectName("Unit_Stats_16")
-        self.gridLayout_4.addWidget(self.Unit_16, 3, 2, 1, 1)
-
-        units.append(self.Unit_16)
-
-        # Unit 17
-        self.Unit_17 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_17.setTitle("")
-        self.Unit_17.setObjectName("Unit_17")
-        self.Unit_Icon_17 = QtWidgets.QLabel(self.Unit_17)
-        self.Unit_Icon_17.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_17.setText("")
-        self.Unit_Icon_17.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_17.setScaledContents(True)
-        self.Unit_Icon_17.setObjectName("Unit_Icon_17")
-        self.Unit_Stats_17 = QtWidgets.QLabel(self.Unit_17)
-        self.Unit_Stats_17.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_17.setObjectName("Unit_Stats_17")
-        self.gridLayout_4.addWidget(self.Unit_17, 4, 2, 1, 1)
-
-        units.append(self.Unit_17)
-
-        # Unit 18
-        self.Unit_18 = QtWidgets.QGroupBox(self.Units_List)
-        self.Unit_18.setTitle("")
-        self.Unit_18.setObjectName("Unit_18")
-        self.Unit_Icon_18 = QtWidgets.QLabel(self.Unit_18)
-        self.Unit_Icon_18.setGeometry(QtCore.QRect(10, 20, 55, 41))
-        self.Unit_Icon_18.setText("")
-        self.Unit_Icon_18.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Unit_Icon_18.setScaledContents(True)
-        self.Unit_Icon_18.setObjectName("Unit_Icon_18")
-        self.Unit_Stats_18 = QtWidgets.QLabel(self.Unit_18)
-        self.Unit_Stats_18.setGeometry(QtCore.QRect(70, 20, 101, 31))
-        self.Unit_Stats_18.setObjectName("Unit_Stats_18")
-        self.gridLayout_4.addWidget(self.Unit_18, 5, 2, 1, 1)
-        self.gridLayout_2.addWidget(self.Units_List, 0, 2, 1, 1)
-
-        units.append(self.Unit_18)
-
-        # Reroll and Level
-        self.Reroll_Level = QtWidgets.QGroupBox(self.UI_Box)
-        self.Reroll_Level.setMaximumSize(QtCore.QSize(200, 16777215))
-        self.Reroll_Level.setStyleSheet("QGroupBox{\n"
-                "background: white;\n"
-        "}")
-        self.Reroll_Level.setTitle("")
-        self.Reroll_Level.setObjectName("Reroll_Level")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.Reroll_Level)
-        self.verticalLayout.setObjectName("verticalLayout")
-
-        # Gold label
-        self.Gold_Label = QtWidgets.QLabel(self.Reroll_Level)
-        font = QtGui.QFont()
-        font.setPointSize(18)
-        self.Gold_Label.setFont(font)
-        self.Gold_Label.setStyleSheet("QLabel{\n"
-                "color: gold;\n"
-        "}")
-        self.Gold_Label.setObjectName("Gold_Label")
-        self.verticalLayout.addWidget(self.Gold_Label)
-
-        # Level label
-        self.Level_Label = QtWidgets.QLabel(self.Reroll_Level)
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.Level_Label.setFont(font)
-        self.Level_Label.setStyleSheet("QLabel{\n"
-                "color: blue;\n"
-        "}")
-        self.Level_Label.setObjectName("Level_Label")
-        self.verticalLayout.addWidget(self.Level_Label)
-
-        # Level-up button
-        self.Level_Up = QtWidgets.QLabel(self.Reroll_Level)
-        self.Level_Up.setText("")
-        self.Level_Up.setPixmap(QtGui.QPixmap("General Assets/Level.png"))
-        self.Level_Up.setScaledContents(True)
-        self.Level_Up.setObjectName("Level_Up")
-        self.verticalLayout.addWidget(self.Level_Up)
-
-        # Reroll
-        self.Reroll = QtWidgets.QLabel(self.Reroll_Level)
-        self.Reroll.setText("")
-        self.Reroll.setPixmap(QtGui.QPixmap("General Assets/Reroll.png"))
-        self.Reroll.setScaledContents(True)
-        self.Reroll.setObjectName("Reroll")
-        self.verticalLayout.addWidget(self.Reroll)
-
-        self.gridLayout_2.addWidget(self.Reroll_Level, 1, 0, 1, 1)
-
-        # Gold and leveling section
-        gold_and_level = (self.Gold_Label, self.Reroll, self.Level_Label, self.Level_Up)
-
-        # Shop
-        self.Shop = QtWidgets.QGroupBox(self.UI_Box)
-        self.Shop.setMaximumSize(QtCore.QSize(16777215, 300))
-        self.Shop.setStyleSheet("QGroupBox{\n"
-                "background: black;\n"
-                "color: white\n"
-        "}")
-        self.Shop.setTitle("")
-        self.Shop.setObjectName("Shop")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(self.Shop)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-
-        shop = []
-
-        # Shop 1
-        self.Slot_1 = QtWidgets.QGroupBox(self.Shop)
-        self.Slot_1.setTitle("")
-        self.Slot_1.setObjectName("Slot_1")
-        self.Shop_Icon_1 = QtWidgets.QLabel(self.Slot_1)
-        self.Shop_Icon_1.setGeometry(QtCore.QRect(10, 10, 191, 141))
-        self.Shop_Icon_1.setText("")
-        self.Shop_Icon_1.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Shop_Icon_1.setScaledContents(True)
-        self.Shop_Icon_1.setObjectName("Shop_Icon_1")
-        self.Shop_Rarity_1 = QtWidgets.QLabel(self.Slot_1)
-        self.Shop_Rarity_1.setGeometry(QtCore.QRect(10, 160, 191, 61))
-        self.Shop_Rarity_1.setText("")
-        self.Shop_Rarity_1.setPixmap(QtGui.QPixmap("rarities/1.png"))
-        self.Shop_Rarity_1.setObjectName("Shop_Rarity_1")
-        self.Shop_Name_1 = QtWidgets.QLabel(self.Slot_1)
-        self.Shop_Name_1.setGeometry(QtCore.QRect(20, 170, 101, 41))
-        self.Shop_Name_1.setObjectName("Shop_Name_1")
-        self.Shop_Cost_1 = QtWidgets.QLabel(self.Slot_1)
-        self.Shop_Cost_1.setGeometry(QtCore.QRect(110, 170, 81, 41))
-        self.Shop_Cost_1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.Shop_Cost_1.setObjectName("Shop_Cost_1")
-        self.Shop_Cost_1.setStyleSheet('color: gold')
-        self.horizontalLayout.addWidget(self.Slot_1)
-
-        shop.append(self.Slot_1)
-
-        # Shop 2
-        self.Slot_2 = QtWidgets.QGroupBox(self.Shop)
-        self.Slot_2.setTitle("")
-        self.Slot_2.setObjectName("Slot_2")
-        self.Shop_Name_2 = QtWidgets.QLabel(self.Slot_2)
-        self.Shop_Name_2.setGeometry(QtCore.QRect(20, 170, 101, 41))
-        self.Shop_Name_2.setObjectName("Shop_Name_2")
-        self.Shop_Rarity_2 = QtWidgets.QLabel(self.Slot_2)
-        self.Shop_Rarity_2.setGeometry(QtCore.QRect(10, 160, 191, 61))
-        self.Shop_Rarity_2.setText("")
-        self.Shop_Rarity_2.setPixmap(QtGui.QPixmap("rarities/1.png"))
-        self.Shop_Rarity_2.setObjectName("Shop_Rarity_2")
-        self.Shop_Icon_2 = QtWidgets.QLabel(self.Slot_2)
-        self.Shop_Icon_2.setGeometry(QtCore.QRect(10, 10, 191, 141))
-        self.Shop_Icon_2.setText("")
-        self.Shop_Icon_2.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Shop_Icon_2.setScaledContents(True)
-        self.Shop_Icon_2.setObjectName("Shop_Icon_2")
-        self.Shop_Cost_2 = QtWidgets.QLabel(self.Slot_2)
-        self.Shop_Cost_2.setGeometry(QtCore.QRect(110, 170, 81, 41))
-        self.Shop_Cost_2.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.Shop_Cost_2.setObjectName("Shop_Cost_2")
-        self.Shop_Cost_2.setStyleSheet('color: gold')
-        self.Shop_Rarity_2.raise_()
-        self.Shop_Icon_2.raise_()
-        self.Shop_Cost_2.raise_()
-        self.Shop_Name_2.raise_()
-        self.horizontalLayout.addWidget(self.Slot_2)
-
-        shop.append(self.Slot_2)
-
-        # Shop 3
-        self.Slot_3 = QtWidgets.QGroupBox(self.Shop)
-        self.Slot_3.setTitle("")
-        self.Slot_3.setObjectName("Slot_3")
-        self.Shop_Name_3 = QtWidgets.QLabel(self.Slot_3)
-        self.Shop_Name_3.setGeometry(QtCore.QRect(20, 170, 101, 41))
-        self.Shop_Name_3.setObjectName("Shop_Name_3")
-        self.Shop_Icon_3 = QtWidgets.QLabel(self.Slot_3)
-        self.Shop_Icon_3.setGeometry(QtCore.QRect(10, 10, 191, 141))
-        self.Shop_Icon_3.setText("")
-        self.Shop_Icon_3.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Shop_Icon_3.setScaledContents(True)
-        self.Shop_Icon_3.setObjectName("Shop_Icon_3")
-        self.Shop_Cost_3 = QtWidgets.QLabel(self.Slot_3)
-        self.Shop_Cost_3.setGeometry(QtCore.QRect(110, 170, 81, 41))
-        self.Shop_Cost_3.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.Shop_Cost_3.setObjectName("Shop_Cost_3")
-        self.Shop_Cost_3.setStyleSheet('color: gold')
-        self.Shop_Rarity_3 = QtWidgets.QLabel(self.Slot_3)
-        self.Shop_Rarity_3.setGeometry(QtCore.QRect(10, 160, 191, 61))
-        self.Shop_Rarity_3.setText("")
-        self.Shop_Rarity_3.setPixmap(QtGui.QPixmap("rarities/1.png"))
-        self.Shop_Rarity_3.setObjectName("Shop_Rarity_3")
-        self.Shop_Icon_3.raise_()
-        self.Shop_Rarity_3.raise_()
-        self.Shop_Name_3.raise_()
-        self.Shop_Cost_3.raise_()
-        self.horizontalLayout.addWidget(self.Slot_3)
-
-        shop.append(self.Slot_3)
-
-        # Shop 4
-        self.Slot_4 = QtWidgets.QGroupBox(self.Shop)
-        self.Slot_4.setTitle("")
-        self.Slot_4.setObjectName("Slot_4")
-        self.Shop_Name_4 = QtWidgets.QLabel(self.Slot_4)
-        self.Shop_Name_4.setGeometry(QtCore.QRect(20, 170, 101, 41))
-        self.Shop_Name_4.setObjectName("Shop_Name_4")
-        self.Shop_Icon_4 = QtWidgets.QLabel(self.Slot_4)
-        self.Shop_Icon_4.setGeometry(QtCore.QRect(10, 10, 191, 141))
-        self.Shop_Icon_4.setText("")
-        self.Shop_Icon_4.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Shop_Icon_4.setScaledContents(True)
-        self.Shop_Icon_4.setObjectName("Shop_Icon_4")
-        self.Shop_Cost_4 = QtWidgets.QLabel(self.Slot_4)
-        self.Shop_Cost_4.setGeometry(QtCore.QRect(110, 170, 81, 41))
-        self.Shop_Cost_4.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.Shop_Cost_4.setObjectName("Shop_Cost_4")
-        self.Shop_Cost_4.setStyleSheet('color: gold')
-        self.Shop_Rarity_4 = QtWidgets.QLabel(self.Slot_4)
-        self.Shop_Rarity_4.setGeometry(QtCore.QRect(10, 160, 191, 61))
-        self.Shop_Rarity_4.setText("")
-        self.Shop_Rarity_4.setPixmap(QtGui.QPixmap("rarities/1.png"))
-        self.Shop_Rarity_4.setObjectName("Shop_Rarity_4")
-        self.Shop_Icon_4.raise_()
-        self.Shop_Rarity_4.raise_()
-        self.Shop_Name_4.raise_()
-        self.Shop_Cost_4.raise_()
-        self.horizontalLayout.addWidget(self.Slot_4)
-
-        shop.append(self.Slot_4)
-
-        # Shop 5
-        self.Slot_5 = QtWidgets.QGroupBox(self.Shop)
-        self.Slot_5.setTitle("")
-        self.Slot_5.setObjectName("Slot_5")
-        self.Shop_Name_5 = QtWidgets.QLabel(self.Slot_5)
-        self.Shop_Name_5.setGeometry(QtCore.QRect(20, 170, 101, 41))
-        self.Shop_Name_5.setObjectName("Shop_Name_5")
-        self.Shop_Icon_5 = QtWidgets.QLabel(self.Slot_5)
-        self.Shop_Icon_5.setGeometry(QtCore.QRect(10, 10, 191, 141))
-        self.Shop_Icon_5.setText("")
-        self.Shop_Icon_5.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Shop_Icon_5.setScaledContents(True)
-        self.Shop_Icon_5.setObjectName("Shop_Icon_5")
-        self.Shop_Cost_5 = QtWidgets.QLabel(self.Slot_5)
-        self.Shop_Cost_5.setGeometry(QtCore.QRect(110, 170, 81, 41))
-        self.Shop_Cost_5.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.Shop_Cost_5.setObjectName("Shop_Cost_5")
-        self.Shop_Cost_5.setStyleSheet('color: gold')
-        self.Shop_Rarity_5 = QtWidgets.QLabel(self.Slot_5)
-        self.Shop_Rarity_5.setGeometry(QtCore.QRect(10, 160, 191, 61))
-        self.Shop_Rarity_5.setText("")
-        self.Shop_Rarity_5.setPixmap(QtGui.QPixmap("rarities/1.png"))
-        self.Shop_Rarity_5.setObjectName("Shop_Rarity_5")
-        self.Shop_Rarity_5.raise_()
-        self.Shop_Name_5.raise_()
-        self.Shop_Icon_5.raise_()
-        self.Shop_Cost_5.raise_()
-        self.horizontalLayout.addWidget(self.Slot_5)
-
-        shop.append(self.Slot_5)
-
-        # Traits
-        self.gridLayout_2.addWidget(self.Shop, 1, 1, 1, 2)
-        self.Traits_List = QtWidgets.QGroupBox(self.UI_Box)
-        self.Traits_List.setMinimumSize(QtCore.QSize(650, 0))
-        self.Traits_List.setStyleSheet("QGroupBox{\n"
-                "background: white;\n"
-        "}")
-        self.Traits_List.setTitle("CURRENT TRAITS")
-        self.Traits_List.setObjectName("Traits_List")
-        self.gridLayout_3 = QtWidgets.QGridLayout(self.Traits_List)
-        self.gridLayout_3.setObjectName("gridLayout_3")
-
-        traits = []
-
-        # Trait 1
-        self.Trait_1 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_1.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_1.setTitle("")
-        self.Trait_1.setObjectName("Trait_1")
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.Trait_1)
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.Trait_Icon_1 = QtWidgets.QLabel(self.Trait_1)
-        self.Trait_Icon_1.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_1.setText("")
-        self.Trait_Icon_1.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_1.setScaledContents(True)
-        self.Trait_Icon_1.setObjectName("Trait_Icon_1")
-        self.horizontalLayout_2.addWidget(self.Trait_Icon_1)
-        self.Trait_Amount_1 = QtWidgets.QLabel(self.Trait_1)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_1.setFont(font)
-        self.Trait_Amount_1.setObjectName("Trait_Amount_1")
-        self.horizontalLayout_2.addWidget(self.Trait_Amount_1)
-        self.gridLayout_3.addWidget(self.Trait_1, 0, 0, 1, 1)
-
-        traits.append(self.Trait_1)
-
-        # Trait 2
-        self.Trait_2 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_2.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_2.setTitle("")
-        self.Trait_2.setObjectName("Trait_2")
-        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.Trait_2)
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.Trait_Icon_2 = QtWidgets.QLabel(self.Trait_2)
-        self.Trait_Icon_2.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_2.setText("")
-        self.Trait_Icon_2.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_2.setScaledContents(True)
-        self.Trait_Icon_2.setObjectName("Trait_Icon_2")
-        self.horizontalLayout_3.addWidget(self.Trait_Icon_2)
-        self.Trait_Amount_2 = QtWidgets.QLabel(self.Trait_2)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_2.setFont(font)
-        self.Trait_Amount_2.setObjectName("Trait_Amount_2")
-        self.horizontalLayout_3.addWidget(self.Trait_Amount_2)
-        self.gridLayout_3.addWidget(self.Trait_2, 1, 0, 1, 1)
-
-        traits.append(self.Trait_2)
-
-        # Trait 3
-        self.Trait_3 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_3.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_3.setTitle("")
-        self.Trait_3.setObjectName("Trait_3")
-        self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.Trait_3)
-        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
-        self.Trait_Icon_3 = QtWidgets.QLabel(self.Trait_3)
-        self.Trait_Icon_3.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_3.setText("")
-        self.Trait_Icon_3.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_3.setScaledContents(True)
-        self.Trait_Icon_3.setObjectName("Trait_Icon_3")
-        self.horizontalLayout_4.addWidget(self.Trait_Icon_3)
-        self.Trait_Amount_3 = QtWidgets.QLabel(self.Trait_3)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_3.setFont(font)
-        self.Trait_Amount_3.setObjectName("Trait_Amount_3")
-        self.horizontalLayout_4.addWidget(self.Trait_Amount_3)
-        self.gridLayout_3.addWidget(self.Trait_3, 2, 0, 1, 1)
-
-        traits.append(self.Trait_3)
-
-        # Trait 4
-        self.Trait_4 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_4.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_4.setTitle("")
-        self.Trait_4.setObjectName("Trait_4")
-        self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.Trait_4)
-        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
-        self.Trait_Icon_4 = QtWidgets.QLabel(self.Trait_4)
-        self.Trait_Icon_4.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_4.setText("")
-        self.Trait_Icon_4.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_4.setScaledContents(True)
-        self.Trait_Icon_4.setObjectName("Trait_Icon_4")
-        self.horizontalLayout_5.addWidget(self.Trait_Icon_4)
-        self.Trait_Amount_4 = QtWidgets.QLabel(self.Trait_4)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_4.setFont(font)
-        self.Trait_Amount_4.setObjectName("Trait_Amount_4")
-        self.horizontalLayout_5.addWidget(self.Trait_Amount_4)
-        self.gridLayout_3.addWidget(self.Trait_4, 3, 0, 1, 1)
-
-        traits.append(self.Trait_4)
-
-        # Trait 5
-        self.Trait_5 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_5.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_5.setTitle("")
-        self.Trait_5.setObjectName("Trait_5")
-        self.horizontalLayout_6 = QtWidgets.QHBoxLayout(self.Trait_5)
-        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-        self.Trait_Icon_5 = QtWidgets.QLabel(self.Trait_5)
-        self.Trait_Icon_5.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_5.setText("")
-        self.Trait_Icon_5.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_5.setScaledContents(True)
-        self.Trait_Icon_5.setObjectName("Trait_Icon_5")
-        self.horizontalLayout_6.addWidget(self.Trait_Icon_5)
-        self.Trait_Amount_5 = QtWidgets.QLabel(self.Trait_5)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_5.setFont(font)
-        self.Trait_Amount_5.setObjectName("Trait_Amount_5")
-        self.horizontalLayout_6.addWidget(self.Trait_Amount_5)
-        self.gridLayout_3.addWidget(self.Trait_5, 4, 0, 1, 1)
-
-        traits.append(self.Trait_5)
-
-        # Trait 6
-        self.Trait_6 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_6.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_6.setTitle("")
-        self.Trait_6.setObjectName("Trait_6")
-        self.horizontalLayout_7 = QtWidgets.QHBoxLayout(self.Trait_6)
-        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-        self.Trait_Icon_6 = QtWidgets.QLabel(self.Trait_6)
-        self.Trait_Icon_6.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_6.setText("")
-        self.Trait_Icon_6.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_6.setScaledContents(True)
-        self.Trait_Icon_6.setObjectName("Trait_Icon_6")
-        self.horizontalLayout_7.addWidget(self.Trait_Icon_6)
-        self.Trait_Amount_6 = QtWidgets.QLabel(self.Trait_6)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_6.setFont(font)
-        self.Trait_Amount_6.setObjectName("Trait_Amount_6")
-        self.horizontalLayout_7.addWidget(self.Trait_Amount_6)
-        self.gridLayout_3.addWidget(self.Trait_6, 5, 0, 1, 1)
-
-        traits.append(self.Trait_6)
-
-        # Trait 7
-        self.Trait_7 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_7.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_7.setTitle("")
-        self.Trait_7.setObjectName("Trait_7")
-        self.horizontalLayout_8 = QtWidgets.QHBoxLayout(self.Trait_7)
-        self.horizontalLayout_8.setObjectName("horizontalLayout_8")
-        self.Trait_Icon_7 = QtWidgets.QLabel(self.Trait_7)
-        self.Trait_Icon_7.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_7.setText("")
-        self.Trait_Icon_7.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_7.setScaledContents(True)
-        self.Trait_Icon_7.setObjectName("Trait_Icon_7")
-        self.horizontalLayout_8.addWidget(self.Trait_Icon_7)
-        self.Trait_Amount_7 = QtWidgets.QLabel(self.Trait_7)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_7.setFont(font)
-        self.Trait_Amount_7.setObjectName("Trait_Amount_7")
-        self.horizontalLayout_8.addWidget(self.Trait_Amount_7)
-        self.gridLayout_3.addWidget(self.Trait_7, 0, 1, 1, 1)
-
-        traits.append(self.Trait_7)
-
-        # Trait 8
-        self.Trait_8 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_8.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_8.setTitle("")
-        self.Trait_8.setObjectName("Trait_8")
-        self.horizontalLayout_9 = QtWidgets.QHBoxLayout(self.Trait_8)
-        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
-        self.Trait_Icon_8 = QtWidgets.QLabel(self.Trait_8)
-        self.Trait_Icon_8.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_8.setText("")
-        self.Trait_Icon_8.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_8.setScaledContents(True)
-        self.Trait_Icon_8.setObjectName("Trait_Icon_8")
-        self.horizontalLayout_9.addWidget(self.Trait_Icon_8)
-        self.Trait_Amount_8 = QtWidgets.QLabel(self.Trait_8)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_8.setFont(font)
-        self.Trait_Amount_8.setObjectName("Trait_Amount_8")
-        self.horizontalLayout_9.addWidget(self.Trait_Amount_8)
-        self.gridLayout_3.addWidget(self.Trait_8, 1, 1, 1, 1)
-
-        traits.append(self.Trait_8)
-
-        # Trait 9
-        self.Trait_9 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_9.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_9.setTitle("")
-        self.Trait_9.setObjectName("Trait_9")
-        self.horizontalLayout_10 = QtWidgets.QHBoxLayout(self.Trait_9)
-        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
-        self.Trait_Icon_9 = QtWidgets.QLabel(self.Trait_9)
-        self.Trait_Icon_9.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_9.setText("")
-        self.Trait_Icon_9.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_9.setScaledContents(True)
-        self.Trait_Icon_9.setObjectName("Trait_Icon_9")
-        self.horizontalLayout_10.addWidget(self.Trait_Icon_9)
-        self.Trait_Amount_9 = QtWidgets.QLabel(self.Trait_9)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_9.setFont(font)
-        self.Trait_Amount_9.setObjectName("Trait_Amount_9")
-        self.horizontalLayout_10.addWidget(self.Trait_Amount_9)
-        self.gridLayout_3.addWidget(self.Trait_9, 2, 1, 1, 1)
-
-        traits.append(self.Trait_9)
-
-        # Trait 10
-        self.Trait_10 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_10.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_10.setTitle("")
-        self.Trait_10.setObjectName("Trait_10")
-        self.horizontalLayout_11 = QtWidgets.QHBoxLayout(self.Trait_10)
-        self.horizontalLayout_11.setObjectName("horizontalLayout_11")
-        self.Trait_Icon_10 = QtWidgets.QLabel(self.Trait_10)
-        self.Trait_Icon_10.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_10.setText("")
-        self.Trait_Icon_10.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_10.setScaledContents(True)
-        self.Trait_Icon_10.setObjectName("Trait_Icon_10")
-        self.horizontalLayout_11.addWidget(self.Trait_Icon_10)
-        self.Trait_Amount_10 = QtWidgets.QLabel(self.Trait_10)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_10.setFont(font)
-        self.Trait_Amount_10.setObjectName("Trait_Amount_10")
-        self.horizontalLayout_11.addWidget(self.Trait_Amount_10)
-        self.gridLayout_3.addWidget(self.Trait_10, 3, 1, 1, 1)
-
-        traits.append(self.Trait_10)
-
-        # Trait 11
-        self.Trait_11 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_11.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_11.setTitle("")
-        self.Trait_11.setObjectName("Trait_11")
-        self.horizontalLayout_12 = QtWidgets.QHBoxLayout(self.Trait_11)
-        self.horizontalLayout_12.setObjectName("horizontalLayout_12")
-        self.Trait_Icon_11 = QtWidgets.QLabel(self.Trait_11)
-        self.Trait_Icon_11.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_11.setText("")
-        self.Trait_Icon_11.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_11.setScaledContents(True)
-        self.Trait_Icon_11.setObjectName("Trait_Icon_11")
-        self.horizontalLayout_12.addWidget(self.Trait_Icon_11)
-        self.Trait_Amount_11 = QtWidgets.QLabel(self.Trait_11)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_11.setFont(font)
-        self.Trait_Amount_11.setObjectName("Trait_Amount_11")
-        self.horizontalLayout_12.addWidget(self.Trait_Amount_11)
-        self.gridLayout_3.addWidget(self.Trait_11, 4, 1, 1, 1)
-
-        traits.append(self.Trait_11)
-
-        # Trait 12
-        self.Trait_12 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_12.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_12.setTitle("")
-        self.Trait_12.setObjectName("Trait_12")
-        self.horizontalLayout_13 = QtWidgets.QHBoxLayout(self.Trait_12)
-        self.horizontalLayout_13.setObjectName("horizontalLayout_13")
-        self.Trait_Icon_12 = QtWidgets.QLabel(self.Trait_12)
-        self.Trait_Icon_12.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_12.setText("")
-        self.Trait_Icon_12.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_12.setScaledContents(True)
-        self.Trait_Icon_12.setObjectName("Trait_Icon_12")
-        self.horizontalLayout_13.addWidget(self.Trait_Icon_12)
-        self.Trait_Amount_12 = QtWidgets.QLabel(self.Trait_12)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_12.setFont(font)
-        self.Trait_Amount_12.setObjectName("Trait_Amount_12")
-        self.horizontalLayout_13.addWidget(self.Trait_Amount_12)
-        self.gridLayout_3.addWidget(self.Trait_12, 5, 1, 1, 1)
-
-        traits.append(self.Trait_12)
-
-        # Trait 13
-        self.Trait_13 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_13.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_13.setTitle("")
-        self.Trait_13.setObjectName("Trait_13")
-        self.horizontalLayout_14 = QtWidgets.QHBoxLayout(self.Trait_13)
-        self.horizontalLayout_14.setObjectName("horizontalLayout_14")
-        self.Trait_Icon_13 = QtWidgets.QLabel(self.Trait_13)
-        self.Trait_Icon_13.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_13.setText("")
-        self.Trait_Icon_13.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_13.setScaledContents(True)
-        self.Trait_Icon_13.setObjectName("Trait_Icon_13")
-        self.horizontalLayout_14.addWidget(self.Trait_Icon_13)
-        self.Trait_Amount_13 = QtWidgets.QLabel(self.Trait_13)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_13.setFont(font)
-        self.Trait_Amount_13.setObjectName("Trait_Amount_13")
-        self.horizontalLayout_14.addWidget(self.Trait_Amount_13)
-        self.gridLayout_3.addWidget(self.Trait_13, 0, 2, 1, 1)
-
-        traits.append(self.Trait_13)
-
-        # Trait 14
-        self.Trait_14 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_14.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_14.setTitle("")
-        self.Trait_14.setObjectName("Trait_14")
-        self.horizontalLayout_15 = QtWidgets.QHBoxLayout(self.Trait_14)
-        self.horizontalLayout_15.setObjectName("horizontalLayout_15")
-        self.Trait_Icon_14 = QtWidgets.QLabel(self.Trait_14)
-        self.Trait_Icon_14.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_14.setText("")
-        self.Trait_Icon_14.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_14.setScaledContents(True)
-        self.Trait_Icon_14.setObjectName("Trait_Icon_14")
-        self.horizontalLayout_15.addWidget(self.Trait_Icon_14)
-        self.Trait_Amount_14 = QtWidgets.QLabel(self.Trait_14)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_14.setFont(font)
-        self.Trait_Amount_14.setObjectName("Trait_Amount_14")
-        self.horizontalLayout_15.addWidget(self.Trait_Amount_14)
-        self.gridLayout_3.addWidget(self.Trait_14, 1, 2, 1, 1)
-
-        traits.append(self.Trait_14)
-
-        # Trait 15
-        self.Trait_15 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_15.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_15.setTitle("")
-        self.Trait_15.setObjectName("Trait_15")
-        self.horizontalLayout_16 = QtWidgets.QHBoxLayout(self.Trait_15)
-        self.horizontalLayout_16.setObjectName("horizontalLayout_16")
-        self.Trait_Icon_15 = QtWidgets.QLabel(self.Trait_15)
-        self.Trait_Icon_15.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_15.setText("")
-        self.Trait_Icon_15.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_15.setScaledContents(True)
-        self.Trait_Icon_15.setObjectName("Trait_Icon_15")
-        self.horizontalLayout_16.addWidget(self.Trait_Icon_15)
-        self.Trait_Amount_15 = QtWidgets.QLabel(self.Trait_15)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_15.setFont(font)
-        self.Trait_Amount_15.setObjectName("Trait_Amount_15")
-        self.horizontalLayout_16.addWidget(self.Trait_Amount_15)
-        self.gridLayout_3.addWidget(self.Trait_15, 2, 2, 1, 1)
-
-        traits.append(self.Trait_15)
-
-        # Trait 16
-        self.Trait_16 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_16.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_16.setTitle("")
-        self.Trait_16.setObjectName("Trait_16")
-        self.horizontalLayout_17 = QtWidgets.QHBoxLayout(self.Trait_16)
-        self.horizontalLayout_17.setObjectName("horizontalLayout_17")
-        self.Trait_Icon_16 = QtWidgets.QLabel(self.Trait_16)
-        self.Trait_Icon_16.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_16.setText("")
-        self.Trait_Icon_16.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_16.setScaledContents(True)
-        self.Trait_Icon_16.setObjectName("Trait_Icon_16")
-        self.horizontalLayout_17.addWidget(self.Trait_Icon_16)
-        self.Trait_Amount_16 = QtWidgets.QLabel(self.Trait_16)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_16.setFont(font)
-        self.Trait_Amount_16.setObjectName("Trait_Amount_16")
-        self.horizontalLayout_17.addWidget(self.Trait_Amount_16)
-        self.gridLayout_3.addWidget(self.Trait_16, 3, 2, 1, 1)
-
-        traits.append(self.Trait_16)
-
-        # Trait 17
-        self.Trait_17 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_17.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_17.setTitle("")
-        self.Trait_17.setObjectName("Trait_17")
-        self.horizontalLayout_18 = QtWidgets.QHBoxLayout(self.Trait_17)
-        self.horizontalLayout_18.setObjectName("horizontalLayout_18")
-        self.Trait_Icon_17 = QtWidgets.QLabel(self.Trait_17)
-        self.Trait_Icon_17.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_17.setText("")
-        self.Trait_Icon_17.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_17.setScaledContents(True)
-        self.Trait_Icon_17.setObjectName("Trait_Icon_17")
-        self.horizontalLayout_18.addWidget(self.Trait_Icon_17)
-        self.Trait_Amount_17 = QtWidgets.QLabel(self.Trait_17)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_17.setFont(font)
-        self.Trait_Amount_17.setObjectName("Trait_Amount_17")
-        self.horizontalLayout_18.addWidget(self.Trait_Amount_17)
-        self.gridLayout_3.addWidget(self.Trait_17, 4, 2, 1, 1)
-
-        traits.append(self.Trait_17)
-
-        # Trait 18
-        self.Trait_18 = QtWidgets.QGroupBox(self.Traits_List)
-        self.Trait_18.setMinimumSize(QtCore.QSize(0, 0))
-        self.Trait_18.setTitle("")
-        self.Trait_18.setObjectName("Trait_18")
-        self.horizontalLayout_19 = QtWidgets.QHBoxLayout(self.Trait_18)
-        self.horizontalLayout_19.setObjectName("horizontalLayout_19")
-        self.Trait_Icon_18 = QtWidgets.QLabel(self.Trait_18)
-        self.Trait_Icon_18.setMinimumSize(QtCore.QSize(80, 80))
-        self.Trait_Icon_18.setText("")
-        self.Trait_Icon_18.setPixmap(QtGui.QPixmap(pathlib_path(GEN_ASSETS, 'white.png')))
-        self.Trait_Icon_18.setScaledContents(True)
-        self.Trait_Icon_18.setObjectName("Trait_Icon_18")
-        self.horizontalLayout_19.addWidget(self.Trait_Icon_18)
-        self.Trait_Amount_18 = QtWidgets.QLabel(self.Trait_18)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.Trait_Amount_18.setFont(font)
-        self.Trait_Amount_18.setObjectName("Trait_Amount_18")
-        self.horizontalLayout_19.addWidget(self.Trait_Amount_18)
-        self.gridLayout_3.addWidget(self.Trait_18, 5, 2, 1, 1)
-
-        traits.append(self.Trait_18)
-
-        # Bounding Boxes
-        self.gridLayout_2.addWidget(self.Traits_List, 0, 0, 1, 2)
-        self.gridLayout.addWidget(self.UI_Box, 1, 0, 1, 1)
-
-        # Central Widget
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1366, 26))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-
-        # self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-        return shop, traits, units, gold_and_level
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.Unit_Stats_11.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_13.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_12.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_10.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_1.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_2.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_8.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_7.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_4.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_3.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_5.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_9.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_6.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_14.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_15.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_16.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_17.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Unit_Stats_18.setText(_translate("MainWindow", "_Star _Amount"))
-        self.Gold_Label.setText(_translate("MainWindow", "Gold: 0"))
-        self.Shop_Name_1.setText(_translate("MainWindow", "_Name"))
-        self.Shop_Cost_1.setText(_translate("MainWindow", "_Cost"))
-        self.Shop_Name_2.setText(_translate("MainWindow", "_Name"))
-        self.Shop_Cost_2.setText(_translate("MainWindow", "_Cost"))
-        self.Shop_Name_3.setText(_translate("MainWindow", "_Name"))
-        self.Shop_Cost_3.setText(_translate("MainWindow", "_Cost"))
-        self.Shop_Name_4.setText(_translate("MainWindow", "_Name"))
-        self.Shop_Cost_4.setText(_translate("MainWindow", "_Cost"))
-        self.Shop_Name_5.setText(_translate("MainWindow", "_Name"))
-        self.Shop_Cost_5.setText(_translate("MainWindow", "_Cost"))
-        self.Trait_Amount_6.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_2.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_10.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_8.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_7.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_5.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_11.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_9.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_3.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_4.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_13.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_12.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_15.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_14.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_18.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_16.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_17.setText(_translate("MainWindow", "? / ?"))
-        self.Trait_Amount_1.setText(_translate("MainWindow", "? / ?"))
-# import resources_rc
+class Ui_MainWindow:
+    """Configure the main window's children using nothing but Qt layouts."""
+
+    def setupUi(self, MainWindow):  # noqa: N802 -- match Qt naming
+        MainWindow.setObjectName('MainWindow')
+        MainWindow.setMinimumSize(*MIN_WINDOW_SIZE)
+        MainWindow.resize(*MIN_WINDOW_SIZE)
+        MainWindow.setWindowTitle('TFT Rolldown')
+
+        central = QtWidgets.QWidget(MainWindow)
+        central.setObjectName('centralwidget')
+        central.setStyleSheet(
+            '#centralwidget { background: #2c2620; }'
+        )
+        MainWindow.setCentralWidget(central)
+
+        root = QtWidgets.QHBoxLayout(central)
+        root.setContentsMargins(12, 12, 12, 12)
+        root.setSpacing(12)
+
+        # ------------------------------------------------------------------ traits column
+        self.traits_column = QtWidgets.QGroupBox('TRAITS')
+        self.traits_column.setStyleSheet(
+            'QGroupBox { background: #f7f1e4; color: #2c2620; '
+            'border: 2px solid #4d3a1f; border-radius: 8px; padding-top: 18px;}'
+            'QGroupBox::title { subcontrol-origin: margin; left: 12px; '
+            'top: 0px; color: #2c2620; }'
+        )
+        self.traits_column.setMinimumWidth(220)
+        self.traits_column.setMaximumWidth(320)
+        traits_layout = QtWidgets.QVBoxLayout(self.traits_column)
+        traits_layout.setContentsMargins(8, 24, 8, 8)
+        traits_layout.setSpacing(6)
+
+        self.trait_widgets = []
+        for _ in range(MAX_VISIBLE_TRAITS):
+            badge = TraitBadge(self.traits_column)
+            traits_layout.addWidget(badge)
+            self.trait_widgets.append(badge)
+        traits_layout.addStretch(1)
+
+        root.addWidget(self.traits_column, 0)
+
+        # ------------------------------------------------------------------ centre column
+        centre = QtWidgets.QVBoxLayout()
+        centre.setSpacing(10)
+        root.addLayout(centre, 1)
+
+        # ----- top bar with gold and level controls
+        top_bar = QtWidgets.QFrame()
+        top_bar.setStyleSheet(
+            'QFrame { background: #1f1a13; border-radius: 8px; }'
+            'QLabel { color: #ffd76b; }'
+        )
+        top_bar.setFixedHeight(56)
+        top_layout = QtWidgets.QHBoxLayout(top_bar)
+        top_layout.setContentsMargins(16, 8, 16, 8)
+        top_layout.setSpacing(20)
+
+        self.gold_label = QtWidgets.QLabel('Gold: 0')
+        gold_font = QtGui.QFont()
+        gold_font.setPointSize(18)
+        gold_font.setBold(True)
+        self.gold_label.setFont(gold_font)
+
+        self.level_label = QtWidgets.QLabel('Level: 1   0 / 2')
+        level_font = QtGui.QFont()
+        level_font.setPointSize(14)
+        self.level_label.setFont(level_font)
+        self.level_label.setStyleSheet('color: #8fd0ff;')
+
+        top_layout.addWidget(self.gold_label)
+        top_layout.addWidget(self.level_label)
+        top_layout.addStretch(1)
+        centre.addWidget(top_bar, 0)
+
+        # ----- board (4 rows × 7 hexes; absolute positioning, see HexBoard)
+        self.board = HexBoard(BOARD_ROWS, BOARD_COLS)
+        # The board's flat tile list is exposed for backwards compatibility
+        # with the test suite (it used ``board_tiles[row][col]``).
+        self.board_tiles = [
+            [self.board.tiles[(r, c)] for c in BOARD_COLS] for r in BOARD_ROWS
+        ]
+        # board_tiles_by_position is a flat dict keyed by ``(row, col)``.
+        self.board_tiles_by_position = dict(self.board.tiles)
+        centre.addWidget(self.board, 6)
+
+        # ----- bench
+        bench_container = QtWidgets.QFrame()
+        bench_container.setStyleSheet(
+            'QFrame { background: #f4dfb6; border: 3px solid #4d3a1f; border-radius: 12px; }'
+        )
+        bench_container.setFixedHeight(90)
+        bench_layout = QtWidgets.QHBoxLayout(bench_container)
+        bench_layout.setContentsMargins(16, 8, 16, 8)
+        bench_layout.setSpacing(8)
+        self.bench_slots = []
+        for i in range(BENCH_SIZE):
+            slot = BenchSlot(i, parent=bench_container)
+            bench_layout.addWidget(slot, 1)
+            self.bench_slots.append(slot)
+        centre.addWidget(bench_container, 0)
+
+        # ----- bottom row: controls + shop side-by-side
+        bottom_row = QtWidgets.QHBoxLayout()
+        bottom_row.setSpacing(10)
+
+        # Buttons stack: Buy XP on top, Reroll on bottom.
+        controls_box = QtWidgets.QFrame()
+        controls_box.setStyleSheet(
+            'QFrame { background: #1f1a13; border-radius: 8px; }'
+        )
+        controls_layout = QtWidgets.QVBoxLayout(controls_box)
+        controls_layout.setContentsMargins(8, 8, 8, 8)
+        controls_layout.setSpacing(8)
+
+        self.level_up = QtWidgets.QPushButton('Buy XP\n(4g)')
+        self.level_up.setStyleSheet(
+            'QPushButton { background: #5566ff; color: white; padding: 12px;'
+            ' border-radius: 6px; font-weight: bold; font-size: 14px;}'
+            'QPushButton:hover { background: #6677ff; }'
+        )
+        self.level_up.setMinimumHeight(90)
+        self.level_up.setMinimumWidth(120)
+
+        self.reroll = QtWidgets.QPushButton('Reroll\n(2g)')
+        self.reroll.setStyleSheet(
+            'QPushButton { background: #cc6633; color: white; padding: 12px;'
+            ' border-radius: 6px; font-weight: bold; font-size: 14px;}'
+            'QPushButton:hover { background: #dd7744; }'
+        )
+        self.reroll.setMinimumHeight(90)
+        self.reroll.setMinimumWidth(120)
+
+        controls_layout.addWidget(self.level_up)
+        controls_layout.addWidget(self.reroll)
+        bottom_row.addWidget(controls_box, 0)
+
+        # ----- shop slots
+        shop_container = QtWidgets.QGroupBox('SHOP')
+        shop_container.setStyleSheet(
+            'QGroupBox { background: #1c1c1c; color: white; border: 2px solid #4d3a1f; '
+            'border-radius: 8px; padding-top: 18px; }'
+            'QGroupBox::title { subcontrol-origin: margin; left: 12px; color: gold; }'
+        )
+        shop_layout = QtWidgets.QHBoxLayout(shop_container)
+        shop_layout.setContentsMargins(10, 24, 10, 10)
+        shop_layout.setSpacing(8)
+        self.shop_widgets = []
+        for idx in range(SHOP_SIZE):
+            slot = ShopSlot(idx, parent=shop_container)
+            shop_layout.addWidget(slot, 1)
+            self.shop_widgets.append(slot)
+        bottom_row.addWidget(shop_container, 1)
+
+        centre.addLayout(bottom_row, 2)
+
+        # ------------------------------------------------------------------ controls dict
+        controls = {
+            'gold_label': self.gold_label,
+            'level_label': self.level_label,
+            'reroll': self.reroll,
+            'level_up': self.level_up,
+        }
+
+        # Toast overlay
+        self.toast = Toast(central)
+
+        # Backwards-compat alias used by the older test suite.
+        self.board_container = self.board
+
+        return self.shop_widgets, self.trait_widgets, self.board_tiles, self.bench_slots, controls
+
+    def retranslateUi(self, MainWindow):  # noqa: N802 -- match Qt naming
+        """No-op kept for backwards compatibility."""

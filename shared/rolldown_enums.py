@@ -5,6 +5,8 @@ import threading
 
 # region Logging
 SERVER_LOG_FILE = Path('server_log')
+# Append-only transition log (one JSON object per line).
+SERVER_TRANSITIONS_LOG = Path('server_transitions.jsonl')
 # endregion
 
 # region Locks
@@ -16,6 +18,13 @@ POOL_LOCK = threading.Lock()
 # Number of slots in shop and on bench
 SHOP_SLOTS = 5
 BENCH_SLOTS = 9
+
+# Board layout: row labels x column labels.  Position keys are 2-tuples
+# (row_label, column_label) so a single coordinate works for both data and
+# GUI lookups.
+BOARD_ROWS = ('A', 'B', 'C', 'D')
+BOARD_COLS = (1, 2, 3, 4, 5, 6, 7)
+BOARD_LAYOUT = tuple((r, c) for r in BOARD_ROWS for c in BOARD_COLS)
 
 # List of all champions in pool by cost
 CHAMPION_POOL = {1: [], 2: [], 3: [], 4: [], 5: []}
