@@ -100,8 +100,8 @@ class Trait:
     def active_breakpoint_index(self, amount):
         """Return the index of the highest breakpoint reached by *amount*."""
         active = -1
-        for idx, breakpoint in enumerate(self.breakpoints):
-            if amount >= breakpoint:
+        for idx, bp in enumerate(self.breakpoints):
+            if amount >= bp:
                 active = idx
             else:
                 break
@@ -109,9 +109,9 @@ class Trait:
 
     def next_breakpoint(self, amount):
         """Return the next breakpoint that *amount* needs to reach."""
-        for breakpoint in self.breakpoints:
-            if amount < breakpoint:
-                return breakpoint
+        for bp in self.breakpoints:
+            if amount < bp:
+                return bp
         return self.breakpoints[-1]
 
     def style_tier(self, amount):
@@ -120,12 +120,12 @@ class Trait:
         if idx < 0:
             return 'inactive'
 
-        breakpoint = self.breakpoints[idx]
+        bp = self.breakpoints[idx]
         style = self.styles[idx]
 
         if style == 4:
             return 'prismatic'
-        if breakpoint >= 10:
+        if bp >= 10:
             return 'prismatic'
         if idx + 1 < len(self.breakpoints) and self.breakpoints[idx + 1] >= 10:
             return 'gold'
@@ -238,22 +238,18 @@ class Team:
         if not bucket:
             self._unit_index.pop(key, None)
 
-    def _count_in_index(self, unit):
-        """Return ``(board_count, bench_count)`` by inspecting actual storage.
+    def count_in_index(self, unit):
+        """Return ``(board_count, bench_count)`` by inspecting actual storage."""
+        return self.count_on_board(unit), self.count_on_bench(unit)
 
-        Perf §1.3 keeps ``_unit_index`` up to date for callers who only need
-        a quick "do I own this" answer, but for correctness we count from
-        :attr:`board_positions` / :attr:`bench` here so direct list writes
-        (e.g. from tests) are still respected.
-        """
-        return self._count_on_board(unit), self._count_on_bench(unit)
-
-    def _count_on_board(self, unit):
+    def count_on_board(self, unit):
+        """Return copies of unit on the board."""
         return sum(
             1 for u in self.board_positions.values() if u.unit_compare_level(unit)
         )
 
-    def _count_on_bench(self, unit):
+    def count_on_bench(self, unit):
+        """Return copies of unit on the bench."""
         return sum(
             1 for u in self.bench if u is not None and u.unit_compare_level(unit)
         )
@@ -300,7 +296,7 @@ class Team:
                 return pos
         return None
 
-    def _remove_copies(self, unit):
+    def remove_copies(self, unit):
         """Remove every copy of *unit* (matching name + level)."""
         board_removed = []
         for pos in list(self.board_positions.keys()):
@@ -317,7 +313,7 @@ class Team:
                 bench_removed.append(idx)
         return board_removed, bench_removed
 
-    def _place_upgraded(self, upgraded, board_removed, bench_removed):
+    def place_upgraded(self, upgraded, board_removed, bench_removed):
         """Place an upgraded unit into a freed slot."""
         if board_removed:
             target = board_removed[0]
@@ -337,21 +333,21 @@ class Team:
             return ('bench', slot)
         return None
 
-    def _maybe_upgrade(self, unit):
+    def maybe_upgrade(self, unit):
         """Trigger a 3-copy upgrade if the threshold is met.
 
         Returns the resulting (possibly upgraded) unit; callers can ignore
         the return value when they only care about the side effects.
         """
-        board, bench = self._count_in_index(unit)
+        board, bench = self.count_in_index(unit)
         if board + bench < 3:
             return unit
-        board_removed, bench_removed = self._remove_copies(unit)
+        board_removed, bench_removed = self.remove_copies(unit)
         upgraded = unit.upgrade(self.three_starred)
-        self._place_upgraded(upgraded, board_removed, bench_removed)
+        self.place_upgraded(upgraded, board_removed, bench_removed)
         # Cascade for 2→3 star.
-        if sum(self._count_in_index(upgraded)) >= 3:
-            return self._maybe_upgrade(upgraded)
+        if sum(self.count_in_index(upgraded)) >= 3:
+            return self.maybe_upgrade(upgraded)
         return upgraded
 
     # -------------------------------------------------------------- buying
@@ -373,24 +369,24 @@ class Team:
                 first_open = idx
                 break
 
-        board_cnt = self._count_on_board(new_unit)
-        bench_cnt = self._count_on_bench(new_unit)
+        board_cnt = self.count_on_board(new_unit)
+        bench_cnt = self.count_on_bench(new_unit)
         triggers_upgrade = board_cnt + bench_cnt >= 2
 
         if triggers_upgrade:
             # Remove the two existing copies *first* to free up space, then
             # mint the upgraded unit and place it in one of the freed slots.
             # This avoids the previous "synthetic position" hack.
-            board_removed, bench_removed = self._remove_copies(new_unit)
+            board_removed, bench_removed = self.remove_copies(new_unit)
             upgraded = new_unit.upgrade(self.three_starred)
-            placed = self._place_upgraded(upgraded, board_removed, bench_removed)
+            placed = self.place_upgraded(upgraded, board_removed, bench_removed)
             if placed is None:
                 # Pool was somehow exhausted – revert: re-insert what we had.
                 return False
             # Cascade: if the upgraded unit now has 3 copies somewhere on
             # the team (rare), recursively merge again.
-            if self._count_on_board(upgraded) + self._count_on_bench(upgraded) >= 3:
-                self._maybe_upgrade(upgraded)
+            if self.count_on_board(upgraded) + self.count_on_bench(upgraded) >= 3:
+                self.maybe_upgrade(upgraded)
             return True
 
         if first_open is None:
@@ -487,7 +483,7 @@ class Team:
 
         # Possible upgrade now that the unit is on the board.
         if source_kind == 'external':
-            self._maybe_upgrade(unit)
+            self.maybe_upgrade(unit)
         return True
 
     def move_to_bench(self, board_pos, target_bench=None):

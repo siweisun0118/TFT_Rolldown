@@ -1,7 +1,6 @@
 """Definition of Game class used by rolldown."""
 
 # Standard libraries
-from copy import deepcopy
 import json
 import os
 import random
@@ -23,8 +22,8 @@ else:
 from shared.networking_client import init_rolldown_client, send_message
 from shared.resources import read_database
 from shared.rolldown_classes import Team, Unit
-from shared.rolldown_enums import CHAMPION_POOL, LEVEL_EXP, LEVEL_ODDS, \
-    SERVER_LOG_FILE, SHOP_SLOTS, THREE_STARRED
+from shared.rolldown_enums import BOARD_LAYOUT, CHAMPION_AMOUNTS, CHAMPION_POOL, \
+    LEVEL_EXP, LEVEL_ODDS, SERVER_LOG_FILE, SHOP_SLOTS
 
 
 class Game:
@@ -101,20 +100,13 @@ class Game:
     def _build_local_pool(self):
         """Populate an in-memory champion pool for offline play."""
         pool = {1: [], 2: [], 3: [], 4: [], 5: []}
-        for name, unit in self.champions_dict.items():
+        for _, unit in self.champions_dict.items():
             amount = CHAMPION_AMOUNTS.get(unit.rarity, 0)
             pool[unit.rarity].extend([unit] * amount)
         return pool
 
     def _connect_to_server(self, input_dir):
-        """Establish a connection to the networking server, starting it if needed.
-
-        Implements server improvement §2.1: replace the fixed 0.5s sleep
-        with exponential backoff polling, raising a clear error when the
-        deadline is exceeded.  Also probes the protocol so a stale legacy
-        server on the same port surfaces an immediate error instead of
-        silently hanging on the first ``recv``.
-        """
+        """Establish a connection to the networking server, starting it if needed."""
         try:
             sock = init_rolldown_client(0)
             if self._probe_protocol(sock):
@@ -427,20 +419,7 @@ class Game:
         print(str_roll, end='')
 
     def buy_unit(self, next_in):
-        """Buy a unit for the team (1-indexed).
-
-        The unit lands on the bench unless purchasing it triggers an
-        upgrade, in which case the upgraded copy lands wherever the merge
-        resolves.  Returns ``True`` if the purchase succeeded.
-
-        **Edge case** – when the bench is full but the shop contains
-        additional copies of the same unit such that the player already
-        owns at least one copy and buying enough extras would complete an
-        upgrade, every needed copy is auto-purchased and the merge is
-        applied atomically.  This mirrors how the real game handles the
-        "full bench, lucky shop" scenario without requiring the GUI to
-        pre-empt the user.
-        """
+        """Buy a unit for the team (1-indexed)."""
         idx = int(next_in) - 1
         cur_unit = self.cur_shop[idx]
         if cur_unit.name == 'BLANK':
@@ -451,8 +430,8 @@ class Game:
             return False
 
         owned = (
-            self.team._count_on_board(cur_unit)
-            + self.team._count_on_bench(cur_unit)
+            self.team.count_on_board(cur_unit)
+            + self.team.count_on_bench(cur_unit)
         )
 
         # Buying just this slot already triggers an upgrade *or* the bench
@@ -494,20 +473,21 @@ class Game:
         # check would otherwise reject the very first purchase.
         template = self.champions_dict[cur_unit.name]
         proto = template.copy()
-        board_removed, bench_removed = self.team._remove_copies(proto)
+        board_removed, bench_removed = self.team.remove_copies(proto)
         upgraded = proto.upgrade(self.team.three_starred)
-        placed = self.team._place_upgraded(upgraded, board_removed, bench_removed)
+        placed = self.team.place_upgraded(upgraded, board_removed, bench_removed)
+
+        # Should never happen – we just freed at least one slot.
         if placed is None:
-            # Should never happen – we just freed at least one slot.
-            return False
+            assert False
 
         self.gold -= total_cost
         for shop_idx in chain_indices:
             self.cur_shop[shop_idx] = Unit(None, 'BLANK', None, None)
 
         # Cascade in the rare case that the new 2-star completes a 3-star.
-        if self.team._count_on_board(upgraded) + self.team._count_on_bench(upgraded) >= 3:
-            self.team._maybe_upgrade(upgraded)
+        if self.team.count_on_board(upgraded) + self.team.count_on_bench(upgraded) >= 3:
+            self.team.maybe_upgrade(upgraded)
         return True
 
     def sell_unit(self, index):
@@ -559,13 +539,7 @@ class Game:
         return True
 
     def move_bench_to_board(self, bench_index, target_position=None):
-        """Drag a unit from the bench onto the board.
-
-        ``target_position`` is the destination ``(row, col)`` tile.  If
-        omitted, the first empty board tile (in layout order) is used.
-        Returns ``True`` on success.  When the target is occupied the two
-        units are swapped.
-        """
+        """Place a unit on the board, following standard TFT rules."""
         if not 0 <= bench_index < self.team.bench_size:
             return False
         if self.team.bench[bench_index] is None:

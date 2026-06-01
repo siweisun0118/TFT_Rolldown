@@ -1,18 +1,4 @@
-"""Rolldown game server.
-
-This rewrite implements the following server improvements from
-``PERFORMANCE_NOTES.md``:
-
-* §2.1 / §2.10 (client-side counterparts): client connect now polls with
-  exponential backoff against the server we spawn here.
-* §2.2: length-prefixed framing on every message (client + server).
-* §2.5: unknown / malformed messages no longer kill the worker thread;
-  every failure produces a structured ``ERROR`` response.
-* §2.9: every successful pool mutation returns a structured ``OK`` ack so
-  the client can apply the change transactionally.
-* §2.12: every applied transition is appended to ``server_transitions.jsonl``
-  on disk so the pool state can be reconstructed after a crash.
-"""
+"""Rolldown game server. Handles shared champion pool and buy/sell messages from clients."""
 
 # Standard libraries
 import datetime as _dt
@@ -181,11 +167,8 @@ def _replay_transitions(champions):
                     CHAMPION_POOL[unit_obj.rarity].append(unit_obj)
 
 
-# ----------------------------------------------------------------------------
-# Command dispatch.  Each helper returns the payload to send back to the
-# client.  Errors are surfaced as strings beginning with "ERROR:" so the
-# client can distinguish ack from failure without a sentinel byte.
 def buy_champion(message, champions):
+    """Handle receiving a message to buy a champion."""
     assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
 
     parts = message.split(':', 1)
@@ -205,6 +188,7 @@ def buy_champion(message, champions):
 
 
 def sell_champion(message, champions):
+    """Handle receiving a message to sell a champion."""
     assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
 
     parts = message.split(':')
@@ -213,8 +197,8 @@ def sell_champion(message, champions):
     unit = parts[1].strip()
     try:
         level = int(parts[2].strip())
-    except ValueError:
-        raise UnknownMessageError(message)
+    except ValueError as err:
+        raise UnknownMessageError(message) from err
     if unit not in champions:
         raise UnknownChampionError(unit)
 
@@ -237,13 +221,8 @@ def shutdown(main_socket, client_threads):
     print('Server shutting down...')
 
 
-# ----------------------------------------------------------------------------
 def client_thread(connection, addr, champions):
-    """Handle a single client connection.
-
-    Server improvement §2.5: every command is wrapped in a try/except so
-    bad input only returns an error – it never tears the thread down.
-    """
+    """Handle a single client connection."""
     try:
         while True:
             try:

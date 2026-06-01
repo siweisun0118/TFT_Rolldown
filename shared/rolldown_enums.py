@@ -87,3 +87,8 @@ GEN_ASSETS = Path('General Assets')
 # region Port number for rolldown server
 SERVER_PORT = 8000
 # endregion
+
+# region Image Utils
+# Sentinel filename that marks a traits/ directory as already inverted.
+INVERTED_SENTINEL = '.inverted'
+# endregion
