@@ -1,0 +1,8 @@
+Akali:3:C3
+Jax:3:A4
+Maokai:2:C1
+Urgot:2:C2
+Morgana:2:C5
+Aatrox:2:C7
+Kindred:2:D1
+Caitlyn:3:D3

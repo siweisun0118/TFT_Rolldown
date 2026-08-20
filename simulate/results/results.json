@@ -1,0 +1,4471 @@
+{
+    "ASol_Aatrox": [
+        "Aatrox",
+        {
+            "damage_taken": 1166,
+            "level": 3,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 943,
+            "level": 3,
+            "name": "Poppy"
+        },
+        {
+            "damage_taken": 1288,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "ASol_Akali": [
+        "Akali",
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Akali"
+        },
+        {
+            "damage_taken": 885,
+            "level": 2,
+            "name": "Urgot"
+        },
+        {
+            "damage_taken": 159,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Kindred"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "ASol_Leona": [
+        "tie",
+        {
+            "damage_taken": 780,
+            "level": 2,
+            "name": "Karma"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Aurelion Sol"
+        },
+        {
+            "damage_taken": 2021,
+            "level": 4,
+            "name": "Leona"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Zoe"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "LeBlanc"
+        }
+    ],
+    "ASol_Meepsie": [
+        "tie",
+        {
+            "damage_taken": 112,
+            "level": 2,
+            "name": "Aurelion Sol"
+        },
+        {
+            "damage_taken": 1724,
+            "level": 3,
+            "name": "Mordekaiser"
+        },
+        {
+            "damage_taken": 527,
+            "level": 3,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Viktor"
+        }
+    ],
+    "ASol_Rivens": [
+        "Rivens",
+        {
+            "damage_taken": 1109,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 616,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Ezreal"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "ASol_Xayah": [
+        "Xayah",
+        {
+            "damage_taken": 1366,
+            "level": 2,
+            "name": "Tahm Kench"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Nunu & Willump"
+        },
+        {
+            "damage_taken": 717,
+            "level": 2,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 1792,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 960,
+            "level": 2,
+            "name": "Maokai"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Xayah"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "ASol_assassins": [
+        "assassins",
+        {
+            "damage_taken": 799,
+            "level": 3,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 1310,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Kai'Sa"
+        }
+    ],
+    "ASol_assassinstanks": [
+        "assassinstanks",
+        {
+            "damage_taken": 837,
+            "level": 2,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 1136,
+            "level": 2,
+            "name": "Rammus"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 148,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 1140,
+            "level": 3,
+            "name": "Ornn"
+        },
+        {
+            "damage_taken": 1140,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Talon"
+        }
+    ],
+    "ASol_jhin": [
+        "ASol",
+        {
+            "damage_taken": 1405,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 1080,
+            "level": 2,
+            "name": "Blitzcrank"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Karma"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Aurelion Sol"
+        }
+    ],
+    "ASol_jhins": [
+        "jhins",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 1052,
+            "level": 2,
+            "name": "The Mighty Mech"
+        }
+    ],
+    "ASol_melees": [
+        "melees",
+        {
+            "damage_taken": 1098,
+            "level": 3,
+            "name": "Poppy"
+        },
+        {
+            "damage_taken": 825,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 356,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 1319,
+            "level": 2,
+            "name": "Pantheon"
+        }
+    ],
+    "ASol_riven": [
+        "riven",
+        {
+            "damage_taken": 782,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 672,
+            "level": 2,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 420,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 168,
+            "level": 3,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Milio"
+        }
+    ],
+    "ASol_shepherd": [
+        "tie",
+        {
+            "damage_taken": 700,
+            "level": 2,
+            "name": "Aurelion Sol"
+        },
+        {
+            "damage_taken": 1151,
+            "level": 3,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 464,
+            "level": 2,
+            "name": "Karma"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Sona"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Lissandra"
+        }
+    ],
+    "ASol_snipers": [
+        "tie",
+        {
+            "damage_taken": 1416,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Karma"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Aurelion Sol"
+        },
+        {
+            "damage_taken": 567,
+            "level": 2,
+            "name": "Vex"
+        }
+    ],
+    "ASol_stargazer": [
+        "stargazer",
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 1663,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Lulu"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Twisted Fate"
+        }
+    ],
+    "ASol_twistedfate": [
+        "twistedfate",
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 451,
+            "level": 4,
+            "name": "Talon"
+        },
+        {
+            "damage_taken": 822,
+            "level": 2,
+            "name": "Nunu & Willump"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 278,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "ASol_zed": [
+        "zed",
+        {
+            "damage_taken": 853,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 542,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Fiora"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Akali"
+        }
+    ],
+    "Aatrox_Akali": [
+        "Aatrox",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 932,
+            "level": 2,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Aatrox_Leona": [
+        "Aatrox",
+        {
+            "damage_taken": 713,
+            "level": 3,
+            "name": "Poppy"
+        },
+        {
+            "damage_taken": 1329,
+            "level": 2,
+            "name": "Rammus"
+        },
+        {
+            "damage_taken": 814,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 1444,
+            "level": 2,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Aatrox_Meepsie": [
+        "Aatrox",
+        {
+            "damage_taken": 938,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Aatrox_Rivens": [
+        "Aatrox",
+        {
+            "damage_taken": 184,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 348,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Aatrox_Xayah": [
+        "Aatrox",
+        {
+            "damage_taken": 1184,
+            "level": 3,
+            "name": "Poppy"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 878,
+            "level": 2,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Aatrox_assassins": [
+        "Aatrox",
+        {
+            "damage_taken": 1001,
+            "level": 3,
+            "name": "Poppy"
+        },
+        {
+            "damage_taken": 189,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 1239,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Aatrox_assassinstanks": [
+        "tie",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 1385,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 756,
+            "level": 3,
+            "name": "Talon"
+        }
+    ],
+    "Aatrox_jhin": [
+        "Aatrox",
+        {
+            "damage_taken": 1292,
+            "level": 3,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Aatrox_jhins": [
+        "jhins",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 256,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 162,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 128,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 520,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 432,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Aatrox_melees": [
+        "Aatrox",
+        {
+            "damage_taken": 1105,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 1610,
+            "level": 2,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Aatrox_riven": [
+        "Aatrox",
+        {
+            "damage_taken": 1052,
+            "level": 3,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 1523,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Aatrox_shepherd": [
+        "Aatrox",
+        {
+            "damage_taken": 1764,
+            "level": 2,
+            "name": "Rammus"
+        },
+        {
+            "damage_taken": 64,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 1458,
+            "level": 2,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Aatrox_snipers": [
+        "Aatrox",
+        {
+            "damage_taken": 405,
+            "level": 3,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 1724,
+            "level": 2,
+            "name": "Rammus"
+        },
+        {
+            "damage_taken": 888,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 438,
+            "level": 2,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Aatrox_stargazer": [
+        "Aatrox",
+        {
+            "damage_taken": 714,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 1034,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 162,
+            "level": 2,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Aatrox_twistedfate": [
+        "tie",
+        {
+            "damage_taken": 1114,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 290,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "Aatrox_zed": [
+        "tie",
+        {
+            "damage_taken": 485,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 266,
+            "level": 3,
+            "name": "Shen"
+        }
+    ],
+    "Akali_Leona": [
+        "Akali",
+        {
+            "damage_taken": 534,
+            "level": 3,
+            "name": "Akali"
+        },
+        {
+            "damage_taken": 70,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 82,
+            "level": 2,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 1170,
+            "level": 2,
+            "name": "Kindred"
+        },
+        {
+            "damage_taken": 312,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Akali_Meepsie": [
+        "Akali",
+        {
+            "damage_taken": 907,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 730,
+            "level": 2,
+            "name": "Kindred"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Akali_Rivens": [
+        "Rivens",
+        {
+            "damage_taken": 978,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 936,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Ezreal"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Akali_Xayah": [
+        "tie",
+        {
+            "damage_taken": 204,
+            "level": 2,
+            "name": "Kindred"
+        },
+        {
+            "damage_taken": 1254,
+            "level": 2,
+            "name": "Xayah"
+        }
+    ],
+    "Akali_assassins": [
+        "Akali",
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Akali"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Urgot"
+        },
+        {
+            "damage_taken": 1847,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Kindred"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Akali_assassinstanks": [
+        "assassinstanks",
+        {
+            "damage_taken": 585,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 1178,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 864,
+            "level": 3,
+            "name": "Talon"
+        }
+    ],
+    "Akali_jhin": [
+        "Akali",
+        {
+            "damage_taken": 1290,
+            "level": 2,
+            "name": "Maokai"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Urgot"
+        },
+        {
+            "damage_taken": 159,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Kindred"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Akali_jhins": [
+        "jhins",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 104,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 248,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Akali_melees": [
+        "melees",
+        {
+            "damage_taken": 1515,
+            "level": 3,
+            "name": "Poppy"
+        },
+        {
+            "damage_taken": 960,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 1048,
+            "level": 2,
+            "name": "Nasus"
+        },
+        {
+            "damage_taken": 256,
+            "level": 2,
+            "name": "Leona"
+        },
+        {
+            "damage_taken": 847,
+            "level": 2,
+            "name": "Pyke"
+        }
+    ],
+    "Akali_riven": [
+        "tie",
+        {
+            "damage_taken": 661,
+            "level": 2,
+            "name": "Kindred"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 576,
+            "level": 2,
+            "name": "Milio"
+        }
+    ],
+    "Akali_shepherd": [
+        "Akali",
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Akali"
+        },
+        {
+            "damage_taken": 867,
+            "level": 2,
+            "name": "Urgot"
+        },
+        {
+            "damage_taken": 1159,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 896,
+            "level": 2,
+            "name": "Kindred"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Akali_snipers": [
+        "Akali",
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Akali"
+        },
+        {
+            "damage_taken": 1504,
+            "level": 2,
+            "name": "Maokai"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Urgot"
+        },
+        {
+            "damage_taken": 559,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 894,
+            "level": 2,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 102,
+            "level": 2,
+            "name": "Kindred"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Akali_stargazer": [
+        "Akali",
+        {
+            "damage_taken": 270,
+            "level": 2,
+            "name": "Urgot"
+        },
+        {
+            "damage_taken": 1530,
+            "level": 2,
+            "name": "Morgana"
+        },
+        {
+            "damage_taken": 883,
+            "level": 2,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Kindred"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        }
+    ],
+    "Akali_twistedfate": [
+        "twistedfate",
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 660,
+            "level": 4,
+            "name": "Talon"
+        },
+        {
+            "damage_taken": 608,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "Akali_zed": [
+        "zed",
+        {
+            "damage_taken": 1194,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 235,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 605,
+            "level": 3,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 606,
+            "level": 1,
+            "name": "Akali"
+        }
+    ],
+    "Leona_Meepsie": [
+        "tie",
+        {
+            "damage_taken": 1648,
+            "level": 4,
+            "name": "Leona"
+        },
+        {
+            "damage_taken": 1258,
+            "level": 3,
+            "name": "Mordekaiser"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Viktor"
+        },
+        {
+            "damage_taken": 550,
+            "level": 3,
+            "name": "Pyke"
+        }
+    ],
+    "Leona_Rivens": [
+        "Rivens",
+        {
+            "damage_taken": 1143,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 1370,
+            "level": 3,
+            "name": "Pantheon"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Ezreal"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Leona_Xayah": [
+        "Xayah",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 1184,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 31,
+            "level": 1,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Xayah"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Leona_assassins": [
+        "tie",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Karma"
+        },
+        {
+            "damage_taken": 336,
+            "level": 2,
+            "name": "Zoe"
+        },
+        {
+            "damage_taken": 336,
+            "level": 3,
+            "name": "Kai'Sa"
+        }
+    ],
+    "Leona_assassinstanks": [
+        "assassinstanks",
+        {
+            "damage_taken": 1919,
+            "level": 2,
+            "name": "Rammus"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 366,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 614,
+            "level": 3,
+            "name": "Ornn"
+        },
+        {
+            "damage_taken": 440,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 1125,
+            "level": 3,
+            "name": "Talon"
+        }
+    ],
+    "Leona_jhin": [
+        "Leona",
+        {
+            "damage_taken": 736,
+            "level": 2,
+            "name": "Karma"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Zoe"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "LeBlanc"
+        }
+    ],
+    "Leona_jhins": [
+        "jhins",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 997,
+            "level": 2,
+            "name": "The Mighty Mech"
+        }
+    ],
+    "Leona_melees": [
+        "melees",
+        {
+            "damage_taken": 33,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Nasus"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 539,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 816,
+            "level": 2,
+            "name": "Shen"
+        }
+    ],
+    "Leona_riven": [
+        "riven",
+        {
+            "damage_taken": 1406,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 507,
+            "level": 2,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 747,
+            "level": 2,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 1252,
+            "level": 3,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Milio"
+        }
+    ],
+    "Leona_shepherd": [
+        "tie",
+        {
+            "damage_taken": 86,
+            "level": 2,
+            "name": "LeBlanc"
+        },
+        {
+            "damage_taken": 1488,
+            "level": 3,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "LeBlanc"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Karma"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Sona"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Lissandra"
+        }
+    ],
+    "Leona_snipers": [
+        "Leona",
+        {
+            "damage_taken": 1362,
+            "level": 4,
+            "name": "Leona"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Karma"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Zoe"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "LeBlanc"
+        }
+    ],
+    "Leona_stargazer": [
+        "stargazer",
+        {
+            "damage_taken": 1684,
+            "level": 3,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 817,
+            "level": 3,
+            "name": "Maokai"
+        },
+        {
+            "damage_taken": 1203,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Twisted Fate"
+        }
+    ],
+    "Leona_twistedfate": [
+        "twistedfate",
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Talon"
+        },
+        {
+            "damage_taken": 1189,
+            "level": 2,
+            "name": "Nunu & Willump"
+        },
+        {
+            "damage_taken": 779,
+            "level": 3,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 954,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "Leona_zed": [
+        "zed",
+        {
+            "damage_taken": 483,
+            "level": 2,
+            "name": "Maokai"
+        },
+        {
+            "damage_taken": 770,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 1406,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Fiora"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Akali"
+        }
+    ],
+    "Meepsie_Rivens": [
+        "Rivens",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 345,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 1868,
+            "level": 3,
+            "name": "Pantheon"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Ezreal"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Meepsie_Xayah": [
+        "Xayah",
+        {
+            "damage_taken": 1652,
+            "level": 2,
+            "name": "Nunu & Willump"
+        },
+        {
+            "damage_taken": 993,
+            "level": 2,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 1110,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 217,
+            "level": 1,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 845,
+            "level": 2,
+            "name": "Xayah"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Meepsie_assassins": [
+        "tie",
+        {
+            "damage_taken": 2051,
+            "level": 3,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Viktor"
+        },
+        {
+            "damage_taken": 1370,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 1287,
+            "level": 3,
+            "name": "Kai'Sa"
+        }
+    ],
+    "Meepsie_assassinstanks": [
+        "assassinstanks",
+        {
+            "damage_taken": 846,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 1043,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 564,
+            "level": 3,
+            "name": "Ornn"
+        },
+        {
+            "damage_taken": 792,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 134,
+            "level": 3,
+            "name": "Talon"
+        }
+    ],
+    "Meepsie_jhin": [
+        "Meepsie",
+        {
+            "damage_taken": 124,
+            "level": 3,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 1040,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Viktor"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Nami"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Lissandra"
+        }
+    ],
+    "Meepsie_jhins": [
+        "jhins",
+        {
+            "damage_taken": 312,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 1312,
+            "level": 2,
+            "name": "The Mighty Mech"
+        }
+    ],
+    "Meepsie_melees": [
+        "tie",
+        {
+            "damage_taken": 1434,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 1024,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 550,
+            "level": 2,
+            "name": "Shen"
+        }
+    ],
+    "Meepsie_riven": [
+        "riven",
+        {
+            "damage_taken": 678,
+            "level": 2,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 287,
+            "level": 2,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 138,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Milio"
+        }
+    ],
+    "Meepsie_shepherd": [
+        "shepherd",
+        {
+            "damage_taken": 1144,
+            "level": 2,
+            "name": "Blitzcrank"
+        },
+        {
+            "damage_taken": 2050,
+            "level": 3,
+            "name": "Illaoi"
+        },
+        {
+            "damage_taken": 1010,
+            "level": 3,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Sona"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Lissandra"
+        }
+    ],
+    "Meepsie_snipers": [
+        "Meepsie",
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 767,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Viktor"
+        },
+        {
+            "damage_taken": 270,
+            "level": 2,
+            "name": "Nami"
+        }
+    ],
+    "Meepsie_stargazer": [
+        "stargazer",
+        {
+            "damage_taken": 1391,
+            "level": 3,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 1390,
+            "level": 3,
+            "name": "Maokai"
+        },
+        {
+            "damage_taken": 976,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Twisted Fate"
+        }
+    ],
+    "Meepsie_twistedfate": [
+        "twistedfate",
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 1620,
+            "level": 4,
+            "name": "Talon"
+        },
+        {
+            "damage_taken": 819,
+            "level": 2,
+            "name": "Nunu & Willump"
+        },
+        {
+            "damage_taken": 1436,
+            "level": 3,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "Meepsie_zed": [
+        "zed",
+        {
+            "damage_taken": 259,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 980,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 18,
+            "level": 2,
+            "name": "Fiora"
+        },
+        {
+            "damage_taken": 1524,
+            "level": 3,
+            "name": "Shen"
+        }
+    ],
+    "Rivens_Xayah": [
+        "Rivens",
+        {
+            "damage_taken": 1152,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 1149,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Ezreal"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Rivens_assassins": [
+        "Rivens",
+        {
+            "damage_taken": 662,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 1183,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Ezreal"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Rivens_assassinstanks": [
+        "assassinstanks",
+        {
+            "damage_taken": 1241,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 1512,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 1232,
+            "level": 3,
+            "name": "Ornn"
+        },
+        {
+            "damage_taken": 1150,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Gwen"
+        }
+    ],
+    "Rivens_jhin": [
+        "Rivens",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Ezreal"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 652,
+            "level": 2,
+            "name": "Cho'Gath"
+        }
+    ],
+    "Rivens_jhins": [
+        "jhins",
+        {
+            "damage_taken": 960,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 48,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Rivens_melees": [
+        "Rivens",
+        {
+            "damage_taken": 406,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 104,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Ezreal"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Rivens_riven": [
+        "Rivens",
+        {
+            "damage_taken": 855,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Ezreal"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Rivens_shepherd": [
+        "Rivens",
+        {
+            "damage_taken": 23,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Ezreal"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Rivens_snipers": [
+        "Rivens",
+        {
+            "damage_taken": 932,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 175,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Ezreal"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Rivens_stargazer": [
+        "Rivens",
+        {
+            "damage_taken": 1632,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 104,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Ezreal"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Rivens_twistedfate": [
+        "twistedfate",
+        {
+            "damage_taken": 1248,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 658,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "Rivens_zed": [
+        "zed",
+        {
+            "damage_taken": 1155,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 615,
+            "level": 2,
+            "name": "Fiora"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Akali"
+        }
+    ],
+    "Xayah_assassins": [
+        "Xayah",
+        {
+            "damage_taken": 770,
+            "level": 2,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 1568,
+            "level": 2,
+            "name": "Maokai"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Xayah"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Xayah_assassinstanks": [
+        "assassinstanks",
+        {
+            "damage_taken": 797,
+            "level": 2,
+            "name": "Rammus"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 1215,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 737,
+            "level": 3,
+            "name": "Talon"
+        }
+    ],
+    "Xayah_jhin": [
+        "Xayah",
+        {
+            "damage_taken": 630,
+            "level": 2,
+            "name": "Nunu & Willump"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 1432,
+            "level": 2,
+            "name": "Maokai"
+        },
+        {
+            "damage_taken": 124,
+            "level": 1,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Xayah"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Xayah_jhins": [
+        "jhins",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 64,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 516,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 156,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Xayah_melees": [
+        "melees",
+        {
+            "damage_taken": 1069,
+            "level": 3,
+            "name": "Poppy"
+        },
+        {
+            "damage_taken": 67,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 1842,
+            "level": 2,
+            "name": "Shen"
+        }
+    ],
+    "Xayah_riven": [
+        "tie",
+        {
+            "damage_taken": 315,
+            "level": 2,
+            "name": "Xayah"
+        },
+        {
+            "damage_taken": 722,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 828,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 427,
+            "level": 2,
+            "name": "Milio"
+        }
+    ],
+    "Xayah_shepherd": [
+        "Xayah",
+        {
+            "damage_taken": 1690,
+            "level": 2,
+            "name": "Nunu & Willump"
+        },
+        {
+            "damage_taken": 1306,
+            "level": 2,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 259,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 784,
+            "level": 2,
+            "name": "Xayah"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Xayah_snipers": [
+        "Xayah",
+        {
+            "damage_taken": 1414,
+            "level": 2,
+            "name": "Nunu & Willump"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 851,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 1512,
+            "level": 2,
+            "name": "Maokai"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Xayah"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Xayah_stargazer": [
+        "Xayah",
+        {
+            "damage_taken": 630,
+            "level": 2,
+            "name": "Nunu & Willump"
+        },
+        {
+            "damage_taken": 1227,
+            "level": 2,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 46,
+            "level": 1,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Xayah"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "Xayah_twistedfate": [
+        "twistedfate",
+        {
+            "damage_taken": 780,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 2192,
+            "level": 4,
+            "name": "Talon"
+        },
+        {
+            "damage_taken": 819,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "Xayah_zed": [
+        "zed",
+        {
+            "damage_taken": 952,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 878,
+            "level": 2,
+            "name": "Fiora"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Shen"
+        }
+    ],
+    "assassins_assassinstanks": [
+        "assassinstanks",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 957,
+            "level": 2,
+            "name": "Rammus"
+        },
+        {
+            "damage_taken": 1512,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 1304,
+            "level": 3,
+            "name": "Ornn"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Talon"
+        }
+    ],
+    "assassins_jhin": [
+        "assassins",
+        {
+            "damage_taken": 1140,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Kai'Sa"
+        }
+    ],
+    "assassins_jhins": [
+        "jhins",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 1150,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 1655,
+            "level": 2,
+            "name": "The Mighty Mech"
+        }
+    ],
+    "assassins_melees": [
+        "melees",
+        {
+            "damage_taken": 1157,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 1134,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Shen"
+        }
+    ],
+    "assassins_riven": [
+        "riven",
+        {
+            "damage_taken": 195,
+            "level": 2,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 352,
+            "level": 1,
+            "name": "Poppy"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 644,
+            "level": 3,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Milio"
+        }
+    ],
+    "assassins_shepherd": [
+        "shepherd",
+        {
+            "damage_taken": 1478,
+            "level": 3,
+            "name": "Illaoi"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "LeBlanc"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Sona"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Lissandra"
+        }
+    ],
+    "assassins_snipers": [
+        "assassins",
+        {
+            "damage_taken": 421,
+            "level": 3,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 1055,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Kai'Sa"
+        }
+    ],
+    "assassins_stargazer": [
+        "stargazer",
+        {
+            "damage_taken": 1244,
+            "level": 3,
+            "name": "Maokai"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Lulu"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Twisted Fate"
+        }
+    ],
+    "assassins_twistedfate": [
+        "twistedfate",
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 664,
+            "level": 4,
+            "name": "Talon"
+        },
+        {
+            "damage_taken": 1776,
+            "level": 3,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 666,
+            "level": 3,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "assassins_zed": [
+        "zed",
+        {
+            "damage_taken": 1460,
+            "level": 2,
+            "name": "Tahm Kench"
+        },
+        {
+            "damage_taken": 395,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 1586,
+            "level": 2,
+            "name": "Fiora"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Akali"
+        }
+    ],
+    "assassinstanks_jhin": [
+        "assassinstanks",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 1235,
+            "level": 2,
+            "name": "Rammus"
+        },
+        {
+            "damage_taken": 420,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 1472,
+            "level": 3,
+            "name": "Ornn"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Talon"
+        }
+    ],
+    "assassinstanks_jhins": [
+        "jhins",
+        {
+            "damage_taken": 224,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 336,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 64,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 336,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "assassinstanks_melees": [
+        "assassinstanks",
+        {
+            "damage_taken": 539,
+            "level": 2,
+            "name": "Rammus"
+        },
+        {
+            "damage_taken": 1496,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 1073,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 1164,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 1288,
+            "level": 3,
+            "name": "Talon"
+        }
+    ],
+    "assassinstanks_riven": [
+        "assassinstanks",
+        {
+            "damage_taken": 670,
+            "level": 2,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 1882,
+            "level": 2,
+            "name": "Rammus"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 1035,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Talon"
+        }
+    ],
+    "assassinstanks_shepherd": [
+        "assassinstanks",
+        {
+            "damage_taken": 816,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 1135,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Ornn"
+        },
+        {
+            "damage_taken": 249,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Gwen"
+        }
+    ],
+    "assassinstanks_snipers": [
+        "assassinstanks",
+        {
+            "damage_taken": 405,
+            "level": 2,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 828,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 960,
+            "level": 3,
+            "name": "Ornn"
+        },
+        {
+            "damage_taken": 880,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 178,
+            "level": 3,
+            "name": "Talon"
+        }
+    ],
+    "assassinstanks_stargazer": [
+        "assassinstanks",
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 1428,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 576,
+            "level": 3,
+            "name": "Ornn"
+        },
+        {
+            "damage_taken": 225,
+            "level": 3,
+            "name": "Gwen"
+        },
+        {
+            "damage_taken": 169,
+            "level": 3,
+            "name": "Talon"
+        }
+    ],
+    "assassinstanks_twistedfate": [
+        "assassinstanks",
+        {
+            "damage_taken": 1268,
+            "level": 3,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 1425,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 1005,
+            "level": 3,
+            "name": "Gwen"
+        }
+    ],
+    "assassinstanks_zed": [
+        "zed",
+        {
+            "damage_taken": 1750,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 1456,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 892,
+            "level": 2,
+            "name": "Fiora"
+        },
+        {
+            "damage_taken": 1264,
+            "level": 3,
+            "name": "Shen"
+        }
+    ],
+    "jhin_jhins": [
+        "jhins",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 1895,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 882,
+            "level": 2,
+            "name": "The Mighty Mech"
+        }
+    ],
+    "jhin_melees": [
+        "melees",
+        {
+            "damage_taken": 237,
+            "level": 3,
+            "name": "Poppy"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Leona"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 630,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 165,
+            "level": 2,
+            "name": "Shen"
+        }
+    ],
+    "jhin_riven": [
+        "riven",
+        {
+            "damage_taken": 1740,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Poppy"
+        },
+        {
+            "damage_taken": 124,
+            "level": 2,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Milio"
+        }
+    ],
+    "jhin_shepherd": [
+        "shepherd",
+        {
+            "damage_taken": 643,
+            "level": 3,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "LeBlanc"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Karma"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Sona"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Lissandra"
+        }
+    ],
+    "jhin_snipers": [
+        "tie",
+        {
+            "damage_taken": 857,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 516,
+            "level": 2,
+            "name": "Vex"
+        }
+    ],
+    "jhin_stargazer": [
+        "stargazer",
+        {
+            "damage_taken": 2064,
+            "level": 3,
+            "name": "Maokai"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 1340,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Lulu"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Twisted Fate"
+        }
+    ],
+    "jhin_twistedfate": [
+        "twistedfate",
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 350,
+            "level": 2,
+            "name": "Nunu & Willump"
+        },
+        {
+            "damage_taken": 462,
+            "level": 3,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 1178,
+            "level": 3,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 375,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "jhin_zed": [
+        "zed",
+        {
+            "damage_taken": 280,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 73,
+            "level": 2,
+            "name": "Fiora"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Akali"
+        }
+    ],
+    "jhins_melees": [
+        "jhins",
+        {
+            "damage_taken": 43,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 54,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "jhins_riven": [
+        "jhins",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 370,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 64,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 288,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "jhins_shepherd": [
+        "jhins",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 1325,
+            "level": 2,
+            "name": "The Mighty Mech"
+        }
+    ],
+    "jhins_snipers": [
+        "jhins",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 1737,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 1109,
+            "level": 2,
+            "name": "The Mighty Mech"
+        }
+    ],
+    "jhins_stargazer": [
+        "jhins",
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 1796,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 1694,
+            "level": 2,
+            "name": "The Mighty Mech"
+        }
+    ],
+    "jhins_twistedfate": [
+        "jhins",
+        {
+            "damage_taken": 624,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 128,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 528,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 1048,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "jhins_zed": [
+        "jhins",
+        {
+            "damage_taken": 320,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 256,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 640,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 1032,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 546,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Jhin"
+        }
+    ],
+    "melees_riven": [
+        "tie",
+        {
+            "damage_taken": 1218,
+            "level": 3,
+            "name": "Poppy"
+        },
+        {
+            "damage_taken": 288,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 2294,
+            "level": 3,
+            "name": "Riven"
+        }
+    ],
+    "melees_shepherd": [
+        "tie",
+        {
+            "damage_taken": 977,
+            "level": 2,
+            "name": "Nasus"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 1222,
+            "level": 2,
+            "name": "Pantheon"
+        },
+        {
+            "damage_taken": 1200,
+            "level": 2,
+            "name": "Blitzcrank"
+        },
+        {
+            "damage_taken": 1733,
+            "level": 3,
+            "name": "Illaoi"
+        },
+        {
+            "damage_taken": 1832,
+            "level": 3,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Lissandra"
+        }
+    ],
+    "melees_snipers": [
+        "melees",
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Leona"
+        },
+        {
+            "damage_taken": 813,
+            "level": 2,
+            "name": "Pyke"
+        },
+        {
+            "damage_taken": 528,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 337,
+            "level": 2,
+            "name": "Shen"
+        }
+    ],
+    "melees_stargazer": [
+        "melees",
+        {
+            "damage_taken": 1022,
+            "level": 3,
+            "name": "Poppy"
+        },
+        {
+            "damage_taken": 66,
+            "level": 3,
+            "name": "Briar"
+        },
+        {
+            "damage_taken": 830,
+            "level": 2,
+            "name": "Nasus"
+        },
+        {
+            "damage_taken": 1890,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 287,
+            "level": 2,
+            "name": "Shen"
+        }
+    ],
+    "melees_twistedfate": [
+        "twistedfate",
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 1913,
+            "level": 3,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 759,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "melees_zed": [
+        "zed",
+        {
+            "damage_taken": 1066,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 384,
+            "level": 3,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 744,
+            "level": 1,
+            "name": "Akali"
+        }
+    ],
+    "riven_shepherd": [
+        "riven",
+        {
+            "damage_taken": 507,
+            "level": 2,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 828,
+            "level": 2,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 1849,
+            "level": 3,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Milio"
+        }
+    ],
+    "riven_snipers": [
+        "riven",
+        {
+            "damage_taken": 1387,
+            "level": 2,
+            "name": "The Mighty Mech"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Fizz"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 272,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 900,
+            "level": 3,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Milio"
+        }
+    ],
+    "riven_stargazer": [
+        "riven",
+        {
+            "damage_taken": 92,
+            "level": 2,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 23,
+            "level": 2,
+            "name": "Corki"
+        },
+        {
+            "damage_taken": 1804,
+            "level": 3,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Milio"
+        }
+    ],
+    "riven_twistedfate": [
+        "twistedfate",
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 646,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "riven_zed": [
+        "zed",
+        {
+            "damage_taken": 1765,
+            "level": 2,
+            "name": "Tahm Kench"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 256,
+            "level": 3,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 368,
+            "level": 1,
+            "name": "Akali"
+        }
+    ],
+    "shepherd_snipers": [
+        "shepherd",
+        {
+            "damage_taken": 790,
+            "level": 3,
+            "name": "Meepsie"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "LeBlanc"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Karma"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Sona"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Lissandra"
+        }
+    ],
+    "shepherd_stargazer": [
+        "tie",
+        {
+            "damage_taken": 632,
+            "level": 2,
+            "name": "Karma"
+        },
+        {
+            "damage_taken": 160,
+            "level": 2,
+            "name": "Sona"
+        },
+        {
+            "damage_taken": 1299,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Twisted Fate"
+        }
+    ],
+    "shepherd_twistedfate": [
+        "twistedfate",
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 1336,
+            "level": 2,
+            "name": "Nunu & Willump"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 997,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "shepherd_zed": [
+        "zed",
+        {
+            "damage_taken": 841,
+            "level": 2,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 854,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 550,
+            "level": 2,
+            "name": "Fiora"
+        },
+        {
+            "damage_taken": 512,
+            "level": 3,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Akali"
+        }
+    ],
+    "snipers_stargazer": [
+        "stargazer",
+        {
+            "damage_taken": 1516,
+            "level": 3,
+            "name": "Maokai"
+        },
+        {
+            "damage_taken": 370,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 324,
+            "level": 3,
+            "name": "Lulu"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Milio"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Twisted Fate"
+        }
+    ],
+    "snipers_twistedfate": [
+        "twistedfate",
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Talon"
+        },
+        {
+            "damage_taken": 1138,
+            "level": 2,
+            "name": "Nunu & Willump"
+        },
+        {
+            "damage_taken": 2009,
+            "level": 3,
+            "name": "Jax"
+        },
+        {
+            "damage_taken": 1130,
+            "level": 3,
+            "name": "Aatrox"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "snipers_zed": [
+        "zed",
+        {
+            "damage_taken": 1090,
+            "level": 2,
+            "name": "Maokai"
+        },
+        {
+            "damage_taken": 371,
+            "level": 2,
+            "name": "Rhaast"
+        },
+        {
+            "damage_taken": 1049,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Fiora"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Akali"
+        }
+    ],
+    "stargazer_twistedfate": [
+        "twistedfate",
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Twisted Fate"
+        },
+        {
+            "damage_taken": 0,
+            "level": 4,
+            "name": "Talon"
+        },
+        {
+            "damage_taken": 1902,
+            "level": 2,
+            "name": "Nunu & Willump"
+        },
+        {
+            "damage_taken": 0,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 638,
+            "level": 2,
+            "name": "Riven"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Corki"
+        }
+    ],
+    "stargazer_zed": [
+        "zed",
+        {
+            "damage_taken": 1163,
+            "level": 2,
+            "name": "Zed"
+        },
+        {
+            "damage_taken": 0,
+            "level": 2,
+            "name": "Fiora"
+        },
+        {
+            "damage_taken": 82,
+            "level": 3,
+            "name": "Shen"
+        },
+        {
+            "damage_taken": 0,
+            "level": 1,
+            "name": "Akali"
+        }
+    ],
+    "twistedfate_zed": [
+        "tie",
+        {
+            "damage_taken": 1119,
+            "level": 3,
+            "name": "Caitlyn"
+        },
+        {
+            "damage_taken": 777,
+            "level": 2,
+            "name": "Zed"
+        }
+    ]
+}

@@ -1,0 +1,578 @@
+[
+    {
+        "Adaptive Helm": {
+            "hp": 0,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 20,
+            "armor": 0,
+            "speed": 0,
+            "mana": 3,
+            "effect": "Gain an additional 15% Mana from all sources. The holder gains an additional bonus based on their Role: Tanks and Fighters: Gain 30 Armor and Magic Resistance. Other Roles: Gain 10% Attack Damage and Ability Power."
+        }
+    },
+    {
+        "Archangel's Staff": {
+            "hp": 0,
+            "AP": 30,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 1,
+            "effect": "Combat start: Gain 20% Ability Power every 5 seconds in combat."
+        }
+    },
+    {
+        "Bloodthirster": {
+            "hp": 0,
+            "AP": 15,
+            "AD": 15,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 20,
+            "mr": 20,
+            "armor": 0,
+            "speed": 0,
+            "mana": 0,
+            "effect": "Once per combat at 40% Health, gain a 25% max Health Shield that lasts up to 5 seconds."
+        }
+    },
+    {
+        "Blue Buff": {
+            "hp": 0,
+            "AP": 15,
+            "AD": 15,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 5,
+            "effect": "Gain 10% additional Attack Damage and Ability Power from all sources."
+        }
+    },
+    {
+        "Bramble Vest": {
+            "hp": 0,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 50,
+            "speed": 0,
+            "mana": 0,
+            "effect": "Gain 6% max health. Take 5% reduced damage from attacks. When struck by any attack, deal 100 magic damage to all adjacent enemies. Cooldown: 2 seconds."
+        }
+    },
+    {
+        "Crownguard": {
+            "hp": 100,
+            "AP": 20,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 20,
+            "speed": 0,
+            "mana": 0,
+            "effect": "Combat Start: Gain a 25% max Health Shield for 8 seconds. When the Shield expires, gain 25% Ability Power."
+        }
+    },
+    {
+        "Deathblade": {
+            "hp": 0,
+            "AP": 0,
+            "AD": 55,
+            "damage_amp": 10,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 0,
+            "effect": "Grants stats only; no additional combat effect."
+        }
+    },
+    {
+        "Dragon's Claw": {
+            "hp": 0,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 60,
+            "armor": 0,
+            "speed": 0,
+            "mana": 0,
+            "effect": "Gain 6% max health. Every 2 seconds, heal 2.5% max Health."
+        }
+    },
+    {
+        "Edge of Night": {
+            "hp": 0,
+            "AP": 10,
+            "AD": 10,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 20,
+            "speed": 15,
+            "mana": 0,
+            "effect": "At 60% Health, briefly become untargetable, shed negative effects, and heal 20% missing health."
+        }
+    },
+    {
+        "Evenshroud": {
+            "hp": 250,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 20,
+            "armor": 0,
+            "speed": 0,
+            "mana": 0,
+            "effect": "30% Sunder enemies within 2 hexes. Gain 15 Armor and Magic Resist for the first 15 seconds of combat. Sunder: Reduce Armor."
+        }
+    },
+    {
+        "Gargoyle Stoneplate": {
+            "hp": 100,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 25,
+            "armor": 25,
+            "speed": 0,
+            "mana": 0,
+            "effect": "Gain 10 Armor and 10 Magic Resist for each enemy targeting the holder."
+        }
+    },
+    {
+        "Giant Slayer": {
+            "hp": 0,
+            "AP": 15,
+            "AD": 15,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 15,
+            "mana": 0,
+            "effect": "Gain 15% additional Damage Amp against Tanks."
+        }
+    },
+    {
+        "Guinsoo's Rageblade": {
+            "hp": 0,
+            "AP": 10,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 10,
+            "mana": 0,
+            "effect": "Gain 7% stacking Attack Speed every second."
+        }
+    },
+    {
+        "Hand Of Justice": {
+            "hp": 0,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 20,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 1,
+            "effect": "Gain 2 effects: 15% Attack Damage and 15% Ability Power. 12% Omnivamp. While above 50% health, double the Attack Damage and Ability Power. While below 50% Health, double the Omnivamp."
+        }
+    },
+    {
+        "Hextech Gunblade": {
+            "hp": 0,
+            "AP": 20,
+            "AD": 20,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 15,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 1,
+            "effect": "Heal the lowest percent Health ally for 20% of damage dealt."
+        }
+    },
+    {
+        "Infinity Edge": {
+            "hp": 0,
+            "AP": 0,
+            "AD": 35,
+            "damage_amp": 0,
+            "crit_chance": 35,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 0,
+            "effect": "Gain Precision. Precision: Ability damage can critically strike. Additional Precision grants 10% Critical Strike Damage."
+        }
+    },
+    {
+        "Ionic Spark": {
+            "hp": 250,
+            "AP": 15,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 35,
+            "armor": 0,
+            "speed": 0,
+            "mana": 0,
+            "effect": "30% Shred enemies within 2 hexes. When enemies cast an Ability, deal magic damage equal to 150% of the Mana spent. Shred: Reduce Magic Resist."
+        }
+    },
+    {
+        "Jeweled Gauntlet": {
+            "hp": 0,
+            "AP": 35,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 35,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 0,
+            "effect": "Gain Precision. Precision: Ability damage can critically strike. Additional Precision grants 10% Critical Strike Damage."
+        }
+    },
+    {
+        "Kraken's Fury": {
+            "hp": 0,
+            "AP": 0,
+            "AD": 10,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 20,
+            "armor": 0,
+            "speed": 10,
+            "mana": 0,
+            "effect": "Attacks grant 3.5% stacking Attack Damage, up to 15 attacks. After 15 attacks, gain 15% Attack Speed."
+        }
+    },
+    {
+        "Last Whisper": {
+            "hp": 0,
+            "AP": 0,
+            "AD": 15,
+            "damage_amp": 0,
+            "crit_chance": 20,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 20,
+            "mana": 0,
+            "effect": "Damage from attacks and Abilities 30% Sunder the target for 3 seconds. This effect does not stack. Sunder: Reduce Armor."
+        }
+    },
+    {
+        "Morellonomicon": {
+            "hp": 150,
+            "AP": 20,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 1,
+            "effect": "Attacks and Abilities deal 1% Burn and 33% Wound to enemies for 10 seconds. Burn: Deals a percent of the target's max Health as true damage every second Wound: Reduces healing received."
+        }
+    },
+    {
+        "Nashor's Tooth": {
+            "hp": 150,
+            "AP": 15,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 20,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 10,
+            "mana": 0,
+            "effect": "Attacks grant 2 bonus Mana, increased to 4 if they critically strike."
+        }
+    },
+    {
+        "Protector's Vow": {
+            "hp": 0,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 25,
+            "armor": 25,
+            "speed": 0,
+            "mana": 1,
+            "effect": "Combat Start: Gain 20 Mana. At 40% Health, gain 15 Mana and a Shield equal to 20% max Health."
+        }
+    },
+    {
+        "Quicksilver": {
+            "hp": 0,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 20,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 20,
+            "armor": 0,
+            "speed": 15,
+            "mana": 0,
+            "effect": "Combat Start: Gain immunity to crowd control for 18 seconds. Gain 3% stacking Attack Speed every second."
+        }
+    },
+    {
+        "Rabadon's Deathcap": {
+            "hp": 0,
+            "AP": 55,
+            "AD": 0,
+            "damage_amp": 15,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 0,
+            "effect": "Grants stats only; no additional combat effect."
+        }
+    },
+    {
+        "Red Buff": {
+            "hp": 0,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 6,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 45,
+            "mana": 0,
+            "effect": "Attacks and Abilities 1% Burn and 33% Wound enemies for 5 seconds. Burn: Deals a percent of the target's max Health as true damage every second Wound: Reduces healing received."
+        }
+    },
+    {
+        "Spear of Shojin": {
+            "hp": 0,
+            "AP": 15,
+            "AD": 15,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 1,
+            "effect": "Attacks grant 5 bonus Mana."
+        }
+    },
+    {
+        "Spirit Visage": {
+            "hp": 300,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 2,
+            "effect": "Regenerate 2% of missing Health each second."
+        }
+    },
+    {
+        "Steadfast Heart": {
+            "hp": 250,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 20,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 20,
+            "speed": 0,
+            "mana": 0,
+            "effect": "Gain 5% Durability. While above 50% Health, instead gain 15% Durability."
+        }
+    },
+    {
+        "Sterak's Gage": {
+            "hp": 300,
+            "AP": 0,
+            "AD": 45,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 0,
+            "effect": "At 60% Health, gain a Shield equal to 40% of the wearer's maximum Health that rapidly decays over 4 seconds."
+        }
+    },
+    {
+        "Striker's Flail": {
+            "hp": 150,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 20,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 10,
+            "mana": 0,
+            "effect": "Critical Strikes grant 5% Damage Amp for 5 seconds, stacking up to 4 times."
+        }
+    },
+    {
+        "Sunfire Cape": {
+            "hp": 150,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 20,
+            "speed": 0,
+            "mana": 0,
+            "effect": "Gain 8% max Health. Every 2 seconds, deal 1% Burn and 33% Wound to an enemy within 2 hexes for 10 seconds. Burn: Deals a percent of the target's max Health as true damage every second Wound: Reduces healing received."
+        }
+    },
+    {
+        "Thief's Gloves": {
+            "hp": 150,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 20,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 0,
+            "effect": "Each round: Equip 2 random items. [Consumes 3 item slots.]"
+        }
+    },
+    {
+        "Titan's Resolve": {
+            "hp": 0,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 20,
+            "speed": 10,
+            "mana": 0,
+            "effect": "Gain 2% Attack Damage and 2% Ability Power when attacking or taking damage, stacking up to 25 times. At full stacks, gain 10% Damage Amp and gain immunity to crowd control."
+        }
+    },
+    {
+        "Void Staff": {
+            "hp": 0,
+            "AP": 35,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 15,
+            "mana": 1,
+            "effect": "Damage from attacks and Abilities 30% Shred the target for 5 seconds. This effect does not stack. Shred: Reduce Magic Resist."
+        }
+    },
+    {
+        "Warmog's Armor": {
+            "hp": 500,
+            "AP": 0,
+            "AD": 0,
+            "damage_amp": 0,
+            "crit_chance": 0,
+            "crit_damage": 0,
+            "omnivamp": 0,
+            "mr": 0,
+            "armor": 0,
+            "speed": 0,
+            "mana": 0,
+            "effect": "Gain 18% max Health."
+        }
+    }
+]

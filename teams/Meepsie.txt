@@ -1,0 +1,8 @@
+Illaoi:2:A1
+Mordekaiser:3:A7
+Meepsie:3:B7
+Rhaast:2:C7
+Viktor:2:D7
+Nami:2:D1
+Lissandra:1:D2
+Pyke:3:D3

@@ -1,0 +1,8 @@
+Pantheon:3:A3
+Jax:3:A4
+Maokai:3:A5
+Aatrox:1:A6
+Rhaast:2:B6
+Lulu:3:D1
+Milio:3:D2
+Twisted Fate:1:D6

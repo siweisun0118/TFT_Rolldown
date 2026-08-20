@@ -46,16 +46,14 @@ class Game:
         # Transient notification consumed by the GUI/tests.
         self.last_notification = None
 
-        # Perf §1.11: per-instance "three starred" tracker so tests no
-        # longer mutate global state.
+        # Units at 3 stars are no longer offered in this game's shops.
         self.three_starred = set()
 
-        # Perf §1.1: client-side pool cache.  Maintained in lockstep with
-        # local buys/sells; resynced from the server on demand.
+        # Local view of the champion pool.
         self._pool_cache = None
         self._pool_dirty = True
 
-        # Perf §1.9: precomputed splash path for each champion so the GUI
+        # Precomputed splash path for each champion so the GUI
         # does not stat the filesystem on every frame.
         self._splash_paths = self._build_splash_path_cache()
 
@@ -123,8 +121,7 @@ class Game:
         except ConnectionRefusedError:
             pass
 
-        # Start the server, scoping its environment (server improvement
-        # §2.10) to avoid GUI environment variables leaking through.
+        # Start the server.
         SERVER_LOG_FILE.unlink(missing_ok=True)
         env = {
             'PATH': os.environ.get('PATH', ''),
@@ -194,13 +191,7 @@ class Game:
         return str(self.team)
 
     def build_champion_pool(self):
-        """Return the current champion pool, using a client-side cache.
-
-        Perf §1.1: ``_pool_cache`` is the authoritative copy maintained by
-        :meth:`_send_buy_message` / :meth:`_send_sell_message`.  We only
-        re-fetch from the server on first call or after an explicit
-        :meth:`invalidate_pool_cache`.
-        """
+        """Return the current champion pool."""
         if self.offline:
             # The offline pool is mutated directly so it's always fresh.
             cur_pool = {rarity: [] for rarity in self._local_pool}
@@ -219,7 +210,7 @@ class Game:
             self._pool_cache = cache
             self._pool_dirty = False
 
-        # Materialise the cache into the historical list form expected by
+        # Materialize the cache into the historical list form expected by
         # callers, filtering out 3-starred units.
         cur_pool = {1: [], 2: [], 3: [], 4: [], 5: []}
         for rarity, names in self._pool_cache.items():
@@ -240,7 +231,7 @@ class Game:
         self.last_notification = message
 
     def _adjust_cache(self, unit, delta):
-        """Apply a delta to the client-side pool cache (perf §1.1)."""
+        """Apply a delta to the client-side pool cache."""
         if self.offline or self._pool_cache is None:
             return
         bucket = self._pool_cache.setdefault(unit.rarity, {})
@@ -253,8 +244,7 @@ class Game:
         if self.offline:
             self._local_pool[unit.rarity].remove(unit)
             return
-        # Server improvement §2.9: the server now returns an ack with the
-        # new state; treat a non-OK response as a transactional failure.
+        # The server answers every mutation.
         response = send_message(self.client_socket, f'buy: {unit.name}')
         if response and response.startswith('ERROR'):
             self._notify(response)
@@ -309,8 +299,7 @@ class Game:
                     candidates.append(possible)
 
             # If candidates is empty, reroll rarities until candidate is available.
-            # Perf §1.2 supplement: shallow-copy the weight list (five ints)
-            # rather than ``deepcopy`` it.
+            # Work on a copy of the weights.
             remaining_odds = list(LEVEL_ODDS[level])
             remaining_odds[i - 1] = 0
             while not candidates:
@@ -350,18 +339,15 @@ class Game:
             # Remove chosen champion from pool
             cur_pool[chosen.rarity].remove(chosen)
 
+        for chosen_unit in results:
+            self._send_buy_message(chosen_unit)
+
         # Return rolled shop
         return results
 
     # Helper function that simulates a single roll based on level
     def roll(self, first_roll=False):
-        """Roll for champions based on level.
-
-        Perf §1.6: ``random.choices`` is invoked once for the cost roll
-        (already batched) and the per-slot unit selection uses
-        ``cur_pool[cost]`` directly instead of re-copying it into a fresh
-        ``can_roll`` list, eliminating an O(N) allocation per slot.
-        """
+        """Roll for champions based on level."""
         assert self.level in range(1, 12)
 
         cur_pool = self.build_champion_pool()
@@ -502,8 +488,7 @@ class Game:
         if removed is not None:
             # The offline pool is owned by Game (Team only sends network
             # messages); restore the unit here so book-keeping is symmetrical.
-            if self.offline:
-                self._send_sell_message(removed)
+            self._send_sell_message(removed)
             return True
         return False
 
@@ -519,10 +504,13 @@ class Game:
         unit = self.team.board_positions.get(position)
         if unit is None:
             return False
+        # Ask first: a refusal must leave gold and the board untouched.
+        try:
+            self._send_sell_message(unit)
+        except RuntimeError:
+            return False
         self.gold += unit.sell_cost
         self.team.remove_unit_from_board(position)
-        if self.offline:
-            self._send_sell_message(unit)
         return True
 
     def sell_bench_unit(self, bench_index):
@@ -532,10 +520,12 @@ class Game:
         unit = self.team.bench[bench_index]
         if unit is None:
             return False
+        try:
+            self._send_sell_message(unit)
+        except RuntimeError:
+            return False
         self.gold += unit.sell_cost
         self.team.remove_unit_from_bench(bench_index)
-        if self.offline:
-            self._send_sell_message(unit)
         return True
 
     def move_bench_to_board(self, bench_index, target_position=None):

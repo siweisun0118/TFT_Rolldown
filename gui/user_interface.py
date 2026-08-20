@@ -50,7 +50,7 @@ class MainWindow(QMainWindow):
         self.reroll_button = self.controls['reroll']
         self.level_up_button = self.controls['level_up']
 
-        # Perf §1.4: cache trait pixmaps so we don't hit disk per redraw.
+        # Trait pixmaps, keyed by (name, size).
         self._trait_pix_cache = {}
 
         # Wire everything up.
@@ -78,7 +78,7 @@ class MainWindow(QMainWindow):
         self.level_up_button.clicked.connect(self.do_buy_exp)
 
         # Click-to-sell wiring: clicking a chip with the right mouse button
-        # sells the unit, mirroring the legacy behaviour.
+        # sells the unit, mirroring the legacy behavior.
         for tiles_row in self.board_tiles:
             for tile in tiles_row:
                 chip = tile.chip
@@ -95,7 +95,7 @@ class MainWindow(QMainWindow):
         self.refresh_traits()
 
         # The board's hex layout depends on the parent widget's size.  Qt
-        # finalises layout after :meth:`show()`, so schedule a deferred
+        # finalizes layout after :meth:`show()`, so schedule a deferred
         # refresh once the window is fully laid out so the initial paint
         # uses the correct hex sizes.  Without this the very first frame
         # shows the board at its sizeHint() instead of the real geometry.
@@ -135,7 +135,7 @@ class MainWindow(QMainWindow):
         return QPixmap()
 
     def _pixmap_for_trait(self, trait_name, size=32):
-        """Return a cached scaled trait pixmap (perf §1.4)."""
+        """Return a cached scaled trait pixmap."""
         cached = self._trait_pix_cache.get((trait_name, size))
         if cached is not None:
             return cached

@@ -12,7 +12,7 @@ Highlights:
   lingering ghost icon after a drop.
 * :class:`ShopSlot` overlays trait icons on the unit splash itself so the
   shop column has a fixed height regardless of how many traits a champion
-  has.  A coloured rarity banner runs along the bottom of the slot.
+  has.  A colored rarity banner runs along the bottom of the slot.
 * :class:`Toast` floats above the board for transient notifications.
 """
 
@@ -34,9 +34,9 @@ TIER_COLORS = {
 }
 
 # RGB swatches mirroring the ``General Assets/rarities/*.png`` files so the
-# shop banner colour stays consistent even if the PNG isn't available.
+# shop banner color stays consistent even if the PNG isn't available.
 RARITY_COLORS = {
-    1: QtGui.QColor(135, 135, 135),  # grey
+    1: QtGui.QColor(135, 135, 135),  # gray
     2: QtGui.QColor(26, 150, 0),     # green
     3: QtGui.QColor(70, 70, 255),    # blue
     4: QtGui.QColor(179, 0, 179),    # purple
@@ -97,7 +97,7 @@ class UnitChip(QtWidgets.QLabel):
             self.setStyleSheet('background: transparent;')
             return
 
-        # Border coloured by rarity makes the chip readable on bench/board.
+        # Border colored by rarity makes the chip readable on bench/board.
         rarity_color = RARITY_COLORS.get(unit.rarity, QtGui.QColor(0, 0, 0))
         self.setStyleSheet(
             'background: rgba(20, 20, 20, 220); '
@@ -281,8 +281,8 @@ class HexBoard(QtWidgets.QFrame):
 
         # Pointy-top hex of width W (flat-to-flat) and height H (vertex-to-vertex):
         #   W = sqrt(3) * size, H = 2 * size, so H = 2/sqrt(3) * W
-        # Horizontal step between centres in a row = W
-        # Vertical step between centres in adjacent rows = 0.75 * H
+        # Horizontal step between centers in a row = W
+        # Vertical step between centers in adjacent rows = 0.75 * H
         # Odd rows shifted right by W/2.
         # Total horizontal extent = n_cols * W + W/2 (for offset) = (n_cols + 0.5) * W
         # Total vertical extent = (n_rows - 1) * 0.75 * H + H = (0.75*(n_rows-1) + 1) * H
@@ -585,8 +585,8 @@ class ShopSlot(QtWidgets.QFrame):
     def display(self, unit, splash_pixmap=None, trait_pixmaps=None):
         """Update the slot to show *unit*.
 
-        Perf §1.7: if the slot is already showing the same unit (same name
-        and cost), we skip the work entirely.
+        If the slot is already showing the same unit (same name and cost),
+        we skip the work entirely.
         """
         previous = self.unit
         if unit is None or unit.name == 'BLANK':

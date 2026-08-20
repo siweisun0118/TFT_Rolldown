@@ -37,7 +37,7 @@ def tmp_trait_dir(tmp_path):
     dest.mkdir()
     for i in range(4):
         img = Image.new('RGBA', (32, 32), (255, 255, 255, 0))
-        # Draw an opaque white "icon" shape in the centre.
+        # Draw an opaque white "icon" shape in the center.
         for x in range(8, 24):
             for y in range(8, 24):
                 img.putpixel((x, y), (255, 255, 255, 220))

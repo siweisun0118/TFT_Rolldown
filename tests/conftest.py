@@ -52,3 +52,74 @@ def qapp():
     from PyQt5.QtWidgets import QApplication  # noqa: WPS433
     app = QApplication.instance() or QApplication(['tft-test'])
     return app
+
+
+@pytest.fixture
+def live_server(set_dir):
+    """A real framed server on an ephemeral port, for end-to-end protocol tests.
+
+    Binds port 0 so runs never contend for the fixed application port, and
+    reuses the shipped dispatch helpers so the wire behavior under test is the
+    same code the real server runs.
+    """
+    import socket  # noqa: WPS433
+    import threading  # noqa: WPS433
+
+    from shared.networking_server import (  # noqa: WPS433
+        buy_champion, get_champion_pool, populate_champ_pool, recv_framed,
+        sell_champion, send_framed,
+    )
+    from shared.rolldown_enums import POOL_LOCK  # noqa: WPS433
+
+    with POOL_LOCK:
+        champions, _ = populate_champ_pool(set_dir)
+
+    listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    listener.bind(('127.0.0.1', 0))
+    listener.listen()
+    listener.settimeout(0.2)
+    port = listener.getsockname()[1]
+    stop = threading.Event()
+
+    def dispatch(message):
+        if message == 'pool':
+            with POOL_LOCK:
+                return get_champion_pool()
+        if message.startswith('buy'):
+            with POOL_LOCK:
+                return buy_champion(message, champions)
+        if message.startswith('sell'):
+            with POOL_LOCK:
+                return sell_champion(message, champions)
+        return f'ERROR: unknown message: {message}'
+
+    def serve():
+        while not stop.is_set():
+            try:
+                connection, _ = listener.accept()
+            except socket.timeout:
+                continue
+            except OSError:
+                break
+            with connection:
+                while not stop.is_set():
+                    try:
+                        message = recv_framed(connection)
+                    except (ConnectionError, OSError):
+                        break
+                    try:
+                        reply = dispatch(message)
+                    except Exception as err:  # noqa: BLE001 -- mirror the real worker
+                        reply = f'ERROR: {type(err).__name__}: {err}'
+                    try:
+                        send_framed(connection, reply)
+                    except OSError:
+                        break
+
+    worker = threading.Thread(target=serve, daemon=True)
+    worker.start()
+    yield port
+    stop.set()
+    listener.close()
+    worker.join(timeout=2)

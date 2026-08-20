@@ -1,0 +1,8 @@
+Pyke:2:A1
+Rammus:2:A2
+Fizz:3:A3
+Zed:2:A4
+Ornn:3:A5
+Briar:3:A6
+Gwen:3:A7
+Talon:3:D1

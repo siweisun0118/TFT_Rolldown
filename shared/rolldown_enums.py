@@ -4,9 +4,8 @@ from pathlib import Path
 import threading
 
 # region Logging
-SERVER_LOG_FILE = Path('server_log')
-# Append-only transition log (one JSON object per line).
-SERVER_TRANSITIONS_LOG = Path('server_transitions.jsonl')
+# Both artifacts live under a per-user data directory; see shared.paths.
+from shared.paths import SERVER_LOG_FILE, SERVER_TRANSITIONS_LOG  # noqa: F401
 # endregion
 
 # region Locks

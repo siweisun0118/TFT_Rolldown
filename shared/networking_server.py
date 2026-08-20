@@ -117,7 +117,7 @@ def get_full_pool():
 
 
 # ----------------------------------------------------------------------------
-# Transition log helpers (server improvement §2.12)
+# Transition log helpers
 _LOG_LOCK = threading.Lock()
 
 
@@ -143,6 +143,15 @@ def _replay_transitions(champions):
     buy/sell records, which the server can reapply at startup so a hard
     crash doesn't lose game progress.
     """
+    # Re-base before applying: replaying the same log twice must land on the
+    # same pool, so the records are applied to a known baseline rather than to
+    # whatever the pool happens to hold.
+    for cost in CHAMPION_POOL:
+        CHAMPION_POOL[cost] = []
+    for unit_obj in champions.values():
+        CHAMPION_POOL[unit_obj.rarity].extend(
+            [unit_obj] * CHAMPION_AMOUNTS[unit_obj.rarity])
+
     if not SERVER_TRANSITIONS_LOG.is_file():
         return
     with open(SERVER_TRANSITIONS_LOG, mode='r', encoding='utf-8') as log_file:
@@ -172,7 +181,7 @@ def buy_champion(message, champions):
     assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
 
     parts = message.split(':', 1)
-    if len(parts) != 2:
+    if len(parts) != 2 or parts[0].strip() != 'buy':
         raise UnknownMessageError(message)
     unit = parts[1].strip()
     if unit not in champions:
@@ -192,7 +201,7 @@ def sell_champion(message, champions):
     assert POOL_LOCK.locked(), 'POOL_LOCK must be held to access CHAMPION POOL'
 
     parts = message.split(':')
-    if len(parts) < 3:
+    if len(parts) < 3 or parts[0].strip() != 'sell':
         raise UnknownMessageError(message)
     unit = parts[1].strip()
     try:
@@ -290,7 +299,7 @@ def init_rolldown_server(argv):
     client_threads = []
     main_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     main_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    host = socket.gethostname()
+    host = '127.0.0.1'
     main_socket.bind((host, SERVER_PORT))
     main_socket.listen()
     print('Server on port', SERVER_PORT, 'listening for connections.')

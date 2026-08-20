@@ -1,4 +1,4 @@
-"""Tests for the new GUI behaviour added in the second iteration.
+"""Tests for the new GUI behavior added in the second iteration.
 
 These cover:
 * Reroll / Buy XP buttons stacked next to the shop (Buy XP on top).

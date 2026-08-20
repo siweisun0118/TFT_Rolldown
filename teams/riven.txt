@@ -1,0 +1,8 @@
+Rammus:2:A3
+The Mighty Mech:2:A4
+Fizz:2:A5
+Poppy:1:A6
+Meepsie:2:A7
+Corki:2:D1
+Riven:3:D2
+Milio:2:D3

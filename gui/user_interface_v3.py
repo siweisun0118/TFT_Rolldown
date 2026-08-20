@@ -67,7 +67,7 @@ class Ui_MainWindow:
 
         root.addWidget(self.traits_column, 0)
 
-        # ------------------------------------------------------------------ centre column
+        # ------------------------------------------------------------------ center column
         centre = QtWidgets.QVBoxLayout()
         centre.setSpacing(10)
         root.addLayout(centre, 1)

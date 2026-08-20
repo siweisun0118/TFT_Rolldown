@@ -1,0 +1,9 @@
+Jhin:2:D1
+Jhin:2:D2
+Jhin:2:D3
+Jhin:2:D4
+Jhin:2:D5
+Jhin:2:D6
+Jhin:2:D7
+The Mighty Mech:2:A3
+The Mighty Mech:2:A4

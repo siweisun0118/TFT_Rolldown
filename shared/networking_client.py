@@ -1,6 +1,6 @@
 """Send messages to the main rolldown server.
 
-Server improvement §2.2: every message is now sent with a 4-byte
+Every message is sent with a 4-byte
 network-order length prefix.  The wire format is::
 
     [4 bytes: payload length, network order] [payload (utf-8)]
@@ -69,7 +69,7 @@ def init_rolldown_client(port):
 
     # Initialize the client socket and bind it to the given port
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    host = socket.gethostname()
+    host = '127.0.0.1'
     client_socket.bind((host, port))
 
     # Connect to server

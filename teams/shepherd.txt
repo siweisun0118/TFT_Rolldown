@@ -1,0 +1,8 @@
+Morgana:2:A3
+Blitzcrank:2:A5
+Illaoi:3:A6
+Meepsie:3:A7
+LeBlanc:2:D1
+Karma:2:D3
+Sona:2:D5
+Lissandra:1:D7

@@ -1,0 +1,9 @@
+Riven:2:D2
+Riven:2:D4
+Corki:2:D1
+Corki:2:D3
+Pantheon:3:A4
+Milio:3:D5
+Ezreal:1:D6
+Jhin:2:D7
+Cho'Gath:2:A1

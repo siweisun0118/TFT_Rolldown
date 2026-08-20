@@ -69,10 +69,10 @@ class Unit:
 
         ``three_starred`` is an optional set used to mark 3-star units so the
         server stops rolling them.  When omitted the module-level
-        :data:`THREE_STARRED` global is updated (legacy behaviour).
+        :data:`THREE_STARRED` global is updated (legacy behavior).
         """
         if three_starred is None:
-            three_starred = THREE_STARRED
+            three_starred = set()
         if self.level == 2:
             three_starred.add(self.name)
 
@@ -165,7 +165,7 @@ class Team:
         # Backwards-compat: index of (name, level) -> set of locations.
         # Locations are either ``('board', (row, col))`` or
         # ``('bench', bench_idx)``.  This lets us answer "how many copies of
-        # X do I own?" in O(1) for buy / upgrade decisions (perf §1.3).
+        # X do I own?" in O(1) for buy / upgrade decisions.
         self._unit_index = {}
 
         # Dictionary of all champions and traits
@@ -177,7 +177,7 @@ class Team:
 
         # 3-star tracker – when provided, this is the Game-owned set used by
         # all upgrade calls.  Falls back to the module-level global.
-        self.three_starred = three_starred if three_starred is not None else THREE_STARRED
+        self.three_starred = three_starred if three_starred is not None else set()
 
     # ---------------------------------------------------------------- compat
     @property
@@ -259,7 +259,7 @@ class Team:
         """Aggregate trait counts from unique board champions.
 
         Multiple star-level copies of the same champion (same ``name``) only
-        contribute once.  Mirrors the original behaviour from the pre-refactor
+        contribute once.  Mirrors the original behavior from the pre-refactor
         :meth:`add_unit` implementation.
         """
         result = {}
@@ -362,7 +362,7 @@ class Team:
             return False
         new_unit = unit_template.copy()
 
-        # Perf §1.5: single pass to find the leftmost open bench slot.
+        # Leftmost open bench slot.
         first_open = None
         for idx, slot in enumerate(self.bench):
             if slot is None:
@@ -603,9 +603,7 @@ class Team:
     def _finish_sell(self, sold_unit):
         if sold_unit.name in self.three_starred and sold_unit.level == 3:
             self.three_starred.remove(sold_unit.name)
-        if self.client_socket is not None:
-            message = f'sell: {sold_unit.name}: {sold_unit.level}'
-            send_message(self.client_socket, message)
+        # The owning Game sends the sell and updates its pool view.
 
     def remove_unit(self, unit_index):
         """Legacy flat-index sell.

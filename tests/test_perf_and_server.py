@@ -1,4 +1,4 @@
-"""Tests for the performance and server-robustness improvements."""
+"""Tests for pool caching, splash-path caching, and the client/server protocol."""
 
 # Standard libraries
 import io
@@ -9,7 +9,7 @@ import threading
 import pytest
 
 
-# ----------------------------------------------------------- perf §1.1 / 1.11
+# ----------------------------------------------------------- pool cache
 def test_pool_cache_is_used_after_first_fetch(monkeypatch, game):
     """The offline path treats the local pool as authoritative.
 
@@ -21,7 +21,7 @@ def test_pool_cache_is_used_after_first_fetch(monkeypatch, game):
     game._pool_cache = {1: {'Aatrox': 5}, 2: {}, 3: {}, 4: {}, 5: {}}
     game._pool_dirty = False
     pool = game.build_champion_pool()
-    # 5 Aatrox should be materialised.
+    # 5 Aatrox should be materialized.
     assert sum(1 for u in pool[1] if u.name == 'Aatrox') == 5
     # Adjust cache via the helper used by buy/sell paths.
     game._adjust_cache(game.champions_dict['Aatrox'], -1)
@@ -40,7 +40,7 @@ def test_pool_cache_is_used_after_first_fetch(monkeypatch, game):
 
 
 def test_three_starred_is_per_instance(set_dir):
-    """Perf §1.11: each Game has its own THREE_STARRED tracker."""
+    """Each Game has its own THREE_STARRED tracker."""
     from shared.game import Game
     g1 = Game(set_dir, gold=100, level=3, offline=True)
     g2 = Game(set_dir, gold=100, level=3, offline=True)
@@ -48,7 +48,7 @@ def test_three_starred_is_per_instance(set_dir):
     assert 'Aatrox' not in g2.three_starred
 
 
-# ----------------------------------------------------------- perf §1.9
+# ----------------------------------------------------------- splash paths
 def test_splash_paths_are_cached_at_startup(game):
     """Splash paths should resolve without touching the filesystem after init."""
     cache = game._splash_paths
@@ -58,7 +58,7 @@ def test_splash_paths_are_cached_at_startup(game):
     assert aatrox_path.exists()
 
 
-# ----------------------------------------------------------- framing helpers (§2.2)
+# ----------------------------------------------------------- framing helpers
 def test_framing_round_trip():
     """Length-prefixed messages survive a back-to-back round trip."""
     from shared.networking_client import send_framed as client_send, recv_framed as client_recv
@@ -95,7 +95,7 @@ def test_framing_handles_partial_recv():
         b.close()
 
 
-# ----------------------------------------------------------- transactional acks (§2.9)
+# ----------------------------------------------------------- transactional acks
 def test_server_returns_ok_for_buy_and_sell(monkeypatch, tmp_path, set_dir):
     """The server should respond with ``OK:`` on successful buy/sell."""
     from shared.networking_server import (
@@ -116,7 +116,7 @@ def test_server_returns_ok_for_buy_and_sell(monkeypatch, tmp_path, set_dir):
 
 
 def test_server_returns_error_for_unknown_champion(monkeypatch, tmp_path, set_dir):
-    """Server improvement §2.5 + §2.9: unknown champion → structured error."""
+    """An unknown champion produces a structured error, not a dead thread."""
     from shared.networking_server import (
         buy_champion, populate_champ_pool, UnknownChampionError,
     )
@@ -130,7 +130,7 @@ def test_server_returns_error_for_unknown_champion(monkeypatch, tmp_path, set_di
             buy_champion('buy: NotAUnit', champs)
 
 
-# ----------------------------------------------------------- transition log (§2.12)
+# ----------------------------------------------------------- transition log
 def test_transition_log_persists_buy_and_sell(monkeypatch, tmp_path, set_dir):
     """Every successful operation should append a record to the log."""
     log_path = tmp_path / 'log.jsonl'
@@ -160,3 +160,22 @@ def test_transition_log_persists_buy_and_sell(monkeypatch, tmp_path, set_dir):
         champs2, _ = populate_champ_pool(set_dir)
         _replay_transitions(champs2)
     # Pool state is internal; we just check the helper does not raise.
+
+
+# ----------------------------------------------------------- end-to-end server
+def test_live_server_round_trip(live_server):
+    """A real socket, real framing, real dispatch, on an ephemeral port."""
+    import json
+    import socket
+
+    from shared.networking_client import send_message
+
+    sock = socket.create_connection(('127.0.0.1', live_server), timeout=5)
+    try:
+        before = json.loads(send_message(sock, 'pool'))
+        assert before['Aatrox'] > 0
+        assert send_message(sock, 'buy: Aatrox').startswith('OK')
+        after = json.loads(send_message(sock, 'pool'))
+        assert after['Aatrox'] == before['Aatrox'] - 1
+    finally:
+        sock.close()

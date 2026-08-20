@@ -1,0 +1,9 @@
+Cho'Gath:3:C1
+Poppy:3:D1
+Briar:3:D2
+Nasus:2:D3
+Leona:2:D4
+Pyke:2:D5
+The Mighty Mech:2:D6
+Shen:2:D7
+Pantheon:2:C7

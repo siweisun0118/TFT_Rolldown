@@ -12,3 +12,6 @@ background.py
 check_server.py
 server_log
 server_transitions.jsonl
+
+# Archives: hand-off builds and captured run outputs. Never tracked.
+*.zip

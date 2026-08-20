@@ -1,217 +1,236 @@
+#!/usr/bin/env python3
+"""
+TFT Champion Scraper for MetaTFT
+Scrapes champion stats, traits, roles, and abilities from
+https://data.metatft.com/lookups/TFTSet17_latest_en_us.json - the same static data
+MetaTFT's own unit pages (e.g. https://www.metatft.com/units/Jhin) render client-side.
+
+This is plain Riot game data behind a CDN, not behind any bot-detection challenge
+(unlike mobalytics.gg, which sits behind a Cloudflare managed JS challenge), so no
+Selenium/browser automation is needed at all - a single `requests.get` returns
+everything for the whole roster.
+
+Caveat: this file can occasionally lag a very recent balance patch for an individual
+champion (confirmed once, for Aatrox, whose ability here didn't match the live site).
+It self-corrects once the CDN cache refreshes; --redo re-pulls it fresh.
+"""
+
+import argparse
 import json
-import os
-from bs4 import BeautifulSoup
-import urllib.request
+import re
 from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import requests
+
+try:
+    from .token_resolver import resolve_ability_scaling_text, resolve_ability_text
+except ImportError:
+    # Run directly as a script (`python scraper/parse_set17_data.py`) rather than
+    # imported as part of the `scraper` package.
+    from token_resolver import resolve_ability_scaling_text, resolve_ability_text
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+ABILITIES_DIR = REPO_ROOT / "TFT_Set_17" / "abilities"
+CHAMPION_STATS_PATH = REPO_ROOT / "TFT_Set_17" / "champion_stats.json"
+
+LOOKUP_URL = "https://data.metatft.com/lookups/TFTSet17_latest_en_us.json"
+
+# Real playable champions vs. PvE monsters/hero-augment variants/UI placeholders that
+# also show up in the `units` list (e.g. "Cosmic Bruiser", "Apex Primordian", item
+# anvils): apiName is "TFT17_<Champion>" with no "PVE"/"Enemy_"/"FakeUnit" marker,
+# has at least one real trait, has stats, and costs 1-5.
+NON_CHAMPION_API_MARKERS = ('PVE', 'Enemy_', 'FakeUnit')
 
 
-def _extract_apollo_cache(filepath):
-    with open(filepath, 'r', encoding='utf-8') as f:
-        html_content = f.read()
-
-    soup = BeautifulSoup(html_content, 'html.parser')
-
-    for script in soup.find_all('script'):
-        if script.string and '__PRELOADED_STATE__' in script.string:
-            raw = script.string.split('window.__PRELOADED_STATE__=', 1)[1]
-            depth = 0
-            end = 0
-            for i, c in enumerate(raw):
-                if c == '{':
-                    depth += 1
-                elif c == '}':
-                    depth -= 1
-                if depth == 0:
-                    end = i + 1
-                    break
-            data = json.loads(raw[:end])
-            return data['tftState']['apollo']['static']
-
-    return {}
+def normalize_name(name: str) -> str:
+    """Normalize a champion name for comparison (e.g. "Cho'Gath" -> "chogath")."""
+    return re.sub(r'[^a-z0-9]', '', name.lower())
 
 
-COLOR_TO_STYLE = {
-    'bronze': 1,
-    'silver': 2,
-    'gold': 3,
-    'platinum': 3,
-    'legendary': 4,
-}
+def slugify(name: str) -> str:
+    return re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
 
 
-def parse_champions():
-    cache = _extract_apollo_cache('Set_17_Champions.txt')
+class TFTScraper:
+    def __init__(self):
+        self.champions_data = {}
 
-    synergy_id_to_name = {}
-    for key, val in cache.items():
-        if key.startswith('SynergiesV1:'):
-            flat_ref = val.get('flatData', {}).get('__ref', '')
-            flat_data = cache.get(flat_ref, {})
-            slug = flat_data.get('slug', '')
-            if slug.endswith('-1'):
+    def fetch_lookup(self) -> Optional[Dict[str, Any]]:
+        try:
+            response = requests.get(LOOKUP_URL, timeout=30)
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as e:
+            print(f"Error fetching {LOOKUP_URL}: {e}")
+            return None
+
+    def is_real_champion(self, unit: Dict[str, Any]) -> bool:
+        api_name = unit.get('apiName', '')
+        if not api_name.startswith('TFT17_'):
+            return False
+        if any(marker in api_name for marker in NON_CHAMPION_API_MARKERS):
+            return False
+        if not unit.get('traits'):
+            return False
+        if not unit.get('stats', {}).get('hp'):
+            return False
+        if not (1 <= unit.get('cost', 0) <= 5):
+            return False
+        return True
+
+    def download_ability_icon(self, icon_asset_path: str, slug: str) -> Optional[str]:
+        """Download an ability's icon (via Community Dragon) to TFT_Set_17/abilities/."""
+        if not icon_asset_path or not slug:
+            return None
+
+        url = 'https://raw.communitydragon.org/latest/game/' + icon_asset_path.lower().replace('.tex', '.png')
+        ABILITIES_DIR.mkdir(parents=True, exist_ok=True)
+        dest = ABILITIES_DIR / f"{slug}.png"
+
+        if not dest.exists():
+            try:
+                response = requests.get(url, timeout=10)
+                response.raise_for_status()
+                dest.write_bytes(response.content)
+            except requests.RequestException as e:
+                print(f"    Failed to download ability icon {url}: {e}")
+                return None
+
+        return str(dest.relative_to(REPO_ROOT)).replace('\\', '/')
+
+    def extract_champion(self, unit: Dict[str, Any], roles: Dict[str, Any]) -> Dict[str, Any]:
+        """Build the champion_stats.json entry for one unit's metatft data."""
+        stats: Dict[str, Any] = {}
+        unit_stats = unit.get('stats', {})
+
+        if unit_stats.get('hp') is not None:
+            stats['hp'] = int(unit_stats['hp'])
+        if unit_stats.get('damage') is not None:
+            stats['damage'] = int(unit_stats['damage'])
+        if unit_stats.get('magicResist') is not None:
+            stats['mr'] = float(unit_stats['magicResist'])
+        if unit_stats.get('armor') is not None:
+            stats['armor'] = float(unit_stats['armor'])
+        if unit_stats.get('attackSpeed') is not None:
+            stats['speed'] = float(unit_stats['attackSpeed'])
+        if unit_stats.get('initialMana') is not None and unit_stats.get('mana') is not None:
+            stats['mana'] = f"{unit_stats['initialMana']} / {unit_stats['mana']}"
+        if unit.get('cost') is not None:
+            stats['cost'] = int(unit['cost'])
+        if unit_stats.get('range') is not None:
+            stats['range'] = int(unit_stats['range'])
+
+        if unit.get('traits'):
+            stats['traits'] = list(unit['traits'])
+
+        role_key = unit.get('role')
+        role = roles.get(role_key) if role_key else None
+        if role and role.get('name'):
+            stats['role'] = role['name']
+
+        ability = unit.get('ability') or {}
+        if ability.get('name'):
+            stats['ability'] = ability['name']
+
+        if ability.get('desc'):
+            base_hp = unit_stats.get('hp')
+            champion_name = unit.get('name')
+            resolved = resolve_ability_text(ability, base_hp=base_hp, champion_name=champion_name)
+            stats['ability_description'] = resolved.text
+
+            scaling = resolve_ability_scaling_text(ability, base_hp=base_hp, champion_name=champion_name)
+            stats['ability_description_scaling'] = scaling.text
+
+        if ability.get('icon') and ability.get('name'):
+            icon_path = self.download_ability_icon(ability['icon'], slugify(ability['name']))
+            if icon_path:
+                stats['ability_icon'] = icon_path
+
+        return stats
+
+    def scrape_all(self) -> Dict[str, Dict[str, Any]]:
+        """Scrape every Set 17 champion's data from the metatft lookup file."""
+        already_scraped = {
+            normalize_name(name) for name, data in self.champions_data.items() if data
+        }
+
+        print("Fetching champion data...")
+        lookup = self.fetch_lookup()
+        if not lookup:
+            print("Failed to fetch champion data.")
+            return self.champions_data
+
+        roles = lookup.get('roles', {})
+        champions = [u for u in lookup.get('units', []) if self.is_real_champion(u)]
+        champions.sort(key=lambda u: u['name'])
+
+        if not champions:
+            print("No champions found in the lookup data.")
+            return self.champions_data
+
+        print(f"Found {len(champions)} champions. Extracting...")
+
+        for i, unit in enumerate(champions, 1):
+            name = unit['name'].strip()
+            print(f"[{i}/{len(champions)}] {name}...", end=' ')
+
+            if normalize_name(name) in already_scraped:
+                print("skipped (already scraped)")
                 continue
-            name = flat_data.get('name', '').strip()
-            if name:
-                synergy_id_to_name[key] = name
 
-    champions_data = []
-    for key, val in cache.items():
-        if not key.startswith('ChampionsV1DataFlatDto:'):
-            continue
-        if val.get('gameSet') != 'set17':
-            continue
+            stats = self.extract_champion(unit, roles)
+            self.champions_data[name] = stats
+            already_scraped.add(normalize_name(name))
+            print("✓")
 
-        name = val['name']
-        cost = val['cost']
-        slug = val['slug']
+        return self.champions_data
 
-        traits = []
-        for syn_ref in val.get('synergies', []):
-            ref_key = syn_ref.get('__ref', '')
-            trait_name = synergy_id_to_name.get(ref_key, '')
-            if trait_name:
-                traits.append(trait_name)
+    def load_existing_data(self, filename: Path = CHAMPION_STATS_PATH):
+        """Load previously scraped data so scrape_all can resume and skip completed champions."""
+        if not filename.exists():
+            return
+        with open(filename, 'r', encoding='utf-8') as f:
+            self.champions_data = json.load(f)
 
-        champion_id = f"TFT17_{slug.replace('-', '').title().replace(' ', '')}"
-
-        champions_data.append({
-            "championId": champion_id,
-            "cost": cost,
-            "name": name,
-            "traits": traits,
-            "_slug": slug,
-        })
-
-    champions_data.sort(key=lambda c: c['name'])
-    return champions_data
-
-
-def parse_traits():
-    cache = _extract_apollo_cache('Set_17_Synergies.txt')
-
-    traits_data = []
-    for key, val in cache.items():
-        if not key.startswith('SynergiesV1DataFlatDto:'):
-            continue
-        if val.get('gameSet') != 'set17':
-            continue
-        name = val.get('name', '').strip()
-        if not name:
-            continue
-        slug = val.get('slug', '')
-        if '-1' in slug:
-            continue
-
-        bonuses = val.get('bonuses', [])
-        if not bonuses:
-            continue
-
-        sets = []
-        needed_values = [b['needed'] for b in bonuses]
-        for i, bonus in enumerate(bonuses):
-            needed = bonus['needed']
-            color = bonus.get('color', 'bronze')
-            style = COLOR_TO_STYLE.get(color, 1)
-
-            if i + 1 < len(needed_values):
-                max_val = needed_values[i + 1] - 1
-            else:
-                max_val = 25000
-
-            sets.append({
-                "min": needed,
-                "max": max_val,
-                "style": style,
-            })
-
-        traits_data.append({"name": name, "sets": sets, "_slug": slug})
-
-    traits_data.sort(key=lambda t: t['name'])
-    return traits_data
-
-
-def _download(url, output_path):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                      'AppleWebKit/537.36 (KHTML, like Gecko) '
-                      'Chrome/120.0.0.0 Safari/537.36'
-    }
-    req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req) as resp:
-        data = resp.read()
-    with open(output_path, 'wb') as f:
-        f.write(data)
-
-
-def download_champion_images(champions_data, output_dir):
-    os.makedirs(output_dir, exist_ok=True)
-
-    for champion in champions_data:
-        name = champion['name']
-        slug = champion.get('_slug', name.lower().replace(' ', '').replace("'", '').replace('-', ''))
-        img_url = f"https://cdn.mobalytics.gg/assets/tft/images/champions/thumbnail/set17/{slug}.jpg?v=5"
-
-        output_path = os.path.join(output_dir, f"{name}.png")
-
-        if os.path.exists(output_path):
-            print(f"Already exists: {name}")
-            continue
-
-        try:
-            _download(img_url, output_path)
-            print(f"Downloaded: {name}")
-        except Exception as e:
-            print(f"Failed to download {name} from {img_url}: {e}")
-
-
-def download_trait_images(traits_data, output_dir):
-    os.makedirs(output_dir, exist_ok=True)
-
-    for trait in traits_data:
-        name = trait['name']
-        slug = trait.get('_slug', name.lower().replace(' ', '-').replace("'", ''))
-        img_url = f"https://cdn.mobalytics.gg/assets/common/icons/tft-synergies-set17/24-{slug}.svg?v=5"
-
-        output_path = os.path.join(output_dir, f"{name}.png")
-
-        if os.path.exists(output_path):
-            print(f"Already exists: {name}")
-            continue
-
-        try:
-            _download(img_url, output_path)
-            print(f"Downloaded: {name}")
-        except Exception as e:
-            print(f"Failed to download {name} from {img_url}: {e}")
+    def save_to_json(self, filename: Path = CHAMPION_STATS_PATH):
+        """Save scraped data to JSON file."""
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(self.champions_data, f, indent=2, ensure_ascii=False)
+        print(f"\nData saved to {filename}")
+        print(f"Total champions scraped: {len(self.champions_data)}")
 
 
 def main():
-    print("Parsing Set 17 champions...")
-    champions = parse_champions()
+    parser = argparse.ArgumentParser(description="Scrape TFT champion stats from MetaTFT.")
+    parser.add_argument(
+        '--redo', action='store_true',
+        help="Re-scrape every champion from scratch, ignoring any existing champion_stats.json. "
+             "By default the scraper resumes and skips champions that already have data."
+    )
+    args = parser.parse_args()
 
-    print("Parsing Set 17 traits...")
-    traits = parse_traits()
+    scraper = TFTScraper()
 
-    os.makedirs('TFT_Set_17', exist_ok=True)
+    if args.redo:
+        print("Redoing full scrape (ignoring existing champion_stats.json).")
+    else:
+        scraper.load_existing_data()
+        if scraper.champions_data:
+            print(f"Resuming: {len(scraper.champions_data)} champions already scraped will be skipped.")
 
-    champions_out = [{k: v for k, v in c.items() if not k.startswith('_')} for c in champions]
-    with open('TFT_Set_17/champions.json', 'w', encoding='utf-8') as f:
-        json.dump(champions_out, f, indent=4, ensure_ascii=False)
-    print(f"Saved {len(champions_out)} champions to champions.json")
-
-    traits_out = [{k: v for k, v in t.items() if not k.startswith('_')} for t in traits]
-    with open('TFT_Set_17/traits.json', 'w', encoding='utf-8') as f:
-        json.dump(traits_out, f, indent=4, ensure_ascii=False)
-    print(f"Saved {len(traits_out)} traits to traits.json")
-
-    print("\nDownloading champion images...")
-    download_champion_images(champions, 'TFT_Set_17/champions')
-
-    print("\nDownloading trait images...")
-    download_trait_images(traits, 'TFT_Set_17/traits')
-
-    print("\nDone!")
+    try:
+        scraper.scrape_all()
+        scraper.save_to_json()
+    except KeyboardInterrupt:
+        print("\nScraping interrupted by user")
+        if scraper.champions_data:
+            scraper.save_to_json()
+    except Exception as e:
+        print(f"Error during scraping: {e}")
+        if scraper.champions_data:
+            scraper.save_to_json()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

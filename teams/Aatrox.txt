@@ -1,0 +1,8 @@
+Aatrox:3:A1
+Poppy:3:A2
+Rammus:2:A4
+Rhaast:2:A7
+Morgana:2:B2
+Corki:2:C1
+Shen:2:C2
+Caitlyn:3:D1

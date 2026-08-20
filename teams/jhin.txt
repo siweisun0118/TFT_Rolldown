@@ -1,0 +1,5 @@
+Ornn:3:A3
+Leona:3:A5
+Jax:3:B3
+Karma:3:D2
+Jhin:2:D4

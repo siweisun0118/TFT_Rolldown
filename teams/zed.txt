@@ -1,0 +1,8 @@
+Tahm Kench:2:A2
+Maokai:2:A3
+Aatrox:2:A6
+Rhaast:2:A7
+Zed:2:B1
+Fiora:2:B3
+Shen:3:C3
+Akali:1:D7

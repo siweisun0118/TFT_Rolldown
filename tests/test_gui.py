@@ -6,7 +6,7 @@ Most importantly, these tests verify:
 * Bench/board widgets are non-overlapping after resize.
 * Drag-and-drop moves units between board and bench via :meth:`handle_drop`.
 * Right-clicking a chip sells the underlying unit.
-* The trait badges colour themselves according to the unit's tier.
+* The trait badges color themselves according to the unit's tier.
 
 All tests run under the ``offscreen`` Qt platform so they work in CI without a
 display.
@@ -145,7 +145,7 @@ def test_right_click_chip_sells_unit(qapp, set_dir):
     assert window.game.team.bench[0] is None
 
 
-# ----------------------------------------------------------------- trait colours
+# ----------------------------------------------------------------- trait colors
 def test_trait_badge_paints_for_each_tier(qapp, set_dir):
     """Every supported tier should produce a different background brush.
 
